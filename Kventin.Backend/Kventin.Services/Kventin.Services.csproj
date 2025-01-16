@@ -6,4 +6,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Kventin.Domain\Kventin.DataAccess.csproj" />
+  </ItemGroup>
+
 </Project>
