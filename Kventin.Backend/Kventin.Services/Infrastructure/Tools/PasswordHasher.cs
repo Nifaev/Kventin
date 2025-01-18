@@ -1,6 +1,6 @@
-﻿using Kventin.Services.Interfaces.Auth;
+﻿using Kventin.Services.Interfaces.Tools;
 
-namespace Kventin.Services.Infrastructure.Auth
+namespace Kventin.Services.Infrastructure.Tools
 {
     public class PasswordHasher : IPasswordHasher
     {

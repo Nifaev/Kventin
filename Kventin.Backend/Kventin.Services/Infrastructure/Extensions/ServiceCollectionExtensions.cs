@@ -1,9 +1,7 @@
 ﻿using Kventin.DataAccess;
-using Kventin.Services.Infrastructure.Auth;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
 namespace Kventin.Services.Infrastructure.Extensions
@@ -39,12 +37,18 @@ namespace Kventin.Services.Infrastructure.Extensions
                     };
                 });
 
-            services.AddAuthorization(options =>
-            {
-                options.AddPolicy("Admin", policy => policy.RequireRole("Admin"));
-                options.AddPolicy("Teacher", policy => policy.RequireRole("Teacher"));
-                options.AddPolicy("Student", policy => policy.RequireRole("Student"));
-            });
+            services.AddAuthorizationBuilder()
+                .AddPolicy("Parent", policy => policy.RequireRole("Parent"))
+                .AddPolicy("Teacher", policy => policy.RequireRole("Teacher"))
+                .AddPolicy("Student", policy => policy.RequireRole("Student"))
+                .AddPolicy("SuperUser", policy => policy.RequireRole("SuperUser"))
+                .AddPolicy("AdminSchedule", policy => policy.RequireRole("AdminSchedule"))
+                .AddPolicy("AdminGroups", policy => policy.RequireRole("AdminGroups"))
+                .AddPolicy("AdminStudyProgress", policy => policy.RequireRole("AdminStudyProgress"))
+                .AddPolicy("AdminAnnouncements", policy => policy.RequireRole("AdminAnnouncements"))
+                .AddPolicy("AdminFinances", policy => policy.RequireRole("AdminFinances"))
+                .AddPolicy("AdminPersonalAccounts", policy => policy.RequireRole("AdminPersonalAccounts"))
+                .AddPolicy("AdminRegistration", policy => policy.RequireRole("AdminRegistration"));
         }
     }
 }

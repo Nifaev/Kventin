@@ -43,7 +43,8 @@ namespace Kventin.DataAccess.Mappings
                 .UsingEntity<Dictionary<string, object>>(
                     "UsersRoles",
                     x => x.HasOne<Role>().WithMany().HasForeignKey("RoleId").OnDelete(DeleteBehavior.NoAction),
-                    x => x.HasOne<User>().WithMany().HasForeignKey("UserId").OnDelete(DeleteBehavior.NoAction));
+                    x => x.HasOne<User>().WithMany().HasForeignKey("UserId").OnDelete(DeleteBehavior.NoAction),
+                    x => x.HasData([new { RoleId = 4, UserId = 1 }]));
 
             builder.HasData([
                 new User

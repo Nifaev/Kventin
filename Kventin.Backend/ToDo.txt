@@ -2,15 +2,18 @@
 	задание дается всей группе (его увидят все, кто состоит в группе), а в таблице "Ответы" можно будет посмотреть, 
 	кто сделал задание, а кто нет
 
+Пароль суперпользователя: Noo7eexe
+
 Роли:
-Ученик
-Преподаватель
-Родитель
-Админ-Расписание
-Админ-Группы
-Админ-Успеваемость
-Админ-Объявления
-Админ-Финансы
-Админ-ЛК
-Админ-Регистрация
-Суперпользователь
+
+Student, 
+Teacher, 
+Parent, 
+SuperUser, 
+AdminSchedule, 
+AdminGroups, 
+AdminStudyProgress, 
+AdminAnnouncements, 
+AdminFinances, 
+AdminPersonalAccounts, 
+AdminRegistration

@@ -1,16 +1,16 @@
 ﻿using Kventin.Services.Infrastructure.Attributes;
 using System.ComponentModel.DataAnnotations;
 
-namespace Kventin.Services.Dtos.User
+namespace Kventin.Services.Dtos.Auth
 {
-    public class LoginUserDto
+    public class LoginDto
     {
         [Required]
         public required string Password { get; set; }
 
         [OneOfTwoRequired("PhoneNumber", "Email")]
         [Length(10, 10)]
-        public string? PhoneNumber {  get; set; }
+        public string? PhoneNumber { get; set; }
 
         [EmailAddress]
         public string? Email { get; set; }

@@ -1,4 +1,4 @@
-﻿namespace Kventin.Services.Interfaces.Auth
+﻿namespace Kventin.Services.Interfaces.Tools
 {
     public interface IPasswordHasher
     {

@@ -1,15 +1,15 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Kventin.Services.Dtos.User
+namespace Kventin.Services.Dtos.Auth
 {
-    public class RegisterUserDto
+    public class RegisterDto
     {
         [Required]
         public required string FirstName { get; set; }
-        
+
         [Required]
         public required string LastName { get; set; }
-        
+
         public string? MiddleName { get; set; }
 
         [Required]
@@ -18,7 +18,7 @@ namespace Kventin.Services.Dtos.User
 
         [Required]
         public required string Password { get; set; }
-        
+
         [EmailAddress]
         public string? Email { get; set; }
     }

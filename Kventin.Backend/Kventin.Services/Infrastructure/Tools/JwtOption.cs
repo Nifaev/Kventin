@@ -1,4 +1,4 @@
-﻿namespace Kventin.Services.Infrastructure.Auth
+﻿namespace Kventin.Services.Infrastructure.Tools
 {
     public class JwtOption
     {

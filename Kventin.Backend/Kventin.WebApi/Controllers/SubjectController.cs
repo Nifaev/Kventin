@@ -1,5 +1,4 @@
 ﻿using Kventin.Services.Dtos;
-using Kventin.Services.Infrastructure.Exceptions;
 using Kventin.Services.Interfaces.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -7,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Kventin.WebApi.Controllers
 {
     [ApiController]
+    [Authorize(Roles = "SuperUser, AdminSchedule")]
     [Route("api/subject")]
     public class SubjectController(ISubjectService subjectService) : ControllerBase
     {
