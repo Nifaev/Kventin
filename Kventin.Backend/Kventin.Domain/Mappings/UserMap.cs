@@ -38,6 +38,25 @@ namespace Kventin.DataAccess.Mappings
                     x => x.HasOne<TuitionTariff>().WithMany().HasForeignKey("TariffId").OnDelete(DeleteBehavior.NoAction),
                     x => x.HasOne<User>().WithMany().HasForeignKey("StudentId").OnDelete(DeleteBehavior.NoAction));
 
+            builder.HasMany(x => x.Roles)
+                .WithMany(x => x.Users)
+                .UsingEntity<Dictionary<string, object>>(
+                    "UsersRoles",
+                    x => x.HasOne<Role>().WithMany().HasForeignKey("RoleId").OnDelete(DeleteBehavior.NoAction),
+                    x => x.HasOne<User>().WithMany().HasForeignKey("UserId").OnDelete(DeleteBehavior.NoAction));
+
+            builder.HasData([
+                new User
+                {
+                    Id = 1,
+                    FirstName = "Суперпользователь",
+                    LastName = "Встроенный",
+                    PhoneNumber = "adminadmin",
+                    HashedPassword = "$2a$11$fOB6qIW/7qIQzJWq.mcS6ugc6UoFPAWctpSDZJQj5uaKTNiqiQ9xO",
+                    CreateDateTime = new DateTime(2025, 1, 18, 19, 30, 00)
+                }
+            ]);
+
             builder.Property(x => x.FirstName)
                 .HasMaxLength(50);
             
@@ -48,7 +67,7 @@ namespace Kventin.DataAccess.Mappings
                 .HasMaxLength(50);
             
             builder.Property(x => x.PhoneNumber)
-                .HasMaxLength(12);
+                .HasMaxLength(10);
 
             builder.Property(x => x.Email)
                 .HasMaxLength(50);

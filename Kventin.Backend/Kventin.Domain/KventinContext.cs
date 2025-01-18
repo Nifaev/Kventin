@@ -1,10 +1,12 @@
 ﻿using Kventin.DataAccess.Domain;
 using Kventin.DataAccess.Mappings;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
+using Microsoft.Extensions.Options;
 
 namespace Kventin.DataAccess
 {
-    public class KventinContext : DbContext
+    public class KventinContext(DbContextOptions<KventinContext> options) : DbContext(options)
     {
         public DbSet<Subject> Subjects { get; set; }
         public DbSet<StudyGroup> StudyGroups { get; set; }
@@ -22,8 +24,7 @@ namespace Kventin.DataAccess
         public DbSet<EmployeeSalary> EmployeeSalaries { get; set; }
         public DbSet<TuitionPayment> TuitionPayments { get; set; }
         public DbSet<TuitionTariff> TuitionTariffs { get; set; }
-
-        public KventinContext(DbContextOptions<KventinContext> options) : base(options) { }
+        public DbSet<Role> Roles { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -43,6 +44,7 @@ namespace Kventin.DataAccess
             modelBuilder.ApplyConfiguration(new EmployeeSalaryMap());
             modelBuilder.ApplyConfiguration(new TuitionPaymentMap());
             modelBuilder.ApplyConfiguration(new TuitionTariffMap());
+            modelBuilder.ApplyConfiguration(new RoleMap());
         }
     }
 }

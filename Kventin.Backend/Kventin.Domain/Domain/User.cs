@@ -53,16 +53,6 @@ namespace Kventin.DataAccess.Domain
         public string? ContractNumber { get; set; }
 
         /// <summary>
-        /// Является суперпользователем
-        /// </summary>
-        public required bool IsSuperUser { get; set; }
-
-        /// <summary>
-        /// Подтвержденный
-        /// </summary>
-        public required bool IsConfirmed { get; set; }
-
-        /// <summary>
         /// Группы, в которых состоит ученик
         /// </summary>
         public List<StudyGroup> StudyGroups { get; set; } = [];
@@ -140,7 +130,7 @@ namespace Kventin.DataAccess.Domain
         /// <summary>
         /// Ставка сотрудника
         /// </summary>
-        public required EmployeeRate EmployeeRate { get; set; }
+        public EmployeeRate? EmployeeRate { get; set; }
 
         /// <summary>
         /// Оплата занятий (ученик, родители)
@@ -156,5 +146,10 @@ namespace Kventin.DataAccess.Domain
         /// Тарифы, по которым обучается ученик 
         /// </summary>
         public List<TuitionTariff> TuitionTariffs { get; set; } = [];
+
+        /// <summary>
+        /// Роли пользователя
+        /// </summary>
+        public List<Role> Roles { get; set; } = [];
     }
 }

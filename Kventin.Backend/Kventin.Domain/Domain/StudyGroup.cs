@@ -8,6 +8,11 @@ namespace Kventin.DataAccess.Domain
     public class StudyGroup : BaseEntity
     {
         /// <summary>
+        /// Название группы
+        /// </summary>
+        public required string Name { get; set; }
+
+        /// <summary>
         /// Id предмета
         /// </summary>
         public int SubjectId { get; set; }

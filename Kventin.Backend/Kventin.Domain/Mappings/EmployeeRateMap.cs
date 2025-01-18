@@ -12,7 +12,7 @@ namespace Kventin.DataAccess.Mappings
 
             builder.HasOne(x => x.Employee)
                 .WithOne(x => x.EmployeeRate)
-                .IsRequired();
+                .HasForeignKey<EmployeeRate>(x => x.EmployeeId);
         }
     }
 }
