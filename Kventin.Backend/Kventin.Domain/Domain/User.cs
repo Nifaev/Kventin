@@ -53,6 +53,11 @@ namespace Kventin.DataAccess.Domain
         public string? ContractNumber { get; set; }
 
         /// <summary>
+        /// Является ли супер-пользователем
+        /// </summary>
+        public bool IsSuperUser { get; set; }
+
+        /// <summary>
         /// Группы, в которых состоит ученик
         /// </summary>
         public List<StudyGroup> StudyGroups { get; set; } = [];
