@@ -1,13 +1,12 @@
 ﻿using Kventin.DataAccess.Domain.Base;
 using Kventin.DataAccess.Enums;
-using System.ComponentModel;
 
 namespace Kventin.DataAccess.Domain
 {
     /// <summary>
-    /// Занятие
+    /// Элемент раписания (абстрактное занятие)
     /// </summary>
-    public class Lesson : BaseEntity
+    public class ScheduleItem : BaseEntity
     {
         /// <summary>
         /// Время начала
@@ -18,6 +17,11 @@ namespace Kventin.DataAccess.Domain
         /// Время окончания
         /// </summary>
         public TimeOnly EndTime { get; set; }
+
+        /// <summary>
+        /// День недели
+        /// </summary>
+        public DayOfTheWeek DayOfWeek { get; set; }
 
         /// <summary>
         /// Является ли онлайн-занятием
@@ -60,33 +64,13 @@ namespace Kventin.DataAccess.Domain
         public required User Teacher { get; set; }
 
         /// <summary>
-        /// Дата проведения
+        /// Id расписания, к которому относится элемент
         /// </summary>
-        public DateOnly? Date {  get; set; }
-
+        public int ScheduleId { get; set; }
+        
         /// <summary>
-        /// Тема занятия
+        /// Расписание, к которому относится элемент 
         /// </summary>
-        public string? Topic { get; set; }
-
-        /// <summary>
-        /// Описание занятия
-        /// </summary>
-        public string? Description { get; set; }
-
-        /// <summary>
-        /// Статус занятия
-        /// </summary>
-        public LessonStatus Status { get; set; }
-
-        /// <summary>
-        /// Присутствующие ученики
-        /// </summary>
-        public List<User> StudentsAttended { get; set; } = [];
-
-        /// <summary>
-        /// Оценки
-        /// </summary>
-        public List<Mark> Marks { get; set; } = [];
+        public required Schedule Schedule { get; set; }
     }
 }

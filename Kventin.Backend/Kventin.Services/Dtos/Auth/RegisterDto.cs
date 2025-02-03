@@ -13,7 +13,7 @@ namespace Kventin.Services.Dtos.Auth
         public string? MiddleName { get; set; }
 
         [Required]
-        [Length(10, 10)]
+        [Phone]
         public required string PhoneNumber { get; set; }
 
         [Required]

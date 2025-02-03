@@ -9,8 +9,7 @@ namespace Kventin.WebApi.Controllers
 {
     [ApiController]
     [Route("api/user")]
-    public class UserController(
-        IUserService userService,
+    public class UserController(IUserService userService,
         IAuthService authService) : ControllerBase
     {
         private readonly IUserService _userService = userService;
@@ -124,6 +123,19 @@ namespace Kventin.WebApi.Controllers
             var token = Request.Cookies["choco-cookies"] ?? string.Empty;
 
             var result = _authService.GetUserIdByToken(token);
+
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// Получить все возможные роли
+        /// </summary>
+        /// <returns>Массив UserRoleDto - Список всех ролей в системе</returns>
+        [Authorize(Roles = "SuperUser, AdminRegistration")]
+        [HttpGet("getAllRoles")]
+        public async Task<ActionResult<List<UserRoleDto>>> GetAllRoles()
+        {
+            var result = await _userService.GetAllRoles();
 
             return Ok(result);
         }

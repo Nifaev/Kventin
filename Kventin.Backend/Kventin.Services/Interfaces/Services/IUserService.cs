@@ -10,5 +10,6 @@ namespace Kventin.Services.Interfaces.Services
         public Task DeleteUserRole(int userId, UserRoleDto dto);
         public Task<List<UserRoleDto>> GetUserRoles(int userId);
         public Task<List<UsersRolesInfoDto>> GetUsersWithRoles(BaseFilterDto filter, int userId);
+        public Task<List<UserRoleDto>> GetAllRoles();
     }
 }

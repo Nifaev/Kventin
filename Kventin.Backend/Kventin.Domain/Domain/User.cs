@@ -68,6 +68,11 @@ namespace Kventin.DataAccess.Domain
         public List<Lesson> ConductedLessons { get; set; } = [];
 
         /// <summary>
+        /// Занятия по расписанию, на которые назначен преподаватель
+        /// </summary>
+        public List<ScheduleItem> ScheduleItems { get; set; } = [];
+
+        /// <summary>
         /// Посещенные занятия (ученик)
         /// </summary>
         public List<Lesson> AttendedLessons { get; set; } = [];

@@ -33,6 +33,11 @@ namespace Kventin.DataAccess.Domain
         public List<Lesson> Lessons { get; set; } = [];
 
         /// <summary>
+        /// Занятия в расписании
+        /// </summary>
+        public List<ScheduleItem> ScheduleItems { get; set; } = [];
+
+        /// <summary>
         /// Полученные задания
         /// </summary>
         public List<Exercise> RecievedExercises { get; set; } = [];

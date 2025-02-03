@@ -25,6 +25,8 @@ namespace Kventin.DataAccess
         public DbSet<TuitionPayment> TuitionPayments { get; set; }
         public DbSet<TuitionTariff> TuitionTariffs { get; set; }
         public DbSet<Role> Roles { get; set; }
+        public DbSet<ScheduleItem> ScheduleItems { get; set; }
+        public DbSet<Schedule> Schedules { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -45,6 +47,8 @@ namespace Kventin.DataAccess
             modelBuilder.ApplyConfiguration(new TuitionPaymentMap());
             modelBuilder.ApplyConfiguration(new TuitionTariffMap());
             modelBuilder.ApplyConfiguration(new RoleMap());
+            modelBuilder.ApplyConfiguration(new ScheduleItemMap());
+            modelBuilder.ApplyConfiguration(new ScheduleMap());
         }
     }
 }

@@ -13,6 +13,15 @@ namespace Kventin.Services.Services
     {
         private readonly KventinContext _db = db;
         
+        public async Task<List<UserRoleDto>> GetAllRoles()
+        {
+            var roles = await _db.Roles
+                .Select(x => new UserRoleDto { RoleName = x.Name })
+                .ToListAsync();
+
+            return roles;
+        }
+
         public async Task SetUserRole(int userId, UserRoleDto dto)
         {
             var role = await _db.Roles

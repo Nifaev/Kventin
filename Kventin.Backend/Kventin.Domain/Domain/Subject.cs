@@ -21,5 +21,10 @@ namespace Kventin.DataAccess.Domain
         /// Группы, занимающиеся по предмету
         /// </summary>
         public List<StudyGroup> StudyGroups { get; set; } = [];
+
+        /// <summary>
+        /// Занятия в расписании
+        /// </summary>
+        public List<ScheduleItem> ScheduleItems { get; set; } = [];
     }
 }

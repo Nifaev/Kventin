@@ -27,16 +27,18 @@ namespace Kventin.Services.Services
 
             if (dto.PhoneNumber != null)
             {
+                var shortPhoneNumber = GetShortPhoneNumber(dto.PhoneNumber);
+
                 var userData = await _db.Users
                     .Include(x => x.Roles)
-                    .Where(x => x.PhoneNumber.CompareTo(dto.PhoneNumber) == 0)
+                    .Where(x => x.PhoneNumber.CompareTo(shortPhoneNumber) == 0)
                     .Select(x => new { x.HashedPassword, x.Roles, x.Id })
                     .FirstOrDefaultAsync()
                     ?? throw new EntityNotFoundException("Пользователь с таким номером телефона не зарегистрирован");
 
                 hashedPassword = userData.HashedPassword;
                 roles = userData.Roles;
-                login = dto.PhoneNumber;
+                login = shortPhoneNumber;
                 userId = userData.Id;
             }
             else if (dto.Email != null)
@@ -70,8 +72,10 @@ namespace Kventin.Services.Services
         {
             var hashedPassword = _passwordHasher.Generate(dto.Password);
 
+            var shortPhoneNumber = GetShortPhoneNumber(dto.PhoneNumber);
+
             var isUniquePhoneNumber = !await _db.Users
-                .AnyAsync(x => x.PhoneNumber.CompareTo(dto.PhoneNumber) == 0);
+                .AnyAsync(x => x.PhoneNumber.CompareTo(shortPhoneNumber) == 0);
 
             bool isUniqueEmail = dto.Email == null ||
                                  !await _db.Users.AnyAsync(x => x.Email != null &&
@@ -89,7 +93,7 @@ namespace Kventin.Services.Services
                 LastName = dto.LastName,
                 MiddleName = dto.MiddleName,
                 Email = dto.Email,
-                PhoneNumber = dto.PhoneNumber,
+                PhoneNumber = shortPhoneNumber,
                 HashedPassword = hashedPassword,
             };
 
@@ -102,6 +106,19 @@ namespace Kventin.Services.Services
             var userId = _jwtProvider.GetUserIdByToken(token);
 
             return userId;
+        }
+
+        private string GetShortPhoneNumber(string phoneNumber)
+        {
+            string shortPhoneNumber = string.Empty;
+
+            if (phoneNumber.Length == 11)
+                shortPhoneNumber = phoneNumber.Substring(1);
+
+            if (phoneNumber.Length == 12)
+                shortPhoneNumber = phoneNumber.Substring(2);
+
+            return shortPhoneNumber;
         }
     }
 }
