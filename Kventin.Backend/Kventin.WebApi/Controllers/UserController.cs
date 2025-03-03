@@ -16,19 +16,19 @@ namespace Kventin.WebApi.Controllers
         private readonly IAuthService _authService = authService;
 
         /// <summary>
-        /// Назначить роль пользователю (SuperUser, AdminRegistration)
+        /// Назначить роли пользователю (SuperUser, AdminRegistration)
         /// Пользователь с ролью AdminRegistration не может назначать роль SuperUser
         /// </summary>
         /// <param name="userId">Id пользователя</param>
-        /// <param name="dto">Принимает UserRoleDto</param>
+        /// <param name="dtos">Принимает массив UserRoleDto</param>
         /// <returns></returns>
         [Authorize(Roles = "SuperUser, AdminRegistration")]
-        [HttpPost("{userId}/setRole")]
-        public async Task<ActionResult> SetRole(int userId, UserRoleDto dto)
+        [HttpPost("{userId}/setRoles")]
+        public async Task<ActionResult> SetRoles(int userId, List<UserRoleDto> dtos)
         {
             try
             {
-                await _userService.SetUserRole(userId, dto);
+                await _userService.SetUserRoles(userId, dtos);
             }
             catch (EntityNotFoundException e)
             {
@@ -43,19 +43,19 @@ namespace Kventin.WebApi.Controllers
         }
 
         /// <summary>
-        /// Удалить роль у пользователя (SuperUser, AdminRegistration)
+        /// Удалить роли у пользователя (SuperUser, AdminRegistration)
         /// Пользователь с ролью AdminRegistration не может удалять роль SuperUser
         /// </summary>
         /// <param name="userId">Id пользователя</param>
-        /// <param name="dto">Принимает UserRoleDto</param>
+        /// <param name="dtos">Принимает массив UserRoleDto</param>
         /// <returns></returns>
         [Authorize(Roles = "SuperUser, AdminRegistration")]
-        [HttpPost("{userId}/deleteRole")]
-        public async Task<ActionResult> DeleteRole(int userId, UserRoleDto dto)
+        [HttpPost("{userId}/deleteRoles")]
+        public async Task<ActionResult> DeleteRoles(int userId, List<UserRoleDto> dtos)
         {
             try
             {
-                await _userService.DeleteUserRole(userId, dto);
+                await _userService.DeleteUserRole(userId, dtos);
             }
             catch (EntityNotFoundException e)
             {

@@ -112,6 +112,9 @@ namespace Kventin.Services.Services
         {
             string shortPhoneNumber = string.Empty;
 
+            if (phoneNumber.Length == 10)
+                shortPhoneNumber = phoneNumber;
+
             if (phoneNumber.Length == 11)
                 shortPhoneNumber = phoneNumber.Substring(1);
 
