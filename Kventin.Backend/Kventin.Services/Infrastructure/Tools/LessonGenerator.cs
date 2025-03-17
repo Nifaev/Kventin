@@ -53,14 +53,13 @@ namespace Kventin.Services.Infrastructure.Tools
                 .Include(x => x.ScheduleItem)
                 .Where(x => x.ScheduleItem != null &&
                             scheduleItemIds.Contains(x.ScheduleItem.Id) &&
-                            x.Date != null &&
                             x.Date > _today &&
                             x.Date <= inTwoWeeks)
                 .Select(x => new
                 {
                     LessonId = x.Id,
                     ScheduleItemId = x.ScheduleItem!.Id,
-                    Date = x.Date!.Value,
+                    x.Date,
                 })
                 .ToListAsync();
 

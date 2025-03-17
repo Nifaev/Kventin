@@ -61,7 +61,7 @@ namespace Kventin.DataAccess.Domain
         /// <summary>
         /// Дата проведения
         /// </summary>
-        public DateOnly? Date {  get; set; }
+        public DateOnly Date {  get; set; }
 
         /// <summary>
         /// Тема занятия
