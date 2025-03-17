@@ -1,7 +1,7 @@
 ﻿using Kventin.DataAccess;
 using Kventin.DataAccess.Domain;
 using Kventin.Services.Dtos.Auth;
-using Kventin.Services.Dtos.User;
+using Kventin.Services.Dtos.Users;
 using Kventin.Services.Infrastructure.Exceptions;
 using Kventin.Services.Interfaces.Services;
 using Kventin.Services.Interfaces.Tools;

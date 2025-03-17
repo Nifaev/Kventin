@@ -1,4 +1,4 @@
-﻿namespace Kventin.Services.Dtos.User
+﻿namespace Kventin.Services.Dtos.Users
 {
     public class UserIdDto
     {

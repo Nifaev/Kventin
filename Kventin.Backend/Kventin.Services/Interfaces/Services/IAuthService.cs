@@ -1,5 +1,5 @@
 ﻿using Kventin.Services.Dtos.Auth;
-using Kventin.Services.Dtos.User;
+using Kventin.Services.Dtos.Users;
 
 namespace Kventin.Services.Interfaces.Services
 {
