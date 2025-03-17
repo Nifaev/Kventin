@@ -1,3 +1,4 @@
+using Kventin.Services.Infrastructure;
 using Kventin.Services.Infrastructure.Extensions;
 using Kventin.Services.Infrastructure.Tools;
 using Kventin.Services.Interfaces.Services;
@@ -65,5 +66,6 @@ app.UseCookiePolicy(new CookiePolicyOptions
 
 app.MapControllers();
 
+await JobScheduler.Start(connectionString);
 
 app.Run();
