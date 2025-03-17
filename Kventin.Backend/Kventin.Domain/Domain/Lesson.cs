@@ -1,6 +1,5 @@
 ﻿using Kventin.DataAccess.Domain.Base;
 using Kventin.DataAccess.Enums;
-using System.ComponentModel;
 
 namespace Kventin.DataAccess.Domain
 {
@@ -88,5 +87,15 @@ namespace Kventin.DataAccess.Domain
         /// Оценки
         /// </summary>
         public List<Mark> Marks { get; set; } = [];
+
+        /// <summary>
+        /// Элемент расписания (шаблон), по которому создано занятие
+        /// Может быть null, чтобы была возможность добавлять внеплановые занятия
+        /// </summary>
+        public ScheduleItem? ScheduleItem { get; set; }
+        /// <summary>
+        /// Id элемента расписания
+        /// </summary>
+        public int? ScheduleItemId { get; set; }
     }
 }

@@ -17,9 +17,9 @@ namespace Kventin.WebApi.Controllers
         /// Получить расписание на учебный год
         /// </summary>
         /// <param name="dto">Передается ScheduleDto</param>
-        /// <returns>Возвращает массив ReturnScheduleItemDto - элементы (занятия) расписания</returns>
+        /// <returns>Возвращает ReturnScheduleDto - элементы (занятия) расписания</returns>
         [HttpPost]
-        public async Task<ActionResult<List<ReturnScheduleItemDto>>> GetSchedule(ScheduleDto dto)
+        public async Task<ActionResult<ReturnScheduleDto>> GetSchedule(ScheduleDto dto)
         {
             try
             {

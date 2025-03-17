@@ -18,6 +18,9 @@ namespace Kventin.DataAccess.Mappings
                 .WithMany(x => x.Lessons)
                 .IsRequired();
 
+            builder.HasOne(x => x.ScheduleItem)
+                .WithMany(x => x.Lessons);
+
             builder.Property(x => x.Description)
                 .HasMaxLength(500);
 

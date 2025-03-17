@@ -4,7 +4,6 @@ namespace Kventin.Services.Dtos.Schedule
 {
     public class ReturnScheduleItemDto
     {
-        public int ScheduleId { get; set; }
         public int ScheduleItemId { get; set; }
         public required string DayOfWeek { get; set; }
         public TimeOnly StartTime { get; set; }
