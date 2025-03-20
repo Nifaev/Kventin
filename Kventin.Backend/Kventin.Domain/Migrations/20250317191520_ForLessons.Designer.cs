@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Kventin.DataAccess.Migrations
 {
     [DbContext(typeof(KventinContext))]
-    [Migration("20250118163411_InitSuperUser")]
-    partial class InitSuperUser
+    [Migration("20250317191520_ForLessons")]
+    partial class ForLessons
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -193,8 +193,14 @@ namespace Kventin.DataAccess.Migrations
                     b.Property<DateTime?>("DeleteDateTime")
                         .HasColumnType("datetime2");
 
+                    b.Property<int?>("IndividualStudentId")
+                        .HasColumnType("int");
+
                     b.Property<bool>("IsIndividual")
                         .HasColumnType("bit");
+
+                    b.Property<int>("LessonId")
+                        .HasColumnType("int");
 
                     b.Property<int>("StudyGroupId")
                         .HasColumnType("int");
@@ -203,6 +209,10 @@ namespace Kventin.DataAccess.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("IndividualStudentId");
+
+                    b.HasIndex("LessonId");
 
                     b.HasIndex("StudyGroupId");
 
@@ -260,7 +270,7 @@ namespace Kventin.DataAccess.Migrations
                     b.Property<DateTime>("CreateDateTime")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateOnly?>("Date")
+                    b.Property<DateOnly>("Date")
                         .HasColumnType("date");
 
                     b.Property<DateTime?>("DeleteDateTime")
@@ -273,11 +283,11 @@ namespace Kventin.DataAccess.Migrations
                     b.Property<TimeOnly>("EndTime")
                         .HasColumnType("time");
 
-                    b.Property<bool>("IsAbstract")
-                        .HasColumnType("bit");
-
                     b.Property<bool>("IsOnline")
                         .HasColumnType("bit");
+
+                    b.Property<int?>("ScheduleItemId")
+                        .HasColumnType("int");
 
                     b.Property<TimeOnly>("StartTime")
                         .HasColumnType("time");
@@ -299,6 +309,8 @@ namespace Kventin.DataAccess.Migrations
                         .HasColumnType("nvarchar(100)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ScheduleItemId");
 
                     b.HasIndex("StudyGroupId");
 
@@ -516,6 +528,85 @@ namespace Kventin.DataAccess.Migrations
                         });
                 });
 
+            modelBuilder.Entity("Kventin.DataAccess.Domain.Schedule", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreateDateTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DeleteDateTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("EndYear")
+                        .HasColumnType("int");
+
+                    b.Property<int>("StartYear")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Schedules");
+                });
+
+            modelBuilder.Entity("Kventin.DataAccess.Domain.ScheduleItem", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Classroom")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreateDateTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("DayOfWeek")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("DeleteDateTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<TimeOnly>("EndTime")
+                        .HasColumnType("time");
+
+                    b.Property<bool>("IsOnline")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("ScheduleId")
+                        .HasColumnType("int");
+
+                    b.Property<TimeOnly>("StartTime")
+                        .HasColumnType("time");
+
+                    b.Property<int>("StudyGroupId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SubjectId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TeacherId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ScheduleId");
+
+                    b.HasIndex("StudyGroupId");
+
+                    b.HasIndex("SubjectId");
+
+                    b.HasIndex("TeacherId");
+
+                    b.ToTable("ScheduleItems");
+                });
+
             modelBuilder.Entity("Kventin.DataAccess.Domain.StudentActivity", b =>
                 {
                     b.Property<int>("Id")
@@ -714,6 +805,9 @@ namespace Kventin.DataAccess.Migrations
                         .HasMaxLength(96)
                         .HasColumnType("nvarchar(96)");
 
+                    b.Property<bool>("IsSuperUser")
+                        .HasColumnType("bit");
+
                     b.Property<string>("LastName")
                         .IsRequired()
                         .HasMaxLength(50)
@@ -747,8 +841,9 @@ namespace Kventin.DataAccess.Migrations
                             CreateDateTime = new DateTime(2025, 1, 18, 19, 30, 0, 0, DateTimeKind.Unspecified),
                             FirstName = "Суперпользователь",
                             HashedPassword = "$2a$11$fOB6qIW/7qIQzJWq.mcS6ugc6UoFPAWctpSDZJQj5uaKTNiqiQ9xO",
+                            IsSuperUser = true,
                             LastName = "Встроенный",
-                            PhoneNumber = "adminadmin"
+                            PhoneNumber = "1234567890"
                         });
                 });
 
@@ -825,6 +920,13 @@ namespace Kventin.DataAccess.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("UsersRoles");
+
+                    b.HasData(
+                        new
+                        {
+                            RoleId = 4,
+                            UserId = 1
+                        });
                 });
 
             modelBuilder.Entity("Kventin.DataAccess.Domain.Announcement", b =>
@@ -873,6 +975,16 @@ namespace Kventin.DataAccess.Migrations
 
             modelBuilder.Entity("Kventin.DataAccess.Domain.Exercise", b =>
                 {
+                    b.HasOne("Kventin.DataAccess.Domain.User", "IndividualStudent")
+                        .WithMany("IndividualExercises")
+                        .HasForeignKey("IndividualStudentId");
+
+                    b.HasOne("Kventin.DataAccess.Domain.Lesson", "Lesson")
+                        .WithMany("Exercises")
+                        .HasForeignKey("LessonId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
                     b.HasOne("Kventin.DataAccess.Domain.StudyGroup", "StudyGroup")
                         .WithMany("RecievedExercises")
                         .HasForeignKey("StudyGroupId")
@@ -884,6 +996,10 @@ namespace Kventin.DataAccess.Migrations
                         .HasForeignKey("TeacherId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("IndividualStudent");
+
+                    b.Navigation("Lesson");
 
                     b.Navigation("StudyGroup");
 
@@ -911,6 +1027,10 @@ namespace Kventin.DataAccess.Migrations
 
             modelBuilder.Entity("Kventin.DataAccess.Domain.Lesson", b =>
                 {
+                    b.HasOne("Kventin.DataAccess.Domain.ScheduleItem", "ScheduleItem")
+                        .WithMany("Lessons")
+                        .HasForeignKey("ScheduleItemId");
+
                     b.HasOne("Kventin.DataAccess.Domain.StudyGroup", "StudyGroup")
                         .WithMany("Lessons")
                         .HasForeignKey("StudyGroupId")
@@ -928,6 +1048,8 @@ namespace Kventin.DataAccess.Migrations
                         .HasForeignKey("TeacherId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("ScheduleItem");
 
                     b.Navigation("StudyGroup");
 
@@ -995,6 +1117,41 @@ namespace Kventin.DataAccess.Migrations
                         .IsRequired();
 
                     b.Navigation("Reciever");
+                });
+
+            modelBuilder.Entity("Kventin.DataAccess.Domain.ScheduleItem", b =>
+                {
+                    b.HasOne("Kventin.DataAccess.Domain.Schedule", "Schedule")
+                        .WithMany("Items")
+                        .HasForeignKey("ScheduleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Kventin.DataAccess.Domain.StudyGroup", "StudyGroup")
+                        .WithMany("ScheduleItems")
+                        .HasForeignKey("StudyGroupId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Kventin.DataAccess.Domain.Subject", "Subject")
+                        .WithMany("ScheduleItems")
+                        .HasForeignKey("SubjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Kventin.DataAccess.Domain.User", "Teacher")
+                        .WithMany("ScheduleItems")
+                        .HasForeignKey("TeacherId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Schedule");
+
+                    b.Navigation("StudyGroup");
+
+                    b.Navigation("Subject");
+
+                    b.Navigation("Teacher");
                 });
 
             modelBuilder.Entity("Kventin.DataAccess.Domain.StudentActivity", b =>
@@ -1122,7 +1279,19 @@ namespace Kventin.DataAccess.Migrations
 
             modelBuilder.Entity("Kventin.DataAccess.Domain.Lesson", b =>
                 {
+                    b.Navigation("Exercises");
+
                     b.Navigation("Marks");
+                });
+
+            modelBuilder.Entity("Kventin.DataAccess.Domain.Schedule", b =>
+                {
+                    b.Navigation("Items");
+                });
+
+            modelBuilder.Entity("Kventin.DataAccess.Domain.ScheduleItem", b =>
+                {
+                    b.Navigation("Lessons");
                 });
 
             modelBuilder.Entity("Kventin.DataAccess.Domain.StudyGroup", b =>
@@ -1130,11 +1299,15 @@ namespace Kventin.DataAccess.Migrations
                     b.Navigation("Lessons");
 
                     b.Navigation("RecievedExercises");
+
+                    b.Navigation("ScheduleItems");
                 });
 
             modelBuilder.Entity("Kventin.DataAccess.Domain.Subject", b =>
                 {
                     b.Navigation("Lessons");
+
+                    b.Navigation("ScheduleItems");
 
                     b.Navigation("StudyGroups");
                 });
@@ -1162,11 +1335,15 @@ namespace Kventin.DataAccess.Migrations
 
                     b.Navigation("ExerciseAnswers");
 
+                    b.Navigation("IndividualExercises");
+
                     b.Navigation("Notifications");
 
                     b.Navigation("RecievedMarks");
 
                     b.Navigation("RecievedMessages");
+
+                    b.Navigation("ScheduleItems");
 
                     b.Navigation("SentMessages");
 

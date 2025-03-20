@@ -97,5 +97,10 @@ namespace Kventin.DataAccess.Domain
         /// Id элемента расписания
         /// </summary>
         public int? ScheduleItemId { get; set; }
+
+        /// <summary>
+        /// Задания, прикрепленные к занятию
+        /// </summary>
+        public List<Exercise> Exercises { get; set; } = [];
     }
 }

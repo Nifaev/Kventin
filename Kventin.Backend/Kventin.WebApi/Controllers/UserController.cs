@@ -80,9 +80,7 @@ namespace Kventin.WebApi.Controllers
         [HttpPost("getUsersRolesInfoPaged")]
         public async Task<ActionResult<List<UsersRolesInfoDto>>> GetUsersRolesInfo(BaseFilterDto filter)
         {
-            var token = Request.Cookies["choco-cookies"] ?? string.Empty;
-
-            var userIdDto = _authService.GetUserIdByToken(token);
+            var userIdDto = _authService.GetUserIdByCookie(Request.Cookies);
 
             var result = await _userService.GetUsersWithRoles(filter, userIdDto.UserId);
 
@@ -94,7 +92,7 @@ namespace Kventin.WebApi.Controllers
         /// </summary>
         /// <param name="userId">Id пользователя</param>
         /// <returns>Возвращает массив UserRoleDto</returns>
-        [Authorize(Roles = "SuperUser, AdminRegistration")]
+        [Authorize]
         [HttpGet("{userId}/getRoles")]
         public async Task<ActionResult<List<UserRoleDto>>> GetRoles(int userId)
         {
@@ -120,9 +118,7 @@ namespace Kventin.WebApi.Controllers
         [HttpGet("getMyId")]
         public ActionResult<UserIdDto> GetCurrentUserId()
         {
-            var token = Request.Cookies["choco-cookies"] ?? string.Empty;
-
-            var result = _authService.GetUserIdByToken(token);
+            var result = _authService.GetUserIdByCookie(Request.Cookies);
 
             return Ok(result);
         }

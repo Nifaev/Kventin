@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Kventin.DataAccess.Migrations
 {
     [DbContext(typeof(KventinContext))]
-    [Migration("20250118155253_Init")]
-    partial class Init
+    [Migration("20250303183819_Start")]
+    partial class Start
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -273,11 +273,11 @@ namespace Kventin.DataAccess.Migrations
                     b.Property<TimeOnly>("EndTime")
                         .HasColumnType("time");
 
-                    b.Property<bool>("IsAbstract")
-                        .HasColumnType("bit");
-
                     b.Property<bool>("IsOnline")
                         .HasColumnType("bit");
+
+                    b.Property<int?>("ScheduleItemId")
+                        .HasColumnType("int");
 
                     b.Property<TimeOnly>("StartTime")
                         .HasColumnType("time");
@@ -299,6 +299,8 @@ namespace Kventin.DataAccess.Migrations
                         .HasColumnType("nvarchar(100)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ScheduleItemId");
 
                     b.HasIndex("StudyGroupId");
 
@@ -446,6 +448,153 @@ namespace Kventin.DataAccess.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Roles");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            CreateDateTime = new DateTime(2025, 1, 18, 19, 30, 0, 0, DateTimeKind.Unspecified),
+                            Name = "Student"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            CreateDateTime = new DateTime(2025, 1, 18, 19, 30, 0, 0, DateTimeKind.Unspecified),
+                            Name = "Teacher"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            CreateDateTime = new DateTime(2025, 1, 18, 19, 30, 0, 0, DateTimeKind.Unspecified),
+                            Name = "Parent"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            CreateDateTime = new DateTime(2025, 1, 18, 19, 30, 0, 0, DateTimeKind.Unspecified),
+                            Name = "SuperUser"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            CreateDateTime = new DateTime(2025, 1, 18, 19, 30, 0, 0, DateTimeKind.Unspecified),
+                            Name = "AdminSchedule"
+                        },
+                        new
+                        {
+                            Id = 6,
+                            CreateDateTime = new DateTime(2025, 1, 18, 19, 30, 0, 0, DateTimeKind.Unspecified),
+                            Name = "AdminGroups"
+                        },
+                        new
+                        {
+                            Id = 7,
+                            CreateDateTime = new DateTime(2025, 1, 18, 19, 30, 0, 0, DateTimeKind.Unspecified),
+                            Name = "AdminStudyProgress"
+                        },
+                        new
+                        {
+                            Id = 8,
+                            CreateDateTime = new DateTime(2025, 1, 18, 19, 30, 0, 0, DateTimeKind.Unspecified),
+                            Name = "AdminAnnouncements"
+                        },
+                        new
+                        {
+                            Id = 9,
+                            CreateDateTime = new DateTime(2025, 1, 18, 19, 30, 0, 0, DateTimeKind.Unspecified),
+                            Name = "AdminFinances"
+                        },
+                        new
+                        {
+                            Id = 10,
+                            CreateDateTime = new DateTime(2025, 1, 18, 19, 30, 0, 0, DateTimeKind.Unspecified),
+                            Name = "AdminPersonalAccounts"
+                        },
+                        new
+                        {
+                            Id = 11,
+                            CreateDateTime = new DateTime(2025, 1, 18, 19, 30, 0, 0, DateTimeKind.Unspecified),
+                            Name = "AdminRegistration"
+                        });
+                });
+
+            modelBuilder.Entity("Kventin.DataAccess.Domain.Schedule", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreateDateTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DeleteDateTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("EndYear")
+                        .HasColumnType("int");
+
+                    b.Property<int>("StartYear")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Schedules");
+                });
+
+            modelBuilder.Entity("Kventin.DataAccess.Domain.ScheduleItem", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Classroom")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreateDateTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("DayOfWeek")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("DeleteDateTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<TimeOnly>("EndTime")
+                        .HasColumnType("time");
+
+                    b.Property<bool>("IsOnline")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("ScheduleId")
+                        .HasColumnType("int");
+
+                    b.Property<TimeOnly>("StartTime")
+                        .HasColumnType("time");
+
+                    b.Property<int>("StudyGroupId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SubjectId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TeacherId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ScheduleId");
+
+                    b.HasIndex("StudyGroupId");
+
+                    b.HasIndex("SubjectId");
+
+                    b.HasIndex("TeacherId");
+
+                    b.ToTable("ScheduleItems");
                 });
 
             modelBuilder.Entity("Kventin.DataAccess.Domain.StudentActivity", b =>
@@ -646,6 +795,9 @@ namespace Kventin.DataAccess.Migrations
                         .HasMaxLength(96)
                         .HasColumnType("nvarchar(96)");
 
+                    b.Property<bool>("IsSuperUser")
+                        .HasColumnType("bit");
+
                     b.Property<string>("LastName")
                         .IsRequired()
                         .HasMaxLength(50)
@@ -671,6 +823,18 @@ namespace Kventin.DataAccess.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Users");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            CreateDateTime = new DateTime(2025, 1, 18, 19, 30, 0, 0, DateTimeKind.Unspecified),
+                            FirstName = "Суперпользователь",
+                            HashedPassword = "$2a$11$fOB6qIW/7qIQzJWq.mcS6ugc6UoFPAWctpSDZJQj5uaKTNiqiQ9xO",
+                            IsSuperUser = true,
+                            LastName = "Встроенный",
+                            PhoneNumber = "1234567890"
+                        });
                 });
 
             modelBuilder.Entity("ParentsChildren", b =>
@@ -746,6 +910,13 @@ namespace Kventin.DataAccess.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("UsersRoles");
+
+                    b.HasData(
+                        new
+                        {
+                            RoleId = 4,
+                            UserId = 1
+                        });
                 });
 
             modelBuilder.Entity("Kventin.DataAccess.Domain.Announcement", b =>
@@ -832,6 +1003,10 @@ namespace Kventin.DataAccess.Migrations
 
             modelBuilder.Entity("Kventin.DataAccess.Domain.Lesson", b =>
                 {
+                    b.HasOne("Kventin.DataAccess.Domain.ScheduleItem", "ScheduleItem")
+                        .WithMany("Lessons")
+                        .HasForeignKey("ScheduleItemId");
+
                     b.HasOne("Kventin.DataAccess.Domain.StudyGroup", "StudyGroup")
                         .WithMany("Lessons")
                         .HasForeignKey("StudyGroupId")
@@ -849,6 +1024,8 @@ namespace Kventin.DataAccess.Migrations
                         .HasForeignKey("TeacherId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("ScheduleItem");
 
                     b.Navigation("StudyGroup");
 
@@ -916,6 +1093,41 @@ namespace Kventin.DataAccess.Migrations
                         .IsRequired();
 
                     b.Navigation("Reciever");
+                });
+
+            modelBuilder.Entity("Kventin.DataAccess.Domain.ScheduleItem", b =>
+                {
+                    b.HasOne("Kventin.DataAccess.Domain.Schedule", "Schedule")
+                        .WithMany("Items")
+                        .HasForeignKey("ScheduleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Kventin.DataAccess.Domain.StudyGroup", "StudyGroup")
+                        .WithMany("ScheduleItems")
+                        .HasForeignKey("StudyGroupId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Kventin.DataAccess.Domain.Subject", "Subject")
+                        .WithMany("ScheduleItems")
+                        .HasForeignKey("SubjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Kventin.DataAccess.Domain.User", "Teacher")
+                        .WithMany("ScheduleItems")
+                        .HasForeignKey("TeacherId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Schedule");
+
+                    b.Navigation("StudyGroup");
+
+                    b.Navigation("Subject");
+
+                    b.Navigation("Teacher");
                 });
 
             modelBuilder.Entity("Kventin.DataAccess.Domain.StudentActivity", b =>
@@ -1046,16 +1258,30 @@ namespace Kventin.DataAccess.Migrations
                     b.Navigation("Marks");
                 });
 
+            modelBuilder.Entity("Kventin.DataAccess.Domain.Schedule", b =>
+                {
+                    b.Navigation("Items");
+                });
+
+            modelBuilder.Entity("Kventin.DataAccess.Domain.ScheduleItem", b =>
+                {
+                    b.Navigation("Lessons");
+                });
+
             modelBuilder.Entity("Kventin.DataAccess.Domain.StudyGroup", b =>
                 {
                     b.Navigation("Lessons");
 
                     b.Navigation("RecievedExercises");
+
+                    b.Navigation("ScheduleItems");
                 });
 
             modelBuilder.Entity("Kventin.DataAccess.Domain.Subject", b =>
                 {
                     b.Navigation("Lessons");
+
+                    b.Navigation("ScheduleItems");
 
                     b.Navigation("StudyGroups");
                 });
@@ -1088,6 +1314,8 @@ namespace Kventin.DataAccess.Migrations
                     b.Navigation("RecievedMarks");
 
                     b.Navigation("RecievedMessages");
+
+                    b.Navigation("ScheduleItems");
 
                     b.Navigation("SentMessages");
 

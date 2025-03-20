@@ -14,6 +14,14 @@ namespace Kventin.DataAccess.Mappings
                 .WithMany(x => x.AssignedExercises)
                 .IsRequired();
 
+            builder.HasOne(x => x.Lesson)
+                .WithMany(x => x.Exercises)
+                .OnDelete(DeleteBehavior.NoAction)
+                .IsRequired();
+
+            builder.HasOne(x => x.IndividualStudent)
+                .WithMany(x => x.IndividualExercises);
+
             builder.HasOne(x => x.StudyGroup)
                 .WithMany(x => x.RecievedExercises)
                 .IsRequired();

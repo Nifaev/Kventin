@@ -39,9 +39,15 @@ namespace Kventin.WebApi.Controllers
         [HttpPost("addItem")]
         public async Task<ActionResult> AddScheduleItem(AddScheduleItemDto dto)
         {
-            await _scheduleService.AddScheduleItem(dto);
-
-            return Ok();
+            try
+            {
+                await _scheduleService.AddScheduleItem(dto);
+                return Ok();
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
         }
 
         /// <summary>

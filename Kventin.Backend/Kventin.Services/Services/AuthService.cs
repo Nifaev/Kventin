@@ -5,6 +5,7 @@ using Kventin.Services.Dtos.Users;
 using Kventin.Services.Infrastructure.Exceptions;
 using Kventin.Services.Interfaces.Services;
 using Kventin.Services.Interfaces.Tools;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 
 namespace Kventin.Services.Services
@@ -101,8 +102,10 @@ namespace Kventin.Services.Services
             await _db.SaveChangesAsync();
         }
 
-        public UserIdDto GetUserIdByToken(string token)
+        public UserIdDto GetUserIdByCookie(IRequestCookieCollection cookie)
         {
+            var token = cookie["choco-cookies"] ?? string.Empty;
+
             var userId = _jwtProvider.GetUserIdByToken(token);
 
             return userId;

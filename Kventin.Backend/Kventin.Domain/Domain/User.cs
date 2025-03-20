@@ -161,5 +161,10 @@ namespace Kventin.DataAccess.Domain
         /// Роли пользователя
         /// </summary>
         public List<Role> Roles { get; set; } = [];
+
+        /// <summary>
+        /// Индивидуальные задания
+        /// </summary>
+        public List<Exercise> IndividualExercises { get; set; } = [];
     }
 }
