@@ -1,5 +1,5 @@
 ﻿using Kventin.DataAccess.Domain;
-using Kventin.Services.Dtos.User;
+using Kventin.Services.Dtos.Users;
 
 namespace Kventin.Services.Interfaces.Tools
 {

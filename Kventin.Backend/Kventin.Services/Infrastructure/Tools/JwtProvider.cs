@@ -1,5 +1,5 @@
 ﻿using Kventin.DataAccess.Domain;
-using Kventin.Services.Dtos.User;
+using Kventin.Services.Dtos.Users;
 using Kventin.Services.Interfaces.Tools;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;

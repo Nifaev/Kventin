@@ -1,10 +1,11 @@
 ﻿using Kventin.DataAccess;
 using Kventin.DataAccess.Domain;
 using Kventin.Services.Dtos.Auth;
-using Kventin.Services.Dtos.User;
+using Kventin.Services.Dtos.Users;
 using Kventin.Services.Infrastructure.Exceptions;
 using Kventin.Services.Interfaces.Services;
 using Kventin.Services.Interfaces.Tools;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 
 namespace Kventin.Services.Services
@@ -101,8 +102,10 @@ namespace Kventin.Services.Services
             await _db.SaveChangesAsync();
         }
 
-        public UserIdDto GetUserIdByToken(string token)
+        public UserIdDto GetUserIdByCookie(IRequestCookieCollection cookie)
         {
+            var token = cookie["choco-cookies"] ?? string.Empty;
+
             var userId = _jwtProvider.GetUserIdByToken(token);
 
             return userId;
@@ -111,6 +114,9 @@ namespace Kventin.Services.Services
         private string GetShortPhoneNumber(string phoneNumber)
         {
             string shortPhoneNumber = string.Empty;
+
+            if (phoneNumber.Length == 10)
+                shortPhoneNumber = phoneNumber;
 
             if (phoneNumber.Length == 11)
                 shortPhoneNumber = phoneNumber.Substring(1);

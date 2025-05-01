@@ -32,7 +32,7 @@ namespace Kventin.Services.Services
             await _db.SaveChangesAsync();
         }
 
-        public async Task<List<ReturnScheduleItemDto>> GetSchedule(ScheduleDto dto)
+        public async Task<ReturnScheduleDto> GetSchedule(ScheduleDto dto)
         {
             var scheduleId = await _db.Schedules
                 .Where(x => x.StartYear == dto.StartYear &&
@@ -50,10 +50,9 @@ namespace Kventin.Services.Services
                 .Where(x => x.ScheduleId == scheduleId)
                 .ToListAsync();
 
-            var result = scheduleItems
-                .Select(x =>  new ReturnScheduleItemDto
+            var scheduleItemDtos = scheduleItems
+                .Select(x => new ReturnScheduleItemDto
                 {
-                    ScheduleId = scheduleId,
                     ScheduleItemId = x.Id,
                     DayOfWeek = x.DayOfWeek.GetDescription(),
                     StartTime = x.StartTime,
@@ -66,16 +65,28 @@ namespace Kventin.Services.Services
                 })
                 .ToList();
 
+            var result = new ReturnScheduleDto
+            {
+                ScheduleId = scheduleId,
+                ScheduleItems = scheduleItemDtos
+            };
+
             return result;
         }
 
         public async Task AddScheduleItem(AddScheduleItemDto dto)
         {
-            var teacher = await _db.Users.FindAsync(dto.TeacherId);
-            var subject = await _db.Subjects.FindAsync(dto.SubjectId);
-            var group = await _db.StudyGroups.FindAsync(dto.GroupId);
+            var schedule = await _db.Schedules.FindAsync(dto.ScheduleId)
+                ?? throw new EntityNotFoundException("Расписание не найдено");
 
-            var schedule = await _db.Schedules.FindAsync(dto.ScheduleId);
+            var teacher = await _db.Users.FindAsync(dto.TeacherId)
+                ?? throw new EntityNotFoundException("Преподаватель не найден");
+
+            var subject = await _db.Subjects.FindAsync(dto.SubjectId)
+                ?? throw new EntityNotFoundException("Учебный предмет не найден");
+
+            var group = await _db.StudyGroups.FindAsync(dto.GroupId)
+                ?? throw new EntityNotFoundException("Учебная группа не найдена");
 
             var scheduleItem = new ScheduleItem
             {

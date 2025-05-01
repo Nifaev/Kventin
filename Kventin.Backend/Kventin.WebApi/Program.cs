@@ -1,5 +1,6 @@
-﻿using System.Reflection;
+using System.Reflection;
 using System.Security.Cryptography;
+using Kventin.Services.Infrastructure;
 using Kventin.Services.Infrastructure.Extensions;
 using Kventin.Services.Infrastructure.Tools;
 using Kventin.Services.Interfaces.Services;
@@ -28,7 +29,6 @@ builder
         options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
     });
 
-// 🟢 Добавляем CORS для Vue с Vite
 builder
     .Services
     .AddCors(options =>
@@ -38,10 +38,10 @@ builder
             policy =>
             {
                 policy
-                    .WithOrigins("http://localhost:5173") // Адрес Vite-сервера для разработки
+                    .WithOrigins("http://localhost:5173")
                     .AllowAnyMethod()
                     .AllowAnyHeader()
-                    .AllowCredentials(); // Если используете авторизацию через куки
+                    .AllowCredentials();
             }
         );
     });
@@ -52,6 +52,7 @@ builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
 builder.Services.AddScoped<IJwtProvider, JwtProvider>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IScheduleService, ScheduleService>();
+builder.Services.AddScoped<ILessonService, LessonService>();
 
 builder
     .Services
@@ -73,7 +74,6 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-// 🟢 Активируем CORS
 app.UseCors("AllowVueApp");
 
 app.UseHttpsRedirection();
@@ -90,7 +90,6 @@ app.UseCookiePolicy(
     }
 );
 
-// 🟢 Раздача собранного фронтенда (Vue)
 var frontendPath = Path.Combine(Directory.GetCurrentDirectory(), "kventin-frontend", "dist");
 if (Directory.Exists(frontendPath))
 {
@@ -102,9 +101,11 @@ if (Directory.Exists(frontendPath))
             RequestPath = ""
         }
     );
-    app.MapFallbackToFile("index.html"); // Поддержка SPA-маршрутизации
+    app.MapFallbackToFile("index.html");
 }
 
 app.MapControllers();
+
+await JobScheduler.Start(connectionString);
 
 app.Run();

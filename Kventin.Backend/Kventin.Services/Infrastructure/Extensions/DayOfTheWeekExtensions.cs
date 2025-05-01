@@ -1,16 +1,24 @@
 ﻿using Kventin.DataAccess.Enums;
-using System.ComponentModel;
-using System.Reflection;
 
 namespace Kventin.Services.Infrastructure.Extensions
 {
-    public static class EnumExtensions
+    public static class DayOfTheWeekExtensions
     {
-        public static string GetDescription(this Enum value)
+        /// <summary>
+        /// Получить ближайший следующий день недели относительно dateFrom, при необходимости пропуская указанное
+        /// количество недель.
+        /// </summary>
+        /// <param name="targetDay"></param>
+        /// <param name="dateFrom"></param>
+        /// <param name="weeksToSkip"></param>
+        /// <returns></returns>
+        public static DateOnly GetNext(this DayOfTheWeek targetDay, DateOnly dateFrom, int weeksToSkip = 0)
         {
-            var field = value.GetType().GetField(value.ToString());
-            var attribute = field?.GetCustomAttribute<DescriptionAttribute>();
-            return attribute?.Description ?? value.ToString();
+            var daysUntilTarget = ((int)targetDay - (int)dateFrom.DayOfWeek.MapToDayOfTheWeek() + 7) % 7;
+
+            var daysToAdd = daysUntilTarget == 0 ? 7 : daysUntilTarget;
+
+            return dateFrom.AddDays(daysToAdd + weeksToSkip * 7);
         }
     }
 }

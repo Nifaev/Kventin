@@ -1,7 +1,7 @@
 ﻿using Kventin.DataAccess;
 using Kventin.DataAccess.Domain;
 using Kventin.Services.Dtos.Filters;
-using Kventin.Services.Dtos.User;
+using Kventin.Services.Dtos.Users;
 using Kventin.Services.Infrastructure.Exceptions;
 using Kventin.Services.Interfaces.Services;
 using Kventin.Services.Interfaces.Tools;
@@ -22,41 +22,49 @@ namespace Kventin.Services.Services
             return roles;
         }
 
-        public async Task SetUserRole(int userId, UserRoleDto dto)
+        public async Task SetUserRoles(int userId, List<UserRoleDto> dtos)
         {
-            var role = await _db.Roles
-                .FirstOrDefaultAsync(x => x.Name.CompareTo(dto.RoleName) == 0) 
-                ?? throw new EntityNotFoundException("Указанная роль не найдена");
+            var rolenames = dtos
+                .Select(x => x.RoleName)
+                .ToList();
 
             var user = await GetUserWithRolesByIdAsync(userId) 
                 ?? throw new EntityNotFoundException("Пользователь с таким Id не найден");
 
-            if (!user.IsSuperUser && dto.RoleName == "SuperUser")
-                throw new NoAccessException("У вас недостаточно прав");
+            if (!user.IsSuperUser && rolenames.Contains("SuperUser"))
+                throw new NoAccessException("У вас недостаточно прав, чтобы присвоить роль SuperUser");
 
-            if (user.Roles.Any(x => x.Name.CompareTo(role.Name) == 0))
+            var userRolenames = user.Roles
+                .Select(x => x.Name)
+                .ToList();
+
+            var roles = await _db.Roles
+                .Where(x => rolenames.Contains(x.Name) &&
+                            !userRolenames.Contains(x.Name))
+                .ToListAsync();
+
+            if (roles.Count == 0)
                 return;
 
-            user.Roles.Add(role);
+            user.Roles.AddRange(roles);
 
             await _db.SaveChangesAsync();
         }
 
-        public async Task DeleteUserRole(int userId, UserRoleDto dto)
+        public async Task DeleteUserRole(int userId, List<UserRoleDto> dtos)
         {
+            var rolenames = dtos
+                .Select(x => x.RoleName)
+                .ToList();
+
             var user = await GetUserWithRolesByIdAsync(userId)
                 ?? throw new EntityNotFoundException("Пользователь с таким Id не найден");
 
-            if (!user.IsSuperUser && dto.RoleName == "SuperUser")
-                throw new NoAccessException("У вас недостаточно прав");
+            if (!user.IsSuperUser && rolenames.Contains("SuperUser"))
+                throw new NoAccessException("У вас недостаточно прав, чтобы удалить роль SuperUser");
 
-            var roleToDelete = user.Roles
-                .FirstOrDefault(x => x.Name.CompareTo(dto.RoleName) == 0);
+            user.Roles.RemoveAll(x => rolenames.Contains(x.Name));
 
-            if (roleToDelete == null)
-                return;
-
-            user.Roles.Remove(roleToDelete);
             await _db.SaveChangesAsync();
         }
 

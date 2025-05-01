@@ -72,5 +72,10 @@ namespace Kventin.DataAccess.Domain
         /// Расписание, к которому относится элемент 
         /// </summary>
         public required Schedule Schedule { get; set; }
+
+        /// <summary>
+        /// Занятия, созданные по данному "шаблону" (элементу расписания)
+        /// </summary>
+        public List<Lesson> Lessons { get; set; } = [];
     }
 }

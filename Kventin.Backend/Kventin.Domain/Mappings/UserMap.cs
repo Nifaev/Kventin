@@ -52,7 +52,7 @@ namespace Kventin.DataAccess.Mappings
                     Id = 1,
                     FirstName = "Суперпользователь",
                     LastName = "Встроенный",
-                    PhoneNumber = "adminadmin",
+                    PhoneNumber = "1234567890",
                     HashedPassword = "$2a$11$fOB6qIW/7qIQzJWq.mcS6ugc6UoFPAWctpSDZJQj5uaKTNiqiQ9xO",
                     IsSuperUser = true,
                     CreateDateTime = new DateTime(2025, 1, 18, 19, 30, 00)
