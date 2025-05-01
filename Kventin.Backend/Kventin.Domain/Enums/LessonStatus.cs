@@ -17,6 +17,7 @@ namespace Kventin.DataAccess.Enums
         /// <summary>
         /// Отменено
         /// </summary>
+        /// Отправляю цифру в запросе
         Canceled = 2,
     }
 }

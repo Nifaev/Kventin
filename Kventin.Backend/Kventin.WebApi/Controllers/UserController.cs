@@ -116,7 +116,7 @@ namespace Kventin.WebApi.Controllers
         /// Получить Id текущего пользователя
         /// </summary>
         /// <returns>Возвращает UserIdDto</returns>
-        [Authorize]
+        //[Authorize]
         [HttpGet("getMyId")]
         public ActionResult<UserIdDto> GetCurrentUserId()
         {
@@ -131,7 +131,7 @@ namespace Kventin.WebApi.Controllers
         /// Получить все возможные роли
         /// </summary>
         /// <returns>Массив UserRoleDto - Список всех ролей в системе</returns>
-        [Authorize(Roles = "SuperUser, AdminRegistration")]
+        //[Authorize(Roles = "SuperUser, AdminRegistration")]
         [HttpGet("getAllRoles")]
         public async Task<ActionResult<List<UserRoleDto>>> GetAllRoles()
         {
