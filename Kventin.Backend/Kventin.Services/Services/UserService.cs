@@ -3,7 +3,6 @@ using Kventin.DataAccess.Domain;
 using Kventin.Services.Dtos.Filters;
 using Kventin.Services.Dtos.Users;
 using Kventin.Services.Infrastructure.Exceptions;
-using Kventin.Services.Infrastructure.Extensions;
 using Kventin.Services.Interfaces.Services;
 using Microsoft.EntityFrameworkCore;
 
