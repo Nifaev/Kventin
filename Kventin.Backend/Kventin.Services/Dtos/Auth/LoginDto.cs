@@ -9,7 +9,7 @@ namespace Kventin.Services.Dtos.Auth
         public required string Password { get; set; }
 
         [OneOfTwoRequired("PhoneNumber", "Email")]
-        //[Phone]
+        [Phone]
         public string? PhoneNumber { get; set; }
 
         [EmailAddress]

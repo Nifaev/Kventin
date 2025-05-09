@@ -33,11 +33,18 @@ namespace Kventin.WebApi.Controllers
         [HttpPost("login")]
         public async Task<ActionResult<string>> Login(LoginDto dto)
         {
-            var token = await _authService.Login(dto);
+            try
+            {
+                var token = await _authService.Login(dto);
 
-            Response.Cookies.Append("choco-cookies", token);
+                Response.Cookies.Append("choco-cookies", token);
 
-            return Ok();
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         /// <summary>

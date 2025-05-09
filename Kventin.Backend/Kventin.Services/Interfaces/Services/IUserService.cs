@@ -5,7 +5,6 @@ namespace Kventin.Services.Interfaces.Services
 {
     public interface IUserService
     {
-        
         public Task SetUserRoles(int userId, List<UserRoleDto> dtos);
         public Task DeleteUserRole(int userId, List<UserRoleDto> dtos);
         public Task<List<UserRoleDto>> GetUserRoles(int userId);
