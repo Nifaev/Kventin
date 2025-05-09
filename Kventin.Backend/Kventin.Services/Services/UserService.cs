@@ -13,25 +13,63 @@ namespace Kventin.Services.Services
     {
         private readonly KventinContext _db = db;
 
-        public async Task SetChildForParent(int parentId, int childId)
+        public async Task<List<UserShortInfoDto>> GetAllStudentsShortInfo()
+        {
+            var studentsQuery = _db.Users
+                .Where(x => x.Roles
+                    .Select(y => y.Name)
+                    .Contains("Student"));
+
+            var take = 50;
+            var studentsCount = await studentsQuery.CountAsync();
+            var pageCount = Math.Ceiling(studentsCount / (double)take);
+            var result = new List<UserShortInfoDto>();
+
+            for (int pageNumber = 0; pageNumber < pageCount; pageNumber++)
+            {
+                var students = await studentsQuery
+                    .Skip(pageNumber * take)
+                    .Take(take)
+                    .ToListAsync();
+
+                var dtos = students
+                    .Select(x => new UserShortInfoDto
+                    {
+                        UserId = x.Id,
+                        FirstName = x.FirstName,
+                        LastName = x.LastName,
+                        MiddleName = x.MiddleName,
+                        FullName = x.GetFullName(),
+                        ShortName = x.GetShortName()
+                    })
+                    .ToList();
+
+                result.AddRange(dtos);
+            }
+
+            return result;
+        }
+
+        public async Task SetChildrenForParent(int parentId, List<int> childrenIds)
         {
             var parent = await _db.Users
                 .Include(x => x.Children)
-                .Include(x => x.Roles)
-                .FirstOrDefaultAsync(x => x.Id == parentId);
+                .FirstOrDefaultAsync(x => x.Id == parentId &&
+                                          x.Roles.Select(y => y.Name).Contains("Parent"));
 
-            if (parent == null || !parent.Roles.Select(x => x.Name).Contains("Parent"))
+            if (parent == null)
                 throw new EntityNotFoundException("Родитель с таким Id не найден");
 
-            var child = await _db.Users
+            var children = await _db.Users
                 .Include(x => x.Parents)
-                .Include(x => x.Roles)
-                .FirstOrDefaultAsync(x => x.Id == childId);
+                .Where(x => childrenIds.Contains(x.Id) &&
+                            x.Roles.Select(y => y.Name).Contains("Student"))
+                .ToListAsync();
 
-            if (child == null || !child.Roles.Select(x => x.Name).Contains("Student"))
-                throw new EntityNotFoundException("Ученик с таким Id не найден");
+            if (!children.Any())
+                throw new EntityNotFoundException("Не найдено ни одного ученика по переданным Id");
 
-            parent.Children.Add(child);
+            parent.Children.AddRange(children);
 
             await _db.SaveChangesAsync();
         }

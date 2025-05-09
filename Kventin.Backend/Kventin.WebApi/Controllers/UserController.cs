@@ -138,19 +138,19 @@ namespace Kventin.WebApi.Controllers
         }
 
         /// <summary>
-        /// Установить связь между родителем и ребенком
+        /// Установить связь между родителем и детьми
         /// (SuperUser, AdminRegistration)
         /// </summary>
         /// <param name="parentId"></param>
-        /// <param name="childId"></param>
+        /// <param name="childrenIds">Принимает массив int - массив Id - шников учеников</param>
         /// <returns></returns>
         [Authorize(Roles = "SuperUser, AdminRegistration")]
-        [HttpPost("{parentId}/addChild/{childId}")]
-        public async Task<ActionResult> SetChildForParent(int parentId, int childId)
+        [HttpPost("{parentId}/addChildren")]
+        public async Task<ActionResult> SetChildrenForParent(int parentId, List<int> childrenIds)
         {
             try
             {
-                await _userService.SetChildForParent(parentId, childId);
+                await _userService.SetChildrenForParent(parentId, childrenIds);
 
                 return Ok();
             }
@@ -196,6 +196,19 @@ namespace Kventin.WebApi.Controllers
             {
                 return BadRequest(ex.Message);
             }
+        }
+
+        /// <summary>
+        /// Получить список всех учеников
+        /// </summary>
+        /// <returns>Возвращает UserShortInfoDto</returns>
+        [Authorize(Roles = "SuperUser, AdminRegistration")]
+        [HttpGet("getAllStudentsInfo")]
+        public async Task<ActionResult<List<UserShortInfoDto>>> GetAllStudentsShortInfo()
+        {
+            var result = await _userService.GetAllStudentsShortInfo();
+
+            return Ok(result);
         }
     }
 }

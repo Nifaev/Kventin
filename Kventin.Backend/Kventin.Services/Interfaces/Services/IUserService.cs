@@ -11,6 +11,7 @@ namespace Kventin.Services.Interfaces.Services
         public Task<List<UsersRolesInfoDto>> GetUsersWithRoles(BaseFilterDto filter, int userId);
         public Task<List<UserRoleDto>> GetAllRoles();
         public Task<GetUsersChildrenDto> GetUsersChildren(int parentId);
-        public Task SetChildForParent(int parentId, int childId);
+        public Task SetChildrenForParent(int parentId, List<int> childrenIds);
+        public Task<List<UserShortInfoDto>> GetAllStudentsShortInfo();
     }
 }
