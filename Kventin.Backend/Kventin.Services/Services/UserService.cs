@@ -3,6 +3,7 @@ using Kventin.DataAccess.Domain;
 using Kventin.Services.Dtos.Filters;
 using Kventin.Services.Dtos.Users;
 using Kventin.Services.Infrastructure.Exceptions;
+using Kventin.Services.Infrastructure.Extensions;
 using Kventin.Services.Interfaces.Services;
 using Microsoft.EntityFrameworkCore;
 
@@ -11,7 +12,59 @@ namespace Kventin.Services.Services
     public class UserService(KventinContext db) : IUserService
     {
         private readonly KventinContext _db = db;
-        
+
+        public async Task SetChildForParent(int parentId, int childId)
+        {
+            var parent = await _db.Users
+                .Include(x => x.Children)
+                .Include(x => x.Roles)
+                .FirstOrDefaultAsync(x => x.Id == parentId);
+
+            if (parent == null || !parent.Roles.Select(x => x.Name).Contains("Parent"))
+                throw new EntityNotFoundException("Родитель с таким Id не найден");
+
+            var child = await _db.Users
+                .Include(x => x.Parents)
+                .Include(x => x.Roles)
+                .FirstOrDefaultAsync(x => x.Id == childId);
+
+            if (child == null || !child.Roles.Select(x => x.Name).Contains("Student"))
+                throw new EntityNotFoundException("Ученик с таким Id не найден");
+
+            parent.Children.Add(child);
+
+            await _db.SaveChangesAsync();
+        }
+
+        public async Task<GetUsersChildrenDto> GetUsersChildren(int parentId)
+        {
+            var children = await _db.Users
+                .Include(x => x.Children)
+                .Where(x => x.Id == parentId)
+                .SelectMany(x => x.Children)
+                .ToListAsync();
+
+            if (!children.Any())
+                return new GetUsersChildrenDto();
+
+            var childrenInfoDtos = children
+                .Select(x => new UserShortInfoDto
+                {
+                    UserId = x.Id,
+                    FirstName = x.FirstName,
+                    LastName = x.LastName,
+                    MiddleName = x.MiddleName,
+                    FullName = x.GetFullName(),
+                    ShortName = x.GetShortName(),
+                })
+                .ToList();
+
+            return new GetUsersChildrenDto
+            {
+                Children = childrenInfoDtos
+            };
+        }
+
         public async Task<List<UserRoleDto>> GetAllRoles()
         {
             var roles = await _db.Roles

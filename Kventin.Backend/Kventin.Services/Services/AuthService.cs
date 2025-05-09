@@ -19,12 +19,37 @@ namespace Kventin.Services.Services
         private readonly IPasswordHasher _passwordHasher = passwordHasher;
         private readonly IJwtProvider _jwtProvider = jwtProvider;
 
+        public async Task<string> GetNewCookieWithChildId(IRequestCookieCollection cookie, int parentId, int childId)
+        {
+            var parent = await _db.Users
+                .FirstOrDefaultAsync(x => x.Id == parentId &&
+                                          x.Children.Any(y => y.Id == childId));
+
+            if (parent == null)
+                throw new EntityNotFoundException("Родитель с таким Id не является родителем переданного ребенка");
+
+            var token = cookie["choco-cookies"] ?? string.Empty;
+
+            var userLogin = _jwtProvider.GetUserLoginByToken(token);
+
+            var userRoles = (_jwtProvider.GetUserRolesByToken(token))
+                .Select(x => x.RoleName)
+                .ToList();
+
+            if (userLogin != null && userRoles != null)
+            {
+                token = _jwtProvider.GenerateToken(parentId, userLogin, userRoles, childId);
+            }
+
+            return token;
+        }
+
         public async Task<string> Login(LoginDto dto)
         {
             var hashedPassword = string.Empty;
             var login = string.Empty;
             var userId = 0;
-            var roles = new List<Role>();
+            var rolenames = new List<string>();
 
             if (dto.PhoneNumber != null)
             {
@@ -38,7 +63,7 @@ namespace Kventin.Services.Services
                     ?? throw new EntityNotFoundException("Пользователь с таким номером телефона не зарегистрирован");
 
                 hashedPassword = userData.HashedPassword;
-                roles = userData.Roles;
+                rolenames = userData.Roles.Select(x => x.Name).ToList();
                 login = shortPhoneNumber;
                 userId = userData.Id;
             }
@@ -53,7 +78,7 @@ namespace Kventin.Services.Services
                     ?? throw new EntityNotFoundException("Пользователь с такой эл. почтой не зарегистрирован");
 
                 hashedPassword = userData.HashedPassword;
-                roles = userData.Roles;
+                rolenames = userData.Roles.Select(x => x.Name).ToList();
                 userId = userData.Id;
                 login = dto.Email;
             }
@@ -64,7 +89,7 @@ namespace Kventin.Services.Services
             if (!verified)
                 throw new AuthException("Неправильный пароль");
 
-            var token = _jwtProvider.GenerateToken(userId, login, roles);
+            var token = _jwtProvider.GenerateToken(userId, login, rolenames);
 
             return token;
         }

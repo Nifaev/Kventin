@@ -1,6 +1,5 @@
 ﻿using Kventin.Services.Dtos.Users;
 using Kventin.Services.Interfaces.Services;
-using Kventin.Services.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -46,20 +45,6 @@ namespace Kventin.WebApi.Controllers
             await _accountService.UpdateUserAccountInfo(dto, userId, authorizedUserId.UserId);
 
             return Ok();
-        }
-
-        /// <summary>
-        /// Получить детей родителя
-        /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
-        [Authorize(Roles = "Parent")]
-        [HttpGet("{userId}/getChildren")]
-        public async Task<ActionResult<GetUsersChildrenDto>> GetChildren(int id)
-        {
-            var result = await _accountService.GetUsersChildren(id);
-
-            return Ok(result);
         }
     }
 }

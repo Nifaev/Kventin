@@ -2,6 +2,7 @@
 using Kventin.Services.Dtos.Users;
 using Kventin.Services.Infrastructure.Exceptions;
 using Kventin.Services.Interfaces.Services;
+using Kventin.Services.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -134,6 +135,67 @@ namespace Kventin.WebApi.Controllers
             var result = await _userService.GetAllRoles();
 
             return Ok(result);
+        }
+
+        /// <summary>
+        /// Установить связь между родителем и ребенком
+        /// (SuperUser, AdminRegistration)
+        /// </summary>
+        /// <param name="parentId"></param>
+        /// <param name="childId"></param>
+        /// <returns></returns>
+        [Authorize(Roles = "SuperUser, AdminRegistration")]
+        [HttpPost("{parentId}/addChild/{childId}")]
+        public async Task<ActionResult> SetChildForParent(int parentId, int childId)
+        {
+            try
+            {
+                await _userService.SetChildForParent(parentId, childId);
+
+                return Ok();
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
+
+        /// <summary>
+        /// Получить детей родителя
+        /// </summary>
+        /// <param name="parentId"></param>
+        /// <returns></returns>
+        [Authorize(Roles = "Parent")]
+        [HttpGet("{parentId}/getChildren")]
+        public async Task<ActionResult<GetUsersChildrenDto>> GetChildren(int parentId)
+        {
+            var result = await _userService.GetUsersChildren(parentId);
+
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// Выбрать ребенка. Чтобы отменить выбор ребенка childId должен быть равен 0
+        /// </summary>
+        /// <param name="parentId"></param>
+        /// <param name="childId"></param>
+        /// <returns></returns>
+        [Authorize(Roles = "Parent")]
+        [HttpPost("{parentId}/selectChild/{childId}")]
+        public async Task<ActionResult> SelectChild(int parentId, int childId)
+        {
+            try
+            {
+                var newToken = await _authService.GetNewCookieWithChildId(Request.Cookies, parentId, childId);
+
+                Response.Cookies.Append("choco-cookies", newToken);
+
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
     }
 }

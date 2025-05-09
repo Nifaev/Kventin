@@ -68,34 +68,5 @@ namespace Kventin.Services.Services
 
             return result;
         }
-
-        public async Task<GetUsersChildrenDto> GetUsersChildren(int parentId)
-        {
-            var children = await _db.Users
-                .Where(x => x.Parents
-                    .Select(y => y.Id)
-                    .Contains(parentId))
-                .ToListAsync();
-
-            if (!children.Any())
-                return new GetUsersChildrenDto();
-
-            var childrenInfoDtos = children
-                .Select(x => new UserShortInfoDto
-                {
-                    UserId = x.Id,
-                    FirstName = x.FirstName,
-                    LastName = x.LastName,
-                    MiddleName = x.MiddleName,
-                    FullName = x.GetFullName(),
-                    ShortName = x.GetShortName(),
-                })
-                .ToList();
-
-            return new GetUsersChildrenDto
-            {
-                Children = childrenInfoDtos
-            };
-        }
     }
 }
