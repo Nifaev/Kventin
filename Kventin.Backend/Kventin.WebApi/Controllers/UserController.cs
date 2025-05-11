@@ -1,8 +1,6 @@
-﻿using Kventin.Services.Dtos.Filters;
-using Kventin.Services.Dtos.Users;
+﻿using Kventin.Services.Dtos.Users;
 using Kventin.Services.Infrastructure.Exceptions;
 using Kventin.Services.Interfaces.Services;
-using Kventin.Services.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -18,26 +16,25 @@ namespace Kventin.WebApi.Controllers
 
         /// <summary>
         /// Назначить роли пользователю (SuperUser, AdminRegistration)
-        /// Пользователь с ролью AdminRegistration не может назначать роль SuperUser
+        /// Пользователь с ролью AdminRegistration не может назначать 
+        /// админские роли и SuperUser
         /// </summary>
         /// <param name="userId">Id пользователя</param>
-        /// <param name="dtos">Принимает массив UserRoleDto</param>
+        /// <param name="rolenames">Принимает массив строк (названий ролей)</param>
         /// <returns></returns>
         [Authorize(Roles = "SuperUser, AdminRegistration")]
         [HttpPost("{userId}/setRoles")]
-        public async Task<ActionResult> SetRoles(int userId, List<UserRoleDto> dtos)
+        public async Task<ActionResult> SetRoles(int userId, List<string> rolenames)
         {
             try
             {
-                await _userService.SetUserRoles(userId, dtos);
+                var authorizedUserId = _authService.GetUserIdByCookie(Request.Cookies);
+
+                await _userService.SetUserRoles(authorizedUserId, userId, rolenames);
             }
-            catch (EntityNotFoundException e)
+            catch (Exception e)
             {
                 return BadRequest(e.Message);
-            }
-            catch (NoAccessException e)
-            {
-                return Forbid(e.Message);
             }
 
             return Ok();
@@ -45,26 +42,24 @@ namespace Kventin.WebApi.Controllers
 
         /// <summary>
         /// Удалить роли у пользователя (SuperUser, AdminRegistration)
-        /// Пользователь с ролью AdminRegistration не может удалять роль SuperUser
+        /// Пользователь с ролью AdminRegistration не может удалять админские роли и SuperUser
         /// </summary>
         /// <param name="userId">Id пользователя</param>
-        /// <param name="dtos">Принимает массив UserRoleDto</param>
+        /// <param name="rolenames">Принимает массив строк (названий ролей)</param>
         /// <returns></returns>
         [Authorize(Roles = "SuperUser, AdminRegistration")]
         [HttpPost("{userId}/deleteRoles")]
-        public async Task<ActionResult> DeleteRoles(int userId, List<UserRoleDto> dtos)
+        public async Task<ActionResult> DeleteRoles(int userId, List<string> rolenames)
         {
             try
             {
-                await _userService.DeleteUserRole(userId, dtos);
+                var authorizedUserId = _authService.GetUserIdByCookie(Request.Cookies);
+
+                await _userService.DeleteUserRole(authorizedUserId, userId, rolenames);
             }
-            catch (EntityNotFoundException e)
+            catch (Exception e)
             {
                 return BadRequest(e.Message);
-            }
-            catch (NoAccessException e)
-            {
-                return Forbid(e.Message);
             }
 
             return Ok();
@@ -72,18 +67,17 @@ namespace Kventin.WebApi.Controllers
 
         /// <summary>
         /// Получить список всех пользователей (кроме себя) и их ролей (SuperUser, AdminRegistration).
-        /// Пользователь с ролью AdminRegistration видит всех пользователей, кроме SuperUser.
-        /// Пользователь с ролью SuperUser видит всех пользователей.
+        /// Пользователь с ролью AdminRegistration видит всех пользователей, кроме админов и SuperUser.
+        /// Пользователь с ролью SuperUser видит всех пользователей (кроме себя).
         /// </summary>
-        /// <param name="filter">Принимает BaseFilterDto - параметры пагинации</param>
         /// <returns></returns>
         [Authorize(Roles = "SuperUser, AdminRegistration")]
-        [HttpPost("getUsersRolesInfoPaged")]
-        public async Task<ActionResult<List<UsersRolesInfoDto>>> GetUsersRolesInfo(BaseFilterDto filter)
+        [HttpPost("getUsersRolesInfo")]
+        public async Task<ActionResult<List<UserRoleInfoDto>>> GetAllUsersWithRoles()
         {
-            var userIdDto = _authService.GetUserIdByCookie(Request.Cookies);
+            var userId = _authService.GetUserIdByCookie(Request.Cookies);
 
-            var result = await _userService.GetUsersWithRoles(filter, userIdDto.UserId);
+            var result = await _userService.GetAllUsersWithRoles(userId);
 
             return Ok(result);
         }
@@ -93,31 +87,42 @@ namespace Kventin.WebApi.Controllers
         /// </summary>
         /// <param name="userId">Id пользователя</param>
         /// <returns>Возвращает массив UserRoleDto</returns>
-        [Authorize]
+        [Authorize(Roles = "SuperUser, AdminRegistration")]
         [HttpGet("{userId}/getRoles")]
-        public async Task<ActionResult<List<UserRoleDto>>> GetRoles(int userId)
+        public async Task<ActionResult<List<string>>> GetRoles(int userId)
         {
-            List<UserRoleDto> result;
-            
             try
             {
-                result = await _userService.GetUserRoles(userId);
+                var result = await _userService.GetUserRoles(userId);
+
+                return Ok(result);
             }
             catch (EntityNotFoundException e)
             {
                 return BadRequest(e.Message);
             }
+        }
+
+        /// <summary>
+        /// Получить список ролей текущего авторизованного пользователя
+        /// </summary>
+        /// <returns></returns>
+        [Authorize]
+        [HttpGet("getMyRoles")]
+        public ActionResult<List<string>> GetMyRoles()
+        {
+            var result = _authService.GetUserRolesByCookie(Request.Cookies);
 
             return Ok(result);
         }
 
         /// <summary>
-        /// Получить Id текущего пользователя
+        /// Получить Id текущего авторизованного пользователя (Все авторизованные пользователи)
         /// </summary>
         /// <returns>Возвращает UserIdDto</returns>
-        //[Authorize]
+        [Authorize]
         [HttpGet("getMyId")]
-        public ActionResult<UserIdDto> GetCurrentUserId()
+        public ActionResult<int> GetCurrentUserId()
         {
             var result = _authService.GetUserIdByCookie(Request.Cookies);
 
@@ -125,12 +130,12 @@ namespace Kventin.WebApi.Controllers
         }
 
         /// <summary>
-        /// Получить все возможные роли
+        /// Получить все возможные роли (Все авторизованные пользователи)
         /// </summary>
         /// <returns>Массив UserRoleDto - Список всех ролей в системе</returns>
-        //[Authorize(Roles = "SuperUser, AdminRegistration")]
+        [Authorize]
         [HttpGet("getAllRoles")]
-        public async Task<ActionResult<List<UserRoleDto>>> GetAllRoles()
+        public async Task<ActionResult<List<string>>> GetAllRoles()
         {
             var result = await _userService.GetAllRoles();
 
@@ -161,13 +166,13 @@ namespace Kventin.WebApi.Controllers
         }
 
         /// <summary>
-        /// Получить детей родителя
+        /// Получить детей родителя (Parent)
         /// </summary>
         /// <param name="parentId"></param>
-        /// <returns></returns>
+        /// <returns>Возвращает массив UserShortInfoDto</returns>
         [Authorize(Roles = "Parent")]
         [HttpGet("{parentId}/getChildren")]
-        public async Task<ActionResult<GetUsersChildrenDto>> GetChildren(int parentId)
+        public async Task<ActionResult<List<UserShortInfoDto>>> GetChildren(int parentId)
         {
             var result = await _userService.GetUsersChildren(parentId);
 
@@ -175,7 +180,7 @@ namespace Kventin.WebApi.Controllers
         }
 
         /// <summary>
-        /// Выбрать ребенка. Чтобы отменить выбор ребенка childId должен быть равен 0
+        /// Выбрать ребенка. Чтобы отменить выбор ребенка передать childId = 0 (Parent)
         /// </summary>
         /// <param name="parentId"></param>
         /// <param name="childId"></param>
@@ -199,14 +204,40 @@ namespace Kventin.WebApi.Controllers
         }
 
         /// <summary>
-        /// Получить список всех учеников
+        /// Получить список всех учеников (SuperUser, AdminRegistration)
         /// </summary>
-        /// <returns>Возвращает UserShortInfoDto</returns>
+        /// <returns>Возвращает массив UserShortInfoDto</returns>
         [Authorize(Roles = "SuperUser, AdminRegistration")]
-        [HttpGet("getAllStudentsInfo")]
+        [HttpGet("getAllStudents")]
         public async Task<ActionResult<List<UserShortInfoDto>>> GetAllStudentsShortInfo()
         {
-            var result = await _userService.GetAllStudentsShortInfo();
+            var result = await _userService.GetAllUsersShortInfoByRole("Student");
+
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// Получить список всех учителей (SuperUser, AdminRegistration)
+        /// </summary>
+        /// <returns>Возвращает массив UserShortInfoDto</returns>
+        [Authorize(Roles = "SuperUser, AdminRegistration")]
+        [HttpGet("getAllTeachers")]
+        public async Task<ActionResult<List<UserShortInfoDto>>> GetAllTeachersShortInfo()
+        {
+            var result = await _userService.GetAllUsersShortInfoByRole("Teacher");
+
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// Получить список всех родителей (SuperUser, AdminRegistration)
+        /// </summary>
+        /// <returns>Возвращает массив UserShortInfoDto</returns>
+        [Authorize(Roles = "SuperUser, AdminRegistration")]
+        [HttpGet("getAllParents")]
+        public async Task<ActionResult<List<UserShortInfoDto>>> GetAllParentsShortInfo()
+        {
+            var result = await _userService.GetAllUsersShortInfoByRole("Parent");
 
             return Ok(result);
         }

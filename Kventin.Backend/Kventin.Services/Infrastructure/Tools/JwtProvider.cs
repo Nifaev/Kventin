@@ -37,7 +37,7 @@ namespace Kventin.Services.Infrastructure.Tools
             return tokenValue;
         }
 
-        public UserIdDto GetChildIdByToken(string token)
+        public int GetChildIdByToken(string token)
         {
             var handler = new JwtSecurityTokenHandler();
             var userId = 0;
@@ -49,10 +49,10 @@ namespace Kventin.Services.Infrastructure.Tools
                 userId = int.Parse(jwtToken.Claims.First(x => x.Type == "childId").Value);
             }
 
-            return new UserIdDto { UserId = userId };
+            return userId;
         }
 
-        public UserIdDto GetUserIdByToken(string token)
+        public int GetUserIdByToken(string token)
         {
             var handler = new JwtSecurityTokenHandler();
             var userId = 0;
@@ -64,7 +64,7 @@ namespace Kventin.Services.Infrastructure.Tools
                 userId = int.Parse(jwtToken.Claims.First(x => x.Type == "userId").Value);
             }
 
-            return new UserIdDto { UserId = userId };
+            return userId;
         }
 
         public string GetUserLoginByToken(string token)
@@ -82,10 +82,10 @@ namespace Kventin.Services.Infrastructure.Tools
             return login;
         }
 
-        public List<UserRoleDto> GetUserRolesByToken(string token)
+        public List<string> GetUserRolesByToken(string token)
         {
             var handler = new JwtSecurityTokenHandler();
-            var roles = new List<UserRoleDto>();
+            var roles = new List<string>();
 
             if (handler.CanReadToken(token))
             {
@@ -93,10 +93,7 @@ namespace Kventin.Services.Infrastructure.Tools
 
                 roles = jwtToken.Claims
                     .Where(x => x.Type == "role")
-                    .Select(x =>  new UserRoleDto
-                    {
-                        RoleName = x.Value
-                    })
+                    .Select(x =>  x.Value)
                     .ToList();
             }
 

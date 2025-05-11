@@ -2,7 +2,7 @@
 {
     public class ScheduleDto
     {
-        public int StartYear { get; set; }
-        public int EndYear { get; set; }
+        public required int StartYear { get; set; }
+        public required int EndYear { get; set; }
     }
 }

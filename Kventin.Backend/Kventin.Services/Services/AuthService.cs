@@ -32,9 +32,7 @@ namespace Kventin.Services.Services
 
             var userLogin = _jwtProvider.GetUserLoginByToken(token);
 
-            var userRoles = (_jwtProvider.GetUserRolesByToken(token))
-                .Select(x => x.RoleName)
-                .ToList();
+            var userRoles = _jwtProvider.GetUserRolesByToken(token);
 
             if (userLogin != null && userRoles != null)
             {
@@ -127,7 +125,7 @@ namespace Kventin.Services.Services
             await _db.SaveChangesAsync();
         }
 
-        public UserIdDto GetUserIdByCookie(IRequestCookieCollection cookie)
+        public int GetUserIdByCookie(IRequestCookieCollection cookie)
         {
             var token = cookie["choco-cookies"] ?? string.Empty;
 
@@ -150,6 +148,15 @@ namespace Kventin.Services.Services
                 shortPhoneNumber = phoneNumber.Substring(2);
 
             return shortPhoneNumber;
+        }
+
+        public List<string> GetUserRolesByCookie(IRequestCookieCollection cookie)
+        {
+            var token = cookie["choco-cookies"] ?? string.Empty;
+
+            var roles = _jwtProvider.GetUserRolesByToken(token);
+
+            return roles;
         }
     }
 }

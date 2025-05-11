@@ -14,7 +14,7 @@ namespace Kventin.WebApi.Controllers
         private readonly IScheduleService _scheduleService = scheduleService;
 
         /// <summary>
-        /// Получить расписание на учебный год
+        /// Получить расписание на учебный год ("SuperUser, AdminSchedule")
         /// </summary>
         /// <param name="dto">Передается ScheduleDto</param>
         /// <returns>Возвращает ReturnScheduleDto - элементы (занятия) расписания</returns>
@@ -32,7 +32,7 @@ namespace Kventin.WebApi.Controllers
         }
 
         /// <summary>
-        /// Добавить элемент расписания
+        /// Добавить элемент расписания ("SuperUser, AdminSchedule")
         /// </summary>
         /// <param name="dto">AddScheduleItemDto</param>
         /// <returns></returns>
@@ -51,7 +51,7 @@ namespace Kventin.WebApi.Controllers
         }
 
         /// <summary>
-        /// Редактировать элемент расписания
+        /// Редактировать элемент расписания ("SuperUser, AdminSchedule")
         /// </summary>
         /// <param name="itemId">Id элемента расписания</param>
         /// <param name="dto">UpdateScheduleItemDto</param>
@@ -71,7 +71,7 @@ namespace Kventin.WebApi.Controllers
         }
 
         /// <summary>
-        /// Удалить элемент расписания
+        /// Удалить элемент расписания ("SuperUser, AdminSchedule")
         /// </summary>
         /// <param name="itemId">Id элемента расписания</param>
         /// <returns></returns>
@@ -84,7 +84,7 @@ namespace Kventin.WebApi.Controllers
         }
 
         /// <summary>
-        /// Создать сущность расписания
+        /// Создать сущность расписания ("SuperUser, AdminSchedule")
         /// </summary>
         /// <param name="dto">ScheduleDto</param>
         /// <returns></returns>

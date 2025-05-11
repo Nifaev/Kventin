@@ -1,8 +1,8 @@
 ﻿namespace Kventin.Services.Dtos.Users
 {
-    public class UsersRolesInfoDto
+    public class UserRoleInfoDto
     {
-        public int UserId { get; set; }
+        public required UserShortInfoDto User {  get; set; }
         public List<string> Roles { get; set; } = [];
     }
 }

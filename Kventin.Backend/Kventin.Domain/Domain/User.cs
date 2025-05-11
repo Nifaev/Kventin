@@ -63,6 +63,11 @@ namespace Kventin.DataAccess.Domain
         public List<StudyGroup> StudyGroups { get; set; } = [];
 
         /// <summary>
+        /// Гррупы, к которым прикреплен преподаватель
+        /// </summary>
+        public List<StudyGroup> TeacherStudyGroups { get; set; } = [];
+
+        /// <summary>
         /// Проведенные занятия (преподаватель)
         /// </summary>
         public List<Lesson> ConductedLessons { get; set; } = [];

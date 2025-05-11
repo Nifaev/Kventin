@@ -2,7 +2,7 @@
 {
     public class ReturnScheduleDto
     {
-        public int ScheduleId { get; set; }
+        public required int ScheduleId { get; set; }
         public List<ReturnScheduleItemDto> ScheduleItems { get; set; } = [];
     }
 }

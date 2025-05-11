@@ -1,6 +1,4 @@
-﻿using Kventin.DataAccess.Enums;
-
-namespace Kventin.Services.Dtos.Schedule
+﻿namespace Kventin.Services.Dtos.Schedule
 {
     public class ReturnScheduleItemDto
     {

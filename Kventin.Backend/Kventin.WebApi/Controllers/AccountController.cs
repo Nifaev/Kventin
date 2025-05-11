@@ -7,6 +7,7 @@ namespace Kventin.WebApi.Controllers
 {
     [ApiController]
     [Route("api/account")]
+    [Authorize]
     public class AccountController(IAccountService accountService,
         IAuthService authService) : ControllerBase
     {
@@ -14,12 +15,11 @@ namespace Kventin.WebApi.Controllers
         private readonly IAuthService _authService = authService;
 
         /// <summary>
-        /// Получить информацию для личного кабинета
+        /// Получить информацию для личного кабинета (Все авторизованные пользователи)
         /// </summary>
         /// <param name="userId"></param>
         /// <returns>Возвращает UserAccountInfoDto</returns>
         [HttpGet("{userId}/getAccountInfo")]
-        [Authorize]
         public async Task<ActionResult<UserAccountInfoDto>> GetUserAccountInfo(int userId)
         {
             var result = await _accountService.GetUserAccountInfo(userId);
@@ -29,20 +29,20 @@ namespace Kventin.WebApi.Controllers
 
         /// <summary>
         /// Обновить информацию о пользователе
-        /// (Superuser может редактировать всех пользователей,
-        /// AdminPersonalAccounts может редактировать всех, кроме Superuser,
+        /// (Все авторизованные пользователи, 
+        /// Superuser может редактировать всех пользователей,
+        /// AdminPersonalAccounts может редактировать всех, кроме SuperUser,
         /// Teacher/Student/Parent могут редактировать только свой профиль)
         /// </summary>
         /// <param name="userId"></param>
         /// <param name="dto">Передавать UpdateUserAccountInfoDto</param>
         /// <returns></returns>
-        [Authorize]
         [HttpPost("{userId}/updateAccountInfo")]
         public async Task<ActionResult> UpdateUserAccountInfo(int userId, UpdateUserAccountInfoDto dto)
         {
             var authorizedUserId = _authService.GetUserIdByCookie(Request.Cookies);
 
-            await _accountService.UpdateUserAccountInfo(dto, userId, authorizedUserId.UserId);
+            await _accountService.UpdateUserAccountInfo(Request.Cookies, dto, userId, authorizedUserId);
 
             return Ok();
         }

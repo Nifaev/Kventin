@@ -1,9 +1,7 @@
 ﻿using Kventin.DataAccess;
 using Kventin.DataAccess.Domain;
-using Kventin.Services.Dtos.Filters;
 using Kventin.Services.Dtos.Users;
 using Kventin.Services.Infrastructure.Exceptions;
-using Kventin.Services.Infrastructure.Extensions;
 using Kventin.Services.Interfaces.Services;
 using Microsoft.EntityFrameworkCore;
 
@@ -13,12 +11,12 @@ namespace Kventin.Services.Services
     {
         private readonly KventinContext _db = db;
 
-        public async Task<List<UserShortInfoDto>> GetAllStudentsShortInfo()
+        public async Task<List<UserShortInfoDto>> GetAllUsersShortInfoByRole(string rolename)
         {
             var studentsQuery = _db.Users
                 .Where(x => x.Roles
                     .Select(y => y.Name)
-                    .Contains("Student"));
+                    .Contains(rolename));
 
             var take = 50;
             var studentsCount = await studentsQuery.CountAsync();
@@ -33,19 +31,15 @@ namespace Kventin.Services.Services
                     .ToListAsync();
 
                 var dtos = students
-                    .Select(x => new UserShortInfoDto
-                    {
-                        UserId = x.Id,
-                        FirstName = x.FirstName,
-                        LastName = x.LastName,
-                        MiddleName = x.MiddleName,
-                        FullName = x.GetFullName(),
-                        ShortName = x.GetShortName()
-                    })
+                    .Select(x => new UserShortInfoDto(x))
                     .ToList();
 
                 result.AddRange(dtos);
             }
+
+            result = result
+                .OrderBy(x => x.FullName)
+                .ToList();
 
             return result;
         }
@@ -74,7 +68,7 @@ namespace Kventin.Services.Services
             await _db.SaveChangesAsync();
         }
 
-        public async Task<GetUsersChildrenDto> GetUsersChildren(int parentId)
+        public async Task<List<UserShortInfoDto>> GetUsersChildren(int parentId)
         {
             var children = await _db.Users
                 .Include(x => x.Children)
@@ -83,117 +77,133 @@ namespace Kventin.Services.Services
                 .ToListAsync();
 
             if (!children.Any())
-                return new GetUsersChildrenDto();
+                return new List<UserShortInfoDto>();
 
-            var childrenInfoDtos = children
-                .Select(x => new UserShortInfoDto
-                {
-                    UserId = x.Id,
-                    FirstName = x.FirstName,
-                    LastName = x.LastName,
-                    MiddleName = x.MiddleName,
-                    FullName = x.GetFullName(),
-                    ShortName = x.GetShortName(),
-                })
+            var result = children
+                .Select(x => new UserShortInfoDto(x))
                 .ToList();
 
-            return new GetUsersChildrenDto
-            {
-                Children = childrenInfoDtos
-            };
+            return result;
         }
 
-        public async Task<List<UserRoleDto>> GetAllRoles()
+        public async Task<List<string>> GetAllRoles()
         {
             var roles = await _db.Roles
-                .Select(x => new UserRoleDto { RoleName = x.Name })
+                .Select(x => x.Name)
                 .ToListAsync();
 
             return roles;
         }
 
-        public async Task SetUserRoles(int userId, List<UserRoleDto> dtos)
+        public async Task SetUserRoles(int authorizedUserId, int userId, List<string> rolenamesToAdd)
         {
-            var rolenames = dtos
-                .Select(x => x.RoleName)
-                .ToList();
+            var authorizedUser = await GetUserWithRolesByIdAsync(authorizedUserId);
 
-            var user = await GetUserWithRolesByIdAsync(userId) 
+            if (!authorizedUser!.IsSuperUser && authorizedUserId == userId)
+                throw new NoAccessException("Вы не можете менять свои роли");
+
+            if (!authorizedUser!.IsSuperUser && (rolenamesToAdd.Contains("SuperUser") || rolenamesToAdd.Any(x => x.Contains("Admin"))))
+                throw new NoAccessException("У вас недостаточно прав, чтобы назначить данные роли");
+
+            var user = await GetUserWithRolesByIdAsync(userId)
                 ?? throw new EntityNotFoundException("Пользователь с таким Id не найден");
-
-            if (!user.IsSuperUser && rolenames.Contains("SuperUser"))
-                throw new NoAccessException("У вас недостаточно прав, чтобы присвоить роль SuperUser");
 
             var userRolenames = user.Roles
                 .Select(x => x.Name)
                 .ToList();
 
-            var roles = await _db.Roles
-                .Where(x => rolenames.Contains(x.Name) &&
+            var rolesToAdd = await _db.Roles
+                .Where(x => rolenamesToAdd.Contains(x.Name) &&
                             !userRolenames.Contains(x.Name))
                 .ToListAsync();
 
-            if (roles.Count == 0)
+            if (rolesToAdd.Count == 0)
                 return;
 
-            user.Roles.AddRange(roles);
+            user.Roles.AddRange(rolesToAdd);
+
+            if (rolesToAdd.Any(x => x.Name == "SuperUser"))
+                user.IsSuperUser = true;
 
             await _db.SaveChangesAsync();
         }
 
-        public async Task DeleteUserRole(int userId, List<UserRoleDto> dtos)
+        public async Task DeleteUserRole(int authorizedUserId, int userId, List<string> rolenamesToDelete)
         {
-            var rolenames = dtos
-                .Select(x => x.RoleName)
-                .ToList();
+            var authorizedUser = await GetUserWithRolesByIdAsync(authorizedUserId);
+
+            if (!authorizedUser!.IsSuperUser && authorizedUserId == userId)
+                throw new NoAccessException("Вы не можете менять свои роли");
+
+            if (!authorizedUser!.IsSuperUser && (rolenamesToDelete.Contains("SuperUser") || rolenamesToDelete.Any(x => x.Contains("Admin"))))
+                throw new NoAccessException("У вас недостаточно прав, чтобы удалить данные роли");
 
             var user = await GetUserWithRolesByIdAsync(userId)
                 ?? throw new EntityNotFoundException("Пользователь с таким Id не найден");
 
-            if (!user.IsSuperUser && rolenames.Contains("SuperUser"))
-                throw new NoAccessException("У вас недостаточно прав, чтобы удалить роль SuperUser");
+            user.Roles.RemoveAll(x => rolenamesToDelete.Contains(x.Name));
 
-            user.Roles.RemoveAll(x => rolenames.Contains(x.Name));
+            if (rolenamesToDelete.Contains("SuperUser"))
+                user.IsSuperUser = false;
 
             await _db.SaveChangesAsync();
         }
 
-        public async Task<List<UserRoleDto>> GetUserRoles(int userId)
+        public async Task<List<string>> GetUserRoles(int userId)
         {
             var user = await GetUserWithRolesByIdAsync(userId)
                 ?? throw new EntityNotFoundException("Пользователь с таким Id не найден");
 
             var userRoles = user.Roles
-                .Select(x => new UserRoleDto { RoleName = x.Name })
+                .Select(x => x.Name)
                 .ToList();
 
             return userRoles;
         }
 
-        public async Task<List<UsersRolesInfoDto>> GetUsersWithRoles(BaseFilterDto filter, int userId)
+        public async Task<List<UserRoleInfoDto>> GetAllUsersWithRoles(int authorizedUserId)
         {
-            var isSuperUser = await _db.Users
-                .Where(x => x.Id == userId)
-                .Select(x => x.IsSuperUser)
-                .FirstOrDefaultAsync();
+            var result = new List<UserRoleInfoDto>();
 
-            var query = _db.Users.Where(x => x.Id != userId);
-
-            if (!isSuperUser)
-                query = query.Where(x => !x.IsSuperUser);
-
-            var dtos = await query
-                .OrderBy(x => x.Id)
-                .Skip(filter.Skip)
-                .Take(filter.Take)
-                .Select(x => new UsersRolesInfoDto
-                {
-                    UserId = x.Id,
-                    Roles = x.Roles.Select(x => x.Name).ToList()
-                })
+            var userRoles = await _db.Users
+                .Where(x => x.Id == authorizedUserId)
+                .SelectMany(x => x.Roles)
                 .ToListAsync();
 
-            return dtos;
+            var query = _db.Users
+                .Include(x => x.Roles)
+                .Where(x => x.Id != authorizedUserId);
+
+            if (userRoles.All(x => x.Name != "SuperUser"))
+                query = query.Where(x => x.Roles
+                    .All(y => !y.Name.Contains("Admin") && 
+                               y.Name != "SuperUser"));
+
+            var take = 50;
+            var usersCount = await query.CountAsync();
+            var pageCount = Math.Ceiling(usersCount / (double)take);
+
+            for (int pageNumber = 0; pageNumber < pageCount; pageNumber++)
+            {
+                var users = await query
+                    .Skip(pageNumber * take)
+                    .Take(take)
+                    .ToListAsync();
+
+                var dtos = users
+                    .Select(x => new UserRoleInfoDto
+                    {
+                        User = new UserShortInfoDto(x),
+                        Roles = x.Roles
+                            .Select(y => y.Name)
+                            .ToList()
+                    })
+                    .ToList();
+
+                result.AddRange(dtos);
+            }
+
+            return result;
         }
 
         private async Task<User?> GetUserWithRolesByIdAsync(int userId)

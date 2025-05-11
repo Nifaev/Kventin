@@ -2,7 +2,7 @@
 {
     public class TeacherExerciseShortInfoDto
     {
-        public int ExerciseId { get; set; }
+        public required int ExerciseId { get; set; }
         public DateTime? Deadline { get; set; }
         public required string Content { get; set; }
         public bool IsIndividual { get; set; }
