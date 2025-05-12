@@ -11,11 +11,20 @@ namespace Kventin.Services.Services
     {
         private readonly KventinContext _db = db;
 
-        public async Task<List<string>> GetAllRoles()
+        public async Task<List<string>> GetAllRoles(List<string> authorizedUserRolenames)
         {
-            var roles = await _db.Roles
-                .Select(x => x.Name)
-                .ToListAsync();
+            var roles = new List<string>();
+
+            if (authorizedUserRolenames.Contains("SuperUser"))
+                roles = await _db.Roles
+                    .Select(x => x.Name)
+                    .ToListAsync();
+            else
+                roles = await _db.Roles
+                    .Where(x => !x.Name.Contains("Admin") &&
+                                x.Name != "SuperUser")
+                    .Select(x => x.Name)
+                    .ToListAsync();
 
             return roles;
         }
