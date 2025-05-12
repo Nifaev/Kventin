@@ -124,14 +124,17 @@ namespace Kventin.WebApi.Controllers
         }
 
         /// <summary>
-        /// Получить все возможные роли (Все авторизованные пользователи)
+        /// Получить все роли, которые можно назначить (SuperUser, AdminRegistration)
+        /// SuperUser видит все роли. AdminRegistration видит только роли Student, Parent, Teacher
         /// </summary>
         /// <returns>Массив UserRoleDto - Список всех ролей в системе</returns>
-        [Authorize]
+        [Authorize(Roles = "SuperUser, AdminRegistration")]
         [HttpGet("getAllRoles")]
         public async Task<ActionResult<List<string>>> GetAllRoles()
         {
-            var result = await _roleService.GetAllRoles();
+            var userRoles = _authService.GetUserRolesByCookie(Request.Cookies);
+
+            var result = await _roleService.GetAllRoles(userRoles);
 
             return Ok(result);
         }
