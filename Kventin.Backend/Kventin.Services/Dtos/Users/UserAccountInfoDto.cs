@@ -1,8 +1,13 @@
-﻿namespace Kventin.Services.Dtos.Users
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace Kventin.Services.Dtos.Users
 {
     public class UserAccountInfoDto
     {
+        [Required]
         public required string FirstName { get; set; }
+
+        [Required]
         public required string LastName { get; set; }
         public string? MiddleName { get; set; }
         public string? Email { get; set; }

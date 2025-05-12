@@ -16,13 +16,22 @@ namespace Kventin.WebApi.Controllers
         /// </summary>
         /// <param name="subjectName">Название предмета</param>
         /// <returns></returns>
+        /// <response code="200">Успешно</response>
+        /// <response code="400">Ошибка (см. сообщение)</response>
         [Authorize(Roles = "SuperUser, AdminSchedule")]
         [HttpPost("create")]
         public async Task<ActionResult> CreateSubject(string subjectName)
         {
-            await _subjectService.CreateSubject(subjectName);
+            try
+            {
+                await _subjectService.CreateSubject(subjectName);
 
-            return Ok();
+                return Ok();
+            }
+            catch (Exception ex)
+            { 
+                return BadRequest(ex.Message);  
+            }
         }
 
         /// <summary>
@@ -41,13 +50,22 @@ namespace Kventin.WebApi.Controllers
         /// </summary>
         /// <param name="subjectId"></param>
         /// <returns></returns>
+        /// <response code="200">Успешно</response>
+        /// <response code="400">Ошибка (см. сообщение)</response>
         [HttpGet("{subjectId}")]
         [Authorize(Roles = "SuperUser, AdminSchedule")]
         public async Task<ActionResult<SubjectDto>> GetSubjectById(int subjectId)
         {
-            var result = await _subjectService.GetSubjectByid(subjectId);
+            try
+            {
+                var result = await _subjectService.GetSubjectByid(subjectId);
 
-            return Ok(result);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         /// <summary>
@@ -55,13 +73,22 @@ namespace Kventin.WebApi.Controllers
         /// </summary>
         /// <param name="subjectId"></param>
         /// <returns></returns>
+        /// <response code="200">Успешно</response>
+        /// <response code="400">Ошибка (см. сообщение)</response>
         [HttpDelete("{subjectId}/delete")]
         [Authorize(Roles = "SuperUser, AdminSchedule")]
         public async Task<ActionResult> DeleteSubjectById(int subjectId)
         {
-            await _subjectService.DeleteSubjectById(subjectId);
+            try
+            {
+                await _subjectService.DeleteSubjectById(subjectId);
 
-            return Ok();
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         /// <summary>
@@ -70,13 +97,22 @@ namespace Kventin.WebApi.Controllers
         /// <param name="subjectId"></param>
         /// <param name="newSubjectName"></param>
         /// <returns></returns>
+        /// <response code="200">Успешно</response>
+        /// <response code="400">Ошибка (см. сообщение)</response>
         [HttpPost("{subjectId}/update")]
         [Authorize(Roles = "SuperUser, AdminSchedule")]
         public async Task<ActionResult> UpdateSubjectById(int subjectId, string newSubjectName)
         {
-            await _subjectService.UpdateSubjectById(subjectId, newSubjectName);
+            try 
+            {
+                await _subjectService.UpdateSubjectById(subjectId, newSubjectName);
 
-            return Ok();
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
     }
 }

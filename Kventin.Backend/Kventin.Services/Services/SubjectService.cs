@@ -14,6 +14,9 @@ namespace Kventin.Services.Services
 
         public async Task CreateSubject(string subjectName)
         {
+            if (string.IsNullOrWhiteSpace(subjectName))
+                throw new ArgumentException("Нельзя создать предмет с пустым названием");
+
             var subject = new Subject { Name = subjectName };
 
             await _db.Subjects.AddAsync(subject);

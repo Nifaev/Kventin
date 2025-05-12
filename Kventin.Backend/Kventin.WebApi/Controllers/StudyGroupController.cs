@@ -16,6 +16,8 @@ namespace Kventin.WebApi.Controllers
         /// </summary>
         /// <param name="dto">Принимает CreateStudyGroupDto</param>
         /// <returns></returns>
+        /// <response code="200">Успешно</response>
+        /// <response code="400">Ошибка (см. сообщение)</response>
         [HttpPost("create")]
         [Authorize(Roles = "SuperUser, AdminGroups")]
         public async Task<ActionResult> CreateStudyGroup(CreateStudyGroupDto dto)
@@ -37,6 +39,8 @@ namespace Kventin.WebApi.Controllers
         /// </summary>
         /// <param name="studyGroupId">Id группы</param>
         /// <returns></returns>
+        /// <response code="200">Успешно</response>
+        /// <response code="400">Ошибка (см. сообщение)</response>
         [HttpDelete("{studyGroupId}/delete")]
         [Authorize(Roles = "SuperUser, AdminGroups")]
         public async Task<ActionResult> DeleteStudyGroupById(int studyGroupId)
@@ -59,6 +63,8 @@ namespace Kventin.WebApi.Controllers
         /// <param name="studyGroupId">Id группы</param>
         /// <param name="dto">Принимает UpdateStudyGroupDto</param>
         /// <returns></returns>
+        /// <response code="200">Успешно</response>
+        /// <response code="400">Ошибка (см. сообщение)</response>
         [HttpPost("{studyGroupId}/update")]
         [Authorize(Roles = "SuperUser, AdminGroups")]
         public async Task<ActionResult> UpdateStudyGroupById(int studyGroupId, UpdateStudyGroupDto dto)
@@ -80,6 +86,8 @@ namespace Kventin.WebApi.Controllers
         /// </summary>
         /// <param name="studyGroupId">Id группы</param>
         /// <returns></returns>
+        /// <response code="200">Успешно</response>
+        /// <response code="400">Ошибка (см. сообщение)</response>
         [HttpGet("{studyGroupId}")]
         [Authorize]
         public async Task<ActionResult<StudyGroupFullInfoDto>> GetStudyGroupInfoById(int studyGroupId)
@@ -100,6 +108,8 @@ namespace Kventin.WebApi.Controllers
         /// Получить список всех групп (SuperUser, AdminGroups)
         /// </summary>
         /// <returns>Возвращает массив StudyGroupShortInfoDto</returns>
+        /// <response code="200">Успешно</response>
+        /// <response code="400">Ошибка (см. сообщение)</response>
         [HttpGet("all")]
         [Authorize(Roles = "SuperUser, AdminGroups")]
         public async Task<ActionResult<List<StudyGroupShortInfoDto>>> GetAllStudyGroupsShortInfo()
@@ -122,6 +132,8 @@ namespace Kventin.WebApi.Controllers
         /// <param name="studyGroupId">Id группы</param>
         /// <param name="studentId">Id ученика</param>
         /// <returns></returns>
+        /// <response code="200">Успешно</response>
+        /// <response code="400">Ошибка (см. сообщение)</response>
         [HttpPost("{studyGroupId}/addStudent")]
         [Authorize(Roles = "SuperUser, AdminGroups")]
         public async Task<ActionResult> AddStudentToStudyGroup(int studyGroupId, int studentId)
@@ -144,6 +156,8 @@ namespace Kventin.WebApi.Controllers
         /// <param name="studyGroupId">Id группы</param>
         /// <param name="studentId">Id ученика</param>
         /// <returns></returns>
+        /// <response code="200">Успешно</response>
+        /// <response code="400">Ошибка (см. сообщение)</response>
         [HttpDelete("{studyGroupId}/deleteStudent")]
         [Authorize(Roles = "SuperUser, AdminGroups")]
         public async Task<ActionResult> DeleteStudentFromStudyGroup(int studyGroupId, int studentId)

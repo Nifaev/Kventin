@@ -19,13 +19,23 @@ namespace Kventin.WebApi.Controllers
         /// </summary>
         /// <param name="userId"></param>
         /// <returns>Возвращает UserAccountInfoDto</returns>
+        /// <response code="200">Успешно</response>
+        /// <response code="400">Ошибка (см. сообщение)</response>
         [HttpGet("{userId}/getAccountInfo")]
         public async Task<ActionResult<UserAccountInfoDto>> GetUserAccountInfo(int userId)
         {
-            var result = await _accountService.GetUserAccountInfo(userId);
+            try
+            {
+                var result = await _accountService.GetUserAccountInfo(userId);
 
-            return Ok(result);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
+
 
         /// <summary>
         /// Обновить информацию о пользователе
@@ -37,14 +47,23 @@ namespace Kventin.WebApi.Controllers
         /// <param name="userId"></param>
         /// <param name="dto">Передавать UpdateUserAccountInfoDto</param>
         /// <returns></returns>
+        /// <response code="200">Успешно</response>
+        /// <response code="400">Ошибка (см. сообщение)</response>
         [HttpPost("{userId}/updateAccountInfo")]
         public async Task<ActionResult> UpdateUserAccountInfo(int userId, UpdateUserAccountInfoDto dto)
         {
-            var authorizedUserId = _authService.GetUserIdByCookie(Request.Cookies);
+            try
+            {
+                var authorizedUserId = _authService.GetUserIdByCookie(Request.Cookies);
 
-            await _accountService.UpdateUserAccountInfo(Request.Cookies, dto, userId, authorizedUserId);
+                await _accountService.UpdateUserAccountInfo(Request.Cookies, dto, userId, authorizedUserId);
 
-            return Ok();
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
     }
 }

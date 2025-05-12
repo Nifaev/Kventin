@@ -85,7 +85,10 @@ namespace Kventin.Services.Services
             var verified = _passwordHasher.Verify(dto.Password, hashedPassword);
 
             if (!verified)
-                throw new AuthException("Неправильный пароль");
+                throw new ArgumentException("Неправильный пароль");
+
+            if (!rolenames.Any())
+                throw new AuthException("Дождитесь, пока администратор подтвердит вашу регистрацию");
 
             var token = _jwtProvider.GenerateToken(userId, login, rolenames);
 
@@ -94,6 +97,9 @@ namespace Kventin.Services.Services
 
         public async Task Register(RegisterDto dto)
         {
+            if (dto.Password.CompareTo(dto.PasswordConfirmation) != 0)
+                throw new ArgumentException("Пароли не совпадают");
+
             var hashedPassword = _passwordHasher.Generate(dto.Password);
 
             var shortPhoneNumber = GetShortPhoneNumber(dto.PhoneNumber);
@@ -106,10 +112,10 @@ namespace Kventin.Services.Services
                                                                 x.Email.CompareTo(dto.Email) == 0);
 
             if (!isUniquePhoneNumber)
-                throw new AuthException("Пользователь с таким номером телефона уже существует");
+                throw new ArgumentException("Пользователь с таким номером телефона уже существует");
 
             if (!isUniqueEmail)
-                throw new AuthException("Пользователь с такой эл. почтой уже существует");
+                throw new ArgumentException("Пользователь с такой эл. почтой уже существует");
 
             var user = new User
             {
