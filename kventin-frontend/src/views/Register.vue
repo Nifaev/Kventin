@@ -5,146 +5,144 @@
       <form @submit.prevent="register">
         <div class="input-group">
           <label for="firstName">Имя</label>
-          <input v-model="firstName" type="text" id="firstName" required />
+          <input v-model="registerData.firstName" type="text" id="firstName" required />
         </div>
         <div class="input-group">
           <label for="lastName">Фамилия</label>
-          <input v-model="lastName" type="text" id="lastName" required />
+          <input v-model="registerData.lastName" type="text" id="lastName" required />
         </div>
         <div class="input-group">
           <label for="middleName">Отчество</label>
-          <input v-model="middleName" type="text" id="middleName" required />
+          <input v-model="registerData.middleName" type="text" id="middleName" required />
         </div>
         <div class="input-group">
           <label for="phoneNumber">Телефон</label>
-          <input v-model="phoneNumber" v-mask="'+7 (###) ###-##-##'" type="tel" id="phoneNumber" required />
+          <input
+            v-model="registerData.phoneNumber"
+            type="tel"
+            id="phoneNumber"
+            required
+          />
         </div>
         <div class="input-group">
           <label for="email">Email</label>
-          <input v-model="email" type="email" id="email" required />
+          <input v-model="registerData.email" type="email" id="email" required />
         </div>
         <div class="input-group">
           <label for="password">Пароль</label>
-          <input v-model="password" type="password" id="password" required />
+          <input v-model="registerData.password" type="password" id="password" required />
         </div>
         <div class="input-group">
-          <label for="confirmPassword">Повторите пароль</label>
-          <input v-model="confirmPassword" type="password" id="confirmPassword" required />
+          <label for="passwordConfirmation">Повторите пароль</label>
+          <input
+            v-model="registerData.passwordConfirmation"
+            type="password"
+            id="passwordConfirmation"
+            required
+          />
         </div>
         <button type="submit">Зарегистрироваться</button>
       </form>
+
       <p v-if="errorMessage" class="error">{{ errorMessage }}</p>
       <p v-if="successMessage" class="success">{{ successMessage }}</p>
     </div>
   </div>
 </template>
 
-<script>
+<script setup>
+import { reactive, ref } from 'vue';
 import axios from 'axios';
+import { useRouter } from 'vue-router';
 
-export default {
-  data() {
-    return {
-      firstName: '',
-      lastName: '',
-      middleName: '',
-      phoneNumber: '',
-      email: '',
-      password: '',
-      confirmPassword: '',
-      errorMessage: '',
-      successMessage: ''
-    };
-  },
-  methods: {
-    async register() {
-      // Проверка совпадения пароля
-      if (this.password !== this.confirmPassword) {
-        this.errorMessage = 'Пароли не совпадают!';
-        this.successMessage = '';
-        return;
-      }
+const router = useRouter();
+const errorMessage   = ref('');
+const successMessage = ref('');
 
-      try {
-        const response = await axios.post('/api/auth/register', {
-          firstName: this.firstName,
-          lastName: this.lastName,
-          middleName: this.middleName,
-          phoneNumber: this.phoneNumber,
-          email: this.email,
-          password: this.password
-        });
-        console.log('Регистрация успешна:', response.data);
-        this.successMessage = "Вы успешно зарегистрировались!";
-        this.errorMessage = "";
-        // Перенаправление на личный кабинет
-        setTimeout(() => this.$router.push('/dashboard'), 2000);
-      } catch (error) {
-        this.errorMessage = 'Ошибка регистрации. Проверьте данные.';
-        this.successMessage = "";
-        console.error(error);
-      }
+// Тело запроса соответствует Swagger RegisterDto
+const registerData = reactive({
+  firstName:            '',
+  lastName:             '',
+  middleName:           '',
+  phoneNumber:          '',
+  password:             '',
+  passwordConfirmation: '',
+  email:                ''
+});
+
+const register = async () => {
+  errorMessage.value   = '';
+  successMessage.value = '';
+
+  try {
+    await axios.post('/api/auth/register', registerData);
+    // после успешной регистрации переходим на логин с флагом ожидания
+    router.push({ path: '/', query: { pendingConfirm: '1' } });
+  } catch (err) {
+    const data = err.response?.data;
+    if (data?.errors) {
+      // ASP.NET-стиль ValidationErrors
+      const arr = Object.values(data.errors).flat();
+      errorMessage.value = arr.join('. ');
+    } else if (data?.message) {
+      errorMessage.value = data.message;
+    } else {
+      errorMessage.value = 'Ошибка регистрации. Проверьте данные.';
     }
+    console.error(err);
   }
 };
 </script>
 
-<style>
+<style scoped>
 .register-container {
   display: flex;
+  height: 100vh;
   justify-content: center;
   align-items: center;
-  height: 100vh;
   background: #f9fafb;
 }
-
 .register-box {
-  background: white;
-  padding: 20px;
+  background: #fff;
+  padding: 24px;
   border-radius: 10px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  width: 350px;
+  width: 360px;
   text-align: center;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
 }
-
 .input-group {
-  margin-bottom: 15px;
+  margin-bottom: 16px;
+  text-align: left;
 }
-
 .input-group label {
   display: block;
-  font-weight: bold;
-  margin-bottom: 5px;
+  font-weight: 600;
+  margin-bottom: 4px;
 }
-
 .input-group input {
   width: 100%;
   padding: 8px;
   border: 1px solid #ccc;
   border-radius: 5px;
 }
-
-button {
+button[type="submit"] {
+  width: 100%;
+  padding: 10px;
   background: #4caf50;
   color: white;
-  padding: 10px;
   border: none;
   border-radius: 5px;
   cursor: pointer;
-  width: 100%;
 }
-
-button:hover {
+button[type="submit"]:hover {
   background: #45a049;
 }
-
 .error {
-  color: red;
-  margin-top: 10px;
+  margin-top: 12px;
+  color: #d32f2f;
 }
-
 .success {
-  color: green;
-  margin-top: 10px;
+  margin-top: 12px;
+  color: #388e3c;
 }
 </style>

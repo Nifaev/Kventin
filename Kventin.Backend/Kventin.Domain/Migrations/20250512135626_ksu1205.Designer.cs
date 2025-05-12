@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Kventin.DataAccess.Migrations
 {
     [DbContext(typeof(KventinContext))]
-    [Migration("20250317191520_ForLessons")]
-    partial class ForLessons
+    [Migration("20250512135626_ksu1205")]
+    partial class ksu1205
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -669,9 +669,14 @@ namespace Kventin.DataAccess.Migrations
                     b.Property<int>("SubjectId")
                         .HasColumnType("int");
 
+                    b.Property<int>("TeacherId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
                     b.HasIndex("SubjectId");
+
+                    b.HasIndex("TeacherId");
 
                     b.ToTable("StudyGroups");
                 });
@@ -1181,7 +1186,15 @@ namespace Kventin.DataAccess.Migrations
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
+                    b.HasOne("Kventin.DataAccess.Domain.User", "Teacher")
+                        .WithMany("TeacherStudyGroups")
+                        .HasForeignKey("TeacherId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
                     b.Navigation("Subject");
+
+                    b.Navigation("Teacher");
                 });
 
             modelBuilder.Entity("Kventin.DataAccess.Domain.TuitionPayment", b =>
@@ -1348,6 +1361,8 @@ namespace Kventin.DataAccess.Migrations
                     b.Navigation("SentMessages");
 
                     b.Navigation("StudentActivities");
+
+                    b.Navigation("TeacherStudyGroups");
 
                     b.Navigation("TuitionPayment");
                 });

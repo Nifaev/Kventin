@@ -4,25 +4,37 @@
       <img src="/images/header-image.png" alt="КВЕНТИН" class="logo-img" />
     </div>
     <ul class="nav-links">
-      <li>
-        <router-link to="/grades" active-class="active-link">Оценки</router-link>
-      </li>
-      <li>
-        <router-link to="/announcements" active-class="active-link">Объявления</router-link>
-      </li>
-      <li>
-        <router-link to="/messages" active-class="active-link">Сообщения</router-link>
-      </li>
-      <li>
-        <router-link to="/schedule" active-class="active-link">Расписание</router-link>
-      </li>
-      <li>
-        <router-link to="/dashboard" active-class="active-link">Личный кабинет</router-link>
+      <li><router-link to="/grades"       active-class="active-link">Оценки</router-link></li>
+      <li><router-link to="/announcements" active-class="active-link">Объявления</router-link></li>
+      <li><router-link to="/messages"     active-class="active-link">Сообщения</router-link></li>
+      <li><router-link to="/schedule"     active-class="active-link">Расписание</router-link></li>
+      <li><router-link to="/dashboard"    active-class="active-link">Личный кабинет</router-link></li>
+      <!-- Показываем этот пункт только если isAdminOrSuper == true -->
+      <li v-if="isAdminOrSuper">
+        <router-link to="/roles" active-class="active-link">Роли</router-link>
       </li>
     </ul>
     <div class="nav-divider"></div>
   </nav>
 </template>
+
+<script setup>
+import { ref, onMounted } from 'vue';
+import axios from 'axios';
+
+const isAdminOrSuper = ref(false);
+
+onMounted(async () => {
+  try {
+    const { data } = await axios.get('/api/roles/getMyRoles');
+    // data — массив строк, например ['Student'], или ['AdminRegistration', ...]
+    isAdminOrSuper.value = data.includes('AdminRegistration')
+                         || data.includes('SuperUser');
+  } catch (e) {
+    console.error('Не удалось узнать роли', e);
+  }
+});
+</script>
 
 <style>
 .navbar {
