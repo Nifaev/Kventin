@@ -1,8 +1,6 @@
 ﻿using Kventin.DataAccess.Domain;
 using Kventin.DataAccess.Mappings;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Diagnostics;
-using Microsoft.Extensions.Options;
 
 namespace Kventin.DataAccess
 {

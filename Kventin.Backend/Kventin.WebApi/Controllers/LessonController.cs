@@ -14,16 +14,16 @@ namespace Kventin.WebApi.Controllers
         private readonly ILessonService _lessonService = lessonService;
         private readonly IAuthService _authService = authService;
 
-        [Authorize(Roles = "Teacher, Superuser")]
+        [Authorize(Roles = "Teacher, SuperUser")]
         [HttpGet]
         [Route("/{lessonId}/teacher")]
         public async Task<ActionResult<GetLessonInfoForTeacherDto>> GetTeacherLessonInfo(int lessonId)
         {
-            var userIdDto = _authService.GetUserIdByCookie(Request.Cookies);
+            var userId = _authService.GetUserIdByCookie(Request.Cookies);
             
             try
             {
-                var result = await _lessonService.GetTeacherLessonInfo(lessonId, userIdDto.UserId);
+                var result = await _lessonService.GetTeacherLessonInfo(lessonId, userId);
 
                 return Ok(result);
             }
@@ -42,11 +42,11 @@ namespace Kventin.WebApi.Controllers
         [HttpGet]
         public async Task<ActionResult<GetLessonInfoForStudentOrParentDto>> GetStudentOrParentLessonInfo(int lessonId)
         {
-            var userIdDto = _authService.GetUserIdByCookie(Request.Cookies);
+            var userId = _authService.GetUserIdByCookie(Request.Cookies);
 
             try
             {
-                var result = await _lessonService.GetStudentOrParentLessonInfo(lessonId, userIdDto.UserId);
+                var result = await _lessonService.GetStudentOrParentLessonInfo(lessonId, userId);
                 return Ok(result);
             }
             catch (EntityNotFoundException ex)

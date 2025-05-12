@@ -6,6 +6,6 @@ namespace Kventin.Services.Dtos.Lessons
     {
         public List<StudentExerciseShortInfoDto> Exercises { get; set; } = [];
         public StudentLessonDto? StudentLessonInfo { get; set; }
-        public bool Attended { get; set; }
+        public required bool Attended { get; set; }
     }
 }

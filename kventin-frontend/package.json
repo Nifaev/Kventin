@@ -15,7 +15,7 @@
     "vue-the-mask": "^0.11.1"
   },
   "devDependencies": {
-    "@vitejs/plugin-vue": "^5.2.1",
+    "@vitejs/plugin-vue": "^5.2.4",
     "vite": "^6.2.0"
   }
 }

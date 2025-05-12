@@ -19,12 +19,35 @@ namespace Kventin.Services.Services
         private readonly IPasswordHasher _passwordHasher = passwordHasher;
         private readonly IJwtProvider _jwtProvider = jwtProvider;
 
+        public async Task<string> GetNewCookieWithChildId(IRequestCookieCollection cookie, int parentId, int childId)
+        {
+            var parent = await _db.Users
+                .FirstOrDefaultAsync(x => x.Id == parentId &&
+                                          x.Children.Any(y => y.Id == childId));
+
+            if (parent == null)
+                throw new EntityNotFoundException("Родитель с таким Id не является родителем переданного ребенка");
+
+            var token = cookie["choco-cookies"] ?? string.Empty;
+
+            var userLogin = _jwtProvider.GetUserLoginByToken(token);
+
+            var userRoles = _jwtProvider.GetUserRolesByToken(token);
+
+            if (userLogin != null && userRoles != null)
+            {
+                token = _jwtProvider.GenerateToken(parentId, userLogin, userRoles, childId);
+            }
+
+            return token;
+        }
+
         public async Task<string> Login(LoginDto dto)
         {
             var hashedPassword = string.Empty;
             var login = string.Empty;
             var userId = 0;
-            var roles = new List<Role>();
+            var rolenames = new List<string>();
 
             if (dto.PhoneNumber != null)
             {
@@ -38,7 +61,7 @@ namespace Kventin.Services.Services
                     ?? throw new EntityNotFoundException("Пользователь с таким номером телефона не зарегистрирован");
 
                 hashedPassword = userData.HashedPassword;
-                roles = userData.Roles;
+                rolenames = userData.Roles.Select(x => x.Name).ToList();
                 login = shortPhoneNumber;
                 userId = userData.Id;
             }
@@ -53,7 +76,7 @@ namespace Kventin.Services.Services
                     ?? throw new EntityNotFoundException("Пользователь с такой эл. почтой не зарегистрирован");
 
                 hashedPassword = userData.HashedPassword;
-                roles = userData.Roles;
+                rolenames = userData.Roles.Select(x => x.Name).ToList();
                 userId = userData.Id;
                 login = dto.Email;
             }
@@ -62,15 +85,21 @@ namespace Kventin.Services.Services
             var verified = _passwordHasher.Verify(dto.Password, hashedPassword);
 
             if (!verified)
-                throw new AuthException("Неправильный пароль");
+                throw new ArgumentException("Неправильный пароль");
 
-            var token = _jwtProvider.GenerateToken(userId, login, roles);
+            if (!rolenames.Any())
+                throw new AuthException("Дождитесь, пока администратор подтвердит вашу регистрацию");
+
+            var token = _jwtProvider.GenerateToken(userId, login, rolenames);
 
             return token;
         }
 
         public async Task Register(RegisterDto dto)
         {
+            if (dto.Password.CompareTo(dto.PasswordConfirmation) != 0)
+                throw new ArgumentException("Пароли не совпадают");
+
             var hashedPassword = _passwordHasher.Generate(dto.Password);
 
             var shortPhoneNumber = GetShortPhoneNumber(dto.PhoneNumber);
@@ -83,10 +112,10 @@ namespace Kventin.Services.Services
                                                                 x.Email.CompareTo(dto.Email) == 0);
 
             if (!isUniquePhoneNumber)
-                throw new AuthException("Пользователь с таким номером телефона уже существует");
+                throw new ArgumentException("Пользователь с таким номером телефона уже существует");
 
             if (!isUniqueEmail)
-                throw new AuthException("Пользователь с такой эл. почтой уже существует");
+                throw new ArgumentException("Пользователь с такой эл. почтой уже существует");
 
             var user = new User
             {
@@ -102,7 +131,7 @@ namespace Kventin.Services.Services
             await _db.SaveChangesAsync();
         }
 
-        public UserIdDto GetUserIdByCookie(IRequestCookieCollection cookie)
+        public int GetUserIdByCookie(IRequestCookieCollection cookie)
         {
             var token = cookie["choco-cookies"] ?? string.Empty;
 
@@ -125,6 +154,15 @@ namespace Kventin.Services.Services
                 shortPhoneNumber = phoneNumber.Substring(2);
 
             return shortPhoneNumber;
+        }
+
+        public List<string> GetUserRolesByCookie(IRequestCookieCollection cookie)
+        {
+            var token = cookie["choco-cookies"] ?? string.Empty;
+
+            var roles = _jwtProvider.GetUserRolesByToken(token);
+
+            return roles;
         }
     }
 }

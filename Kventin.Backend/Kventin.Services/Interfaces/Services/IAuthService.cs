@@ -8,6 +8,8 @@ namespace Kventin.Services.Interfaces.Services
     {
         public Task Register(RegisterDto dto);
         public Task<string> Login(LoginDto dto);
-        UserIdDto GetUserIdByCookie(IRequestCookieCollection cookie);
+        public int GetUserIdByCookie(IRequestCookieCollection cookie);
+        public List<string> GetUserRolesByCookie(IRequestCookieCollection cookie);
+        public Task<string> GetNewCookieWithChildId(IRequestCookieCollection cookie, int parentId, int childId);
     }
 }

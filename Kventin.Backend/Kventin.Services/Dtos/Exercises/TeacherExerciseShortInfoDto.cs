@@ -1,10 +1,18 @@
-﻿namespace Kventin.Services.Dtos.Exercises
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace Kventin.Services.Dtos.Exercises
 {
     public class TeacherExerciseShortInfoDto
     {
-        public int ExerciseId { get; set; }
+        [Required]
+        public required int ExerciseId { get; set; }
+
         public DateTime? Deadline { get; set; }
+
+        [Required]
         public required string Content { get; set; }
+
+        [Required]
         public bool IsIndividual { get; set; }
 
         /// <summary>

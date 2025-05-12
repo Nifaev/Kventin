@@ -2,6 +2,7 @@
 using Kventin.DataAccess.Domain;
 using Kventin.DataAccess.Enums;
 using Kventin.Services.Dtos.Schedule;
+using Kventin.Services.Dtos.Users;
 using Kventin.Services.Infrastructure.Exceptions;
 using Kventin.Services.Infrastructure.Extensions;
 using Kventin.Services.Interfaces.Services;
@@ -58,7 +59,7 @@ namespace Kventin.Services.Services
                     StartTime = x.StartTime,
                     EndTime = x.EndTime,
                     Classroom = x.Classroom,
-                    TeacherShortName = x.Teacher.GetShortName(),
+                    Teacher = new UserShortInfoDto(x.Teacher),
                     SubjectName = x.Subject.Name,
                     IsOnline = x.IsOnline,
                     GroupName = x.StudyGroup.Name

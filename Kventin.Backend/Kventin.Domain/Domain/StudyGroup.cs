@@ -15,12 +15,22 @@ namespace Kventin.DataAccess.Domain
         /// <summary>
         /// Id предмета
         /// </summary>
-        public int SubjectId { get; set; }
+        public required int SubjectId { get; set; }
 
         /// <summary>
         /// Предмет
         /// </summary>
         public required Subject Subject { get; set; }
+
+        /// <summary>
+        /// Id преподавателя
+        /// </summary>
+        public required int TeacherId { get; set; }
+
+        /// <summary>
+        /// Преподаватель
+        /// </summary>
+        public required User Teacher { get; set; }
         
         /// <summary>
         /// Ученики

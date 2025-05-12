@@ -19,6 +19,9 @@ namespace Kventin.Services.Dtos.Auth
         [Required]
         public required string Password { get; set; }
 
+        [Required]
+        public required string PasswordConfirmation { get; set; }
+
         [EmailAddress]
         public string? Email { get; set; }
     }

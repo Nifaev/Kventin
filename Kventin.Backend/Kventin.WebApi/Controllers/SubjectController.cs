@@ -1,4 +1,4 @@
-﻿using Kventin.Services.Dtos;
+﻿using Kventin.Services.Dtos.Subjects;
 using Kventin.Services.Interfaces.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -6,40 +6,113 @@ using Microsoft.AspNetCore.Mvc;
 namespace Kventin.WebApi.Controllers
 {
     [ApiController]
-    //[Authorize(Roles = "SuperUser, AdminSchedule")]
     [Route("api/subject")]
     public class SubjectController(ISubjectService subjectService) : ControllerBase
     {
         private readonly ISubjectService _subjectService = subjectService;
 
+        /// <summary>
+        /// Создать предмет (SuperUser, AdminSchedule)
+        /// </summary>
+        /// <param name="subjectName">Название предмета</param>
+        /// <returns></returns>
+        /// <response code="200">Успешно</response>
+        /// <response code="400">Ошибка (см. сообщение)</response>
+        [Authorize(Roles = "SuperUser, AdminSchedule")]
         [HttpPost("create")]
-        public async Task<ActionResult> CreateSubject(SubjectDto dto)
+        public async Task<ActionResult> CreateSubject(string subjectName)
         {
-            await _subjectService.CreateSubject(dto);
+            try
+            {
+                await _subjectService.CreateSubject(subjectName);
 
-            return Ok();
+                return Ok();
+            }
+            catch (Exception ex)
+            { 
+                return BadRequest(ex.Message);  
+            }
         }
 
+        /// <summary>
+        /// Получить все предметы (Все авторизованные пользователи)
+        /// </summary>
+        /// <returns></returns>
         [HttpGet("all")]
+        [Authorize]
         public async Task<ActionResult<List<SubjectDto>>> GetAllSubjects()
         {
             return await _subjectService.GetAllSubjects();
         }
 
-        [HttpGet("{id}")]
-        public async Task<ActionResult<SubjectDto>> GetSubjectById(int id)
+        /// <summary>
+        /// Получить предмет по Id (SuperUser, AdminSchedule)
+        /// </summary>
+        /// <param name="subjectId"></param>
+        /// <returns></returns>
+        /// <response code="200">Успешно</response>
+        /// <response code="400">Ошибка (см. сообщение)</response>
+        [HttpGet("{subjectId}")]
+        [Authorize(Roles = "SuperUser, AdminSchedule")]
+        public async Task<ActionResult<SubjectDto>> GetSubjectById(int subjectId)
         {
-            var result = await _subjectService.GetSubjectByid(id);
+            try
+            {
+                var result = await _subjectService.GetSubjectByid(subjectId);
 
-            return Ok(result);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
-        [HttpDelete("{id}")]
-        public async Task<ActionResult> DeleteSubjectById(int id)
+        /// <summary>
+        /// Удалить предмет по Id (SuperUser, AdminSchedule)
+        /// </summary>
+        /// <param name="subjectId"></param>
+        /// <returns></returns>
+        /// <response code="200">Успешно</response>
+        /// <response code="400">Ошибка (см. сообщение)</response>
+        [HttpDelete("{subjectId}/delete")]
+        [Authorize(Roles = "SuperUser, AdminSchedule")]
+        public async Task<ActionResult> DeleteSubjectById(int subjectId)
         {
-            await _subjectService.DeleteSubjectById(id);
+            try
+            {
+                await _subjectService.DeleteSubjectById(subjectId);
 
-            return Ok();
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Изменить предмет по Id (SuperUser, AdminSchedule)
+        /// </summary>
+        /// <param name="subjectId"></param>
+        /// <param name="newSubjectName"></param>
+        /// <returns></returns>
+        /// <response code="200">Успешно</response>
+        /// <response code="400">Ошибка (см. сообщение)</response>
+        [HttpPost("{subjectId}/update")]
+        [Authorize(Roles = "SuperUser, AdminSchedule")]
+        public async Task<ActionResult> UpdateSubjectById(int subjectId, string newSubjectName)
+        {
+            try 
+            {
+                await _subjectService.UpdateSubjectById(subjectId, newSubjectName);
+
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
     }
 }

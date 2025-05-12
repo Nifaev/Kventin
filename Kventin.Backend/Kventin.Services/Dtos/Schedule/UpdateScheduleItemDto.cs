@@ -1,5 +1,4 @@
-﻿using Kventin.DataAccess.Domain;
-using Kventin.DataAccess.Enums;
+﻿using Kventin.DataAccess.Enums;
 
 namespace Kventin.Services.Dtos.Schedule
 {

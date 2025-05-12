@@ -1,17 +1,33 @@
 ﻿using Kventin.DataAccess.Enums;
+using System.ComponentModel.DataAnnotations;
 
 namespace Kventin.Services.Dtos.Schedule
 {
     public class AddScheduleItemDto
     {
-        public DayOfTheWeek DayOfWeek { get; set; }
-        public TimeOnly StartTime { get; set; }
-        public TimeOnly EndTime { get; set; }
+        [Required]
+        public required DayOfTheWeek DayOfWeek { get; set; }
+
+        [Required]
+        public required TimeOnly StartTime { get; set; }
+
+        [Required]
+        public required TimeOnly EndTime { get; set; }
         public string? Classroom { get; set; }
-        public int TeacherId { get; set; }
-        public int GroupId { get; set; }
-        public int SubjectId { get; set; }
-        public int ScheduleId { get; set; }
-        public bool IsOnline { get; set; }
+
+        [Required]
+        public required int TeacherId { get; set; }
+
+        [Required]
+        public required int GroupId { get; set; }
+
+        [Required]
+        public required int SubjectId { get; set; }
+
+        [Required]
+        public required int ScheduleId { get; set; }
+
+        [Required]
+        public required bool IsOnline { get; set; }
     }
 }

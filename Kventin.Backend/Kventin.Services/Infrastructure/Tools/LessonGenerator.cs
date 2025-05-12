@@ -78,20 +78,20 @@ namespace Kventin.Services.Infrastructure.Tools
                 if (lessonIntoWeekCreated && lessonIntoTwoWeeksCreated)
                     continue;
                 else if (lessonIntoWeekCreated)
-                    MapScheduleItemToLesson(scheduleItem, intoTwoWeeks);
+                    await MapScheduleItemToLesson(scheduleItem, intoTwoWeeks);
                 else if (lessonIntoTwoWeeksCreated)
-                    MapScheduleItemToLesson(scheduleItem, intoWeek);
+                    await MapScheduleItemToLesson(scheduleItem, intoWeek);
                 else
                 {
-                    MapScheduleItemToLesson(scheduleItem, intoWeek);
-                    MapScheduleItemToLesson(scheduleItem, intoTwoWeeks);
+                    await MapScheduleItemToLesson(scheduleItem, intoWeek);
+                    await MapScheduleItemToLesson(scheduleItem, intoTwoWeeks);
                 }
             }
 
             await _db.SaveChangesAsync();
         }
 
-        private void MapScheduleItemToLesson(ScheduleItem scheduleItem, DateOnly lessonDate)
+        private async Task MapScheduleItemToLesson(ScheduleItem scheduleItem, DateOnly lessonDate)
         {
             var lesson = new Lesson()
             {
@@ -107,7 +107,7 @@ namespace Kventin.Services.Infrastructure.Tools
                 ScheduleItem = scheduleItem,
             };
 
-            _db.Lessons.Add(lesson);
+            await _db.Lessons.AddAsync(lesson);
 
             scheduleItem.Lessons.Add(lesson);
         }

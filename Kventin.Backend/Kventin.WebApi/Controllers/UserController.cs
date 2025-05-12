@@ -1,6 +1,4 @@
-﻿using Kventin.Services.Dtos.Filters;
-using Kventin.Services.Dtos.Users;
-using Kventin.Services.Infrastructure.Exceptions;
+﻿using Kventin.Services.Dtos.Users;
 using Kventin.Services.Interfaces.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -16,107 +14,12 @@ namespace Kventin.WebApi.Controllers
         private readonly IAuthService _authService = authService;
 
         /// <summary>
-        /// Назначить роли пользователю (SuperUser, AdminRegistration)
-        /// Пользователь с ролью AdminRegistration не может назначать роль SuperUser
-        /// </summary>
-        /// <param name="userId">Id пользователя</param>
-        /// <param name="dtos">Принимает массив UserRoleDto</param>
-        /// <returns></returns>
-        [Authorize(Roles = "SuperUser, AdminRegistration")]
-        [HttpPost("{userId}/setRoles")]
-        public async Task<ActionResult> SetRoles(int userId, List<UserRoleDto> dtos)
-        {
-            try
-            {
-                await _userService.SetUserRoles(userId, dtos);
-            }
-            catch (EntityNotFoundException e)
-            {
-                return BadRequest(e.Message);
-            }
-            catch (NoAccessException e)
-            {
-                return Forbid(e.Message);
-            }
-
-            return Ok();
-        }
-
-        /// <summary>
-        /// Удалить роли у пользователя (SuperUser, AdminRegistration)
-        /// Пользователь с ролью AdminRegistration не может удалять роль SuperUser
-        /// </summary>
-        /// <param name="userId">Id пользователя</param>
-        /// <param name="dtos">Принимает массив UserRoleDto</param>
-        /// <returns></returns>
-        [Authorize(Roles = "SuperUser, AdminRegistration")]
-        [HttpPost("{userId}/deleteRoles")]
-        public async Task<ActionResult> DeleteRoles(int userId, List<UserRoleDto> dtos)
-        {
-            try
-            {
-                await _userService.DeleteUserRole(userId, dtos);
-            }
-            catch (EntityNotFoundException e)
-            {
-                return BadRequest(e.Message);
-            }
-            catch (NoAccessException e)
-            {
-                return Forbid(e.Message);
-            }
-
-            return Ok();
-        }
-
-        /// <summary>
-        /// Получить список всех пользователей (кроме себя) и их ролей (SuperUser, AdminRegistration).
-        /// Пользователь с ролью AdminRegistration видит всех пользователей, кроме SuperUser.
-        /// Пользователь с ролью SuperUser видит всех пользователей.
-        /// </summary>
-        /// <param name="filter">Принимает BaseFilterDto - параметры пагинации</param>
-        /// <returns></returns>
-        [Authorize(Roles = "SuperUser, AdminRegistration")]
-        [HttpPost("getUsersRolesInfoPaged")]
-        public async Task<ActionResult<List<UsersRolesInfoDto>>> GetUsersRolesInfo(BaseFilterDto filter)
-        {
-            var userIdDto = _authService.GetUserIdByCookie(Request.Cookies);
-
-            var result = await _userService.GetUsersWithRoles(filter, userIdDto.UserId);
-
-            return Ok(result);
-        }
-
-        /// <summary>
-        /// Получить список ролей пользователя (SuperUser, AdminRegistration)
-        /// </summary>
-        /// <param name="userId">Id пользователя</param>
-        /// <returns>Возвращает массив UserRoleDto</returns>
-        [Authorize]
-        [HttpGet("{userId}/getRoles")]
-        public async Task<ActionResult<List<UserRoleDto>>> GetRoles(int userId)
-        {
-            List<UserRoleDto> result;
-            
-            try
-            {
-                result = await _userService.GetUserRoles(userId);
-            }
-            catch (EntityNotFoundException e)
-            {
-                return BadRequest(e.Message);
-            }
-
-            return Ok(result);
-        }
-
-        /// <summary>
-        /// Получить Id текущего пользователя
+        /// Получить Id текущего авторизованного пользователя (Все авторизованные пользователи)
         /// </summary>
         /// <returns>Возвращает UserIdDto</returns>
-        //[Authorize]
+        [Authorize]
         [HttpGet("getMyId")]
-        public ActionResult<UserIdDto> GetCurrentUserId()
+        public ActionResult<int> GetCurrentUserId()
         {
             var result = _authService.GetUserIdByCookie(Request.Cookies);
 
@@ -124,14 +27,105 @@ namespace Kventin.WebApi.Controllers
         }
 
         /// <summary>
-        /// Получить все возможные роли
+        /// Установить связь между родителем и детьми
+        /// (SuperUser, AdminRegistration)
         /// </summary>
-        /// <returns>Массив UserRoleDto - Список всех ролей в системе</returns>
-        //[Authorize(Roles = "SuperUser, AdminRegistration")]
-        [HttpGet("getAllRoles")]
-        public async Task<ActionResult<List<UserRoleDto>>> GetAllRoles()
+        /// <param name="parentId"></param>
+        /// <param name="childrenIds">Принимает массив int - массив Id - шников учеников</param>
+        /// <returns></returns>
+        /// <response code="200">Успешно</response>
+        /// <response code="400">Ошибка (см. сообщение)</response>
+        [Authorize(Roles = "SuperUser, AdminRegistration")]
+        [HttpPost("{parentId}/addChildren")]
+        public async Task<ActionResult> SetChildrenForParent(int parentId, List<int> childrenIds)
         {
-            var result = await _userService.GetAllRoles();
+            try
+            {
+                await _userService.SetChildrenForParent(parentId, childrenIds);
+
+                return Ok();
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
+
+        /// <summary>
+        /// Получить детей родителя (Parent)
+        /// </summary>
+        /// <param name="parentId"></param>
+        /// <returns>Возвращает массив UserShortInfoDto</returns>
+        [Authorize(Roles = "Parent")]
+        [HttpGet("{parentId}/getChildren")]
+        public async Task<ActionResult<List<UserShortInfoDto>>> GetChildren(int parentId)
+        {
+            var result = await _userService.GetUsersChildren(parentId);
+
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// Выбрать ребенка. Чтобы отменить выбор ребенка передать childId = 0 (Parent)
+        /// </summary>
+        /// <param name="parentId"></param>
+        /// <param name="childId"></param>
+        /// <returns></returns>
+        /// <response code="200">Успешно</response>
+        /// <response code="400">Ошибка (см. сообщение)</response>
+        [Authorize(Roles = "Parent")]
+        [HttpPost("{parentId}/selectChild/{childId}")]
+        public async Task<ActionResult> SelectChild(int parentId, int childId)
+        {
+            try
+            {
+                var newToken = await _authService.GetNewCookieWithChildId(Request.Cookies, parentId, childId);
+
+                Response.Cookies.Append("choco-cookies", newToken);
+
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Получить список всех учеников (SuperUser, AdminRegistration)
+        /// </summary>
+        /// <returns>Возвращает массив UserShortInfoDto</returns>
+        [Authorize(Roles = "SuperUser, AdminRegistration")]
+        [HttpGet("getAllStudents")]
+        public async Task<ActionResult<List<UserShortInfoDto>>> GetAllStudentsShortInfo()
+        {
+            var result = await _userService.GetAllUsersShortInfoByRole("Student");
+
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// Получить список всех учителей (SuperUser, AdminRegistration)
+        /// </summary>
+        /// <returns>Возвращает массив UserShortInfoDto</returns>
+        [Authorize(Roles = "SuperUser, AdminRegistration")]
+        [HttpGet("getAllTeachers")]
+        public async Task<ActionResult<List<UserShortInfoDto>>> GetAllTeachersShortInfo()
+        {
+            var result = await _userService.GetAllUsersShortInfoByRole("Teacher");
+
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// Получить список всех родителей (SuperUser, AdminRegistration)
+        /// </summary>
+        /// <returns>Возвращает массив UserShortInfoDto</returns>
+        [Authorize(Roles = "SuperUser, AdminRegistration")]
+        [HttpGet("getAllParents")]
+        public async Task<ActionResult<List<UserShortInfoDto>>> GetAllParentsShortInfo()
+        {
+            var result = await _userService.GetAllUsersShortInfoByRole("Parent");
 
             return Ok(result);
         }

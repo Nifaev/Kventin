@@ -1,4 +1,5 @@
 ﻿using Kventin.Services.Dtos.Auth;
+using Kventin.Services.Infrastructure.Exceptions;
 using Kventin.Services.Interfaces.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -17,27 +18,50 @@ namespace Kventin.WebApi.Controllers
         /// Принимает RegisterDto
         /// </param>
         /// <returns></returns>
+        /// <response code="200">Успешная регистрация</response>
+        /// <response code="400">Ошибка (см. сообщение)</response>
         [HttpPost("register")]
         public async Task<ActionResult> Register(RegisterDto dto)
         {
-            await _authService.Register(dto);
+            try
+            {
+                await _authService.Register(dto);
 
-            return Ok();
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         /// <summary>
         /// Авторизация
         /// </summary>
-        /// <param name="dto">Принимает LoginDto</param>
+        /// <param name="dto"></param>
         /// <returns></returns>
+        /// <response code="200">Успешная авторизация</response>
+        /// <response code="400">Ошибка (см. сообщение)</response>
+        /// <response code="403">Доступ запрещён (не подтвержден аккаунт)</response>
         [HttpPost("login")]
-        public async Task<ActionResult<string>> Login(LoginDto dto)
+        public async Task<ActionResult> Login(LoginDto dto)
         {
-            var token = await _authService.Login(dto);
+            try
+            {
+                var token = await _authService.Login(dto);
 
-            Response.Cookies.Append("choco-cookies", token);
+                Response.Cookies.Append("choco-cookies", token);
 
-            return Ok();
+                return Ok();
+            }
+            catch (AuthException ex)
+            {
+                return StatusCode(403, ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         /// <summary>

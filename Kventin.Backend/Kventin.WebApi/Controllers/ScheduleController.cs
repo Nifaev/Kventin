@@ -14,10 +14,12 @@ namespace Kventin.WebApi.Controllers
         private readonly IScheduleService _scheduleService = scheduleService;
 
         /// <summary>
-        /// Получить расписание на учебный год
+        /// Получить расписание на учебный год ("SuperUser, AdminSchedule")
         /// </summary>
         /// <param name="dto">Передается ScheduleDto</param>
         /// <returns>Возвращает ReturnScheduleDto - элементы (занятия) расписания</returns>
+        /// <response code="200">Успешно</response>
+        /// <response code="400">Ошибка (см. сообщение)</response>
         [HttpPost]
         public async Task<ActionResult<ReturnScheduleDto>> GetSchedule(ScheduleDto dto)
         {
@@ -32,10 +34,12 @@ namespace Kventin.WebApi.Controllers
         }
 
         /// <summary>
-        /// Добавить элемент расписания
+        /// Добавить элемент расписания ("SuperUser, AdminSchedule")
         /// </summary>
         /// <param name="dto">AddScheduleItemDto</param>
         /// <returns></returns>
+        /// <response code="200">Успешно</response>
+        /// <response code="400">Ошибка (см. сообщение)</response>
         [HttpPost("addItem")]
         public async Task<ActionResult> AddScheduleItem(AddScheduleItemDto dto)
         {
@@ -51,11 +55,13 @@ namespace Kventin.WebApi.Controllers
         }
 
         /// <summary>
-        /// Редактировать элемент расписания
+        /// Редактировать элемент расписания ("SuperUser, AdminSchedule")
         /// </summary>
         /// <param name="itemId">Id элемента расписания</param>
         /// <param name="dto">UpdateScheduleItemDto</param>
         /// <returns></returns>
+        /// <response code="200">Успешно</response>
+        /// <response code="400">Ошибка (см. сообщение)</response>
         [HttpPost("updateItem/{itemId}")]
         public async Task<ActionResult> EditScheduleItem(int itemId, UpdateScheduleItemDto dto)
         {
@@ -71,10 +77,11 @@ namespace Kventin.WebApi.Controllers
         }
 
         /// <summary>
-        /// Удалить элемент расписания
+        /// Удалить элемент расписания ("SuperUser, AdminSchedule")
         /// </summary>
         /// <param name="itemId">Id элемента расписания</param>
         /// <returns></returns>
+        /// <response code="200">Успешно</response>
         [HttpDelete("deleteItem/{itemId}")]
         public async Task<ActionResult> DeleteScheduleItem(int itemId)
         {
@@ -84,10 +91,12 @@ namespace Kventin.WebApi.Controllers
         }
 
         /// <summary>
-        /// Создать сущность расписания
+        /// Создать сущность расписания ("SuperUser, AdminSchedule")
         /// </summary>
         /// <param name="dto">ScheduleDto</param>
         /// <returns></returns>
+        /// <response code="200">Успешно</response>
+        /// <response code="400">Ошибка (см. сообщение)</response>
         [HttpPost("create")]
         public async Task<ActionResult> CreateSchedule(ScheduleDto dto)
         {
