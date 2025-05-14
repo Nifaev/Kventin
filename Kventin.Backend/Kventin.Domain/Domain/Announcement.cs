@@ -26,5 +26,11 @@ namespace Kventin.DataAccess.Domain
         /// Автор
         /// </summary>
         public required User Author { get; set; }
+
+
+        /// <summary>
+        /// Прикрепленные файлы
+        /// </summary>
+        public List<FileRecord> Files { get; set; } = [];
     }
 }

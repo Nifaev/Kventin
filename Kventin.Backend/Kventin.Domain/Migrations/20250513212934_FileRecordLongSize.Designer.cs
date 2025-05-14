@@ -4,6 +4,7 @@ using Kventin.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,13 +12,15 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Kventin.DataAccess.Migrations
 {
     [DbContext(typeof(KventinContext))]
-    partial class KventinContextModelSnapshot : ModelSnapshot
+    [Migration("20250513212934_FileRecordLongSize")]
+    partial class FileRecordLongSize
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.5")
+                .HasAnnotation("ProductVersion", "9.0.0")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -260,9 +263,6 @@ namespace Kventin.DataAccess.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("AnnouncementId")
-                        .HasColumnType("int");
-
                     b.Property<string>("ContentType")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -273,23 +273,8 @@ namespace Kventin.DataAccess.Migrations
                     b.Property<DateTime?>("DeleteDateTime")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("ExerciseAnswerId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("ExerciseId")
-                        .HasColumnType("int");
-
                     b.Property<long>("FileSize")
                         .HasColumnType("bigint");
-
-                    b.Property<int?>("LessonId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("MessageId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("NotificationId")
-                        .HasColumnType("int");
 
                     b.Property<string>("OriginalFileName")
                         .IsRequired()
@@ -303,18 +288,6 @@ namespace Kventin.DataAccess.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("AnnouncementId");
-
-                    b.HasIndex("ExerciseAnswerId");
-
-                    b.HasIndex("ExerciseId");
-
-                    b.HasIndex("LessonId");
-
-                    b.HasIndex("MessageId");
-
-                    b.HasIndex("NotificationId");
 
                     b.HasIndex("UploadedByUserId");
 
@@ -1098,47 +1071,11 @@ namespace Kventin.DataAccess.Migrations
 
             modelBuilder.Entity("Kventin.DataAccess.Domain.FileRecord", b =>
                 {
-                    b.HasOne("Kventin.DataAccess.Domain.Announcement", "Announcement")
-                        .WithMany("Files")
-                        .HasForeignKey("AnnouncementId");
-
-                    b.HasOne("Kventin.DataAccess.Domain.ExerciseAnswer", "ExerciseAnswer")
-                        .WithMany("Files")
-                        .HasForeignKey("ExerciseAnswerId");
-
-                    b.HasOne("Kventin.DataAccess.Domain.Exercise", "Exercise")
-                        .WithMany("Files")
-                        .HasForeignKey("ExerciseId");
-
-                    b.HasOne("Kventin.DataAccess.Domain.Lesson", "Lesson")
-                        .WithMany("Files")
-                        .HasForeignKey("LessonId");
-
-                    b.HasOne("Kventin.DataAccess.Domain.Message", "Message")
-                        .WithMany("Files")
-                        .HasForeignKey("MessageId");
-
-                    b.HasOne("Kventin.DataAccess.Domain.Notification", "Notification")
-                        .WithMany("Files")
-                        .HasForeignKey("NotificationId");
-
                     b.HasOne("Kventin.DataAccess.Domain.User", "UploadedByUser")
                         .WithMany("UploadedFiles")
                         .HasForeignKey("UploadedByUserId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
-
-                    b.Navigation("Announcement");
-
-                    b.Navigation("Exercise");
-
-                    b.Navigation("ExerciseAnswer");
-
-                    b.Navigation("Lesson");
-
-                    b.Navigation("Message");
-
-                    b.Navigation("Notification");
 
                     b.Navigation("UploadedByUser");
                 });
@@ -1396,42 +1333,18 @@ namespace Kventin.DataAccess.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Kventin.DataAccess.Domain.Announcement", b =>
-                {
-                    b.Navigation("Files");
-                });
-
             modelBuilder.Entity("Kventin.DataAccess.Domain.Exercise", b =>
                 {
                     b.Navigation("Answers");
 
-                    b.Navigation("Files");
-
                     b.Navigation("Marks");
-                });
-
-            modelBuilder.Entity("Kventin.DataAccess.Domain.ExerciseAnswer", b =>
-                {
-                    b.Navigation("Files");
                 });
 
             modelBuilder.Entity("Kventin.DataAccess.Domain.Lesson", b =>
                 {
                     b.Navigation("Exercises");
 
-                    b.Navigation("Files");
-
                     b.Navigation("Marks");
-                });
-
-            modelBuilder.Entity("Kventin.DataAccess.Domain.Message", b =>
-                {
-                    b.Navigation("Files");
-                });
-
-            modelBuilder.Entity("Kventin.DataAccess.Domain.Notification", b =>
-                {
-                    b.Navigation("Files");
                 });
 
             modelBuilder.Entity("Kventin.DataAccess.Domain.Schedule", b =>

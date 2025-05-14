@@ -25,6 +25,7 @@ namespace Kventin.DataAccess
         public DbSet<Role> Roles { get; set; }
         public DbSet<ScheduleItem> ScheduleItems { get; set; }
         public DbSet<Schedule> Schedules { get; set; }
+        public DbSet<FileRecord> FileRecords { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -47,6 +48,7 @@ namespace Kventin.DataAccess
             modelBuilder.ApplyConfiguration(new RoleMap());
             modelBuilder.ApplyConfiguration(new ScheduleItemMap());
             modelBuilder.ApplyConfiguration(new ScheduleMap());
+            modelBuilder.ApplyConfiguration(new FileRecordMap());
         }
     }
 }

@@ -71,5 +71,10 @@ namespace Kventin.DataAccess.Domain
         /// Id ученика, которому выдали индиидуальное задание
         /// </summary>
         public int? IndividualStudentId { get; set; }
+
+        /// <summary>
+        /// Прикрепленные файлы
+        /// </summary>
+        public List<FileRecord> Files { get; set; } = [];
     }
 }

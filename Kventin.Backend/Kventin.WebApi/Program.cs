@@ -1,5 +1,6 @@
 using System.Reflection;
 using System.Security.Cryptography;
+using Kventin.Services.Config;
 using Kventin.Services.Infrastructure;
 using Kventin.Services.Infrastructure.Extensions;
 using Kventin.Services.Infrastructure.Tools;
@@ -8,6 +9,7 @@ using Kventin.Services.Interfaces.Tools;
 using Kventin.Services.Services;
 using Microsoft.AspNetCore.CookiePolicy;
 using Microsoft.Extensions.FileProviders;
+using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,6 +28,7 @@ builder
     .AddSwaggerGen(options =>
     {
         var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+        
         options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
     });
 
@@ -56,6 +59,13 @@ builder.Services.AddScoped<ILessonService, LessonService>();
 builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddScoped<IStudyGroupService, StudyGroupService>();
 builder.Services.AddScoped<IRoleService, RoleService>();
+builder.Services.AddScoped<IFileService, FileService>();
+builder.Services.AddScoped<IFileRecordFactory, FileRecordFactory>();
+
+builder.Services.AddSingleton<IFileStorageProvider, YandexCloudFileStorageProvider>();
+
+builder.Services.Configure<YandexCloudFileStorageOptions>(
+    builder.Configuration.GetSection("YandexCloudObjectStorage"));
 
 builder
     .Services

@@ -26,5 +26,11 @@ namespace Kventin.DataAccess.Domain.Base
         /// Получатель
         /// </summary>
         public required User Reciever { get; set; }
+
+
+        /// <summary>
+        /// Прикрепленные файлы
+        /// </summary>
+        public List<FileRecord> Files { get; set; } = [];
     }
 }

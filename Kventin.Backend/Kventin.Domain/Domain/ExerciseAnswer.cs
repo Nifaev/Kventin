@@ -31,5 +31,11 @@ namespace Kventin.DataAccess.Domain
         /// Задание
         /// </summary>
         public required Exercise Exercise { get; set; }
+
+
+        /// <summary>
+        /// Прикрепленные файлы
+        /// </summary>
+        public List<FileRecord> Files { get; set; } = [];
     }
 }

@@ -102,5 +102,10 @@ namespace Kventin.DataAccess.Domain
         /// Задания, прикрепленные к занятию
         /// </summary>
         public List<Exercise> Exercises { get; set; } = [];
+
+        /// <summary>
+        /// Прикрепленные файлы
+        /// </summary>
+        public List<FileRecord> Files { get; set; } = [];
     }
 }

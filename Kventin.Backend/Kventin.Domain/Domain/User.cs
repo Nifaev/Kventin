@@ -171,5 +171,10 @@ namespace Kventin.DataAccess.Domain
         /// Индивидуальные задания
         /// </summary>
         public List<Exercise> IndividualExercises { get; set; } = [];
+
+        /// <summary>
+        /// Файлы, загруженные пользователем
+        /// </summary>
+        public List<FileRecord> UploadedFiles { get; set; } = [];
     }
 }
