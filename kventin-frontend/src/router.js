@@ -8,7 +8,9 @@ import Schedule from './views/Schedule.vue';
 import Login from './views/Login.vue';
 import Dashboard from './views/Dashboard.vue';
 import Register from './views/Register.vue';
-import Role from './views/Role.vue';         // ← новый импорт
+import Role from './views/Role.vue';  
+import Group from './views/Group.vue';       // ← новый импорт
+import Subject from './views/Subject.vue';
 
 const routes = [
   { path: '/register',    component: Register },
@@ -19,6 +21,8 @@ const routes = [
   { path: '/messages',    component: Messages },
   { path: '/schedule',    component: Schedule },
   { path: '/roles',       component: Role },   // ← новая страница
+  {path: '/group',        component:Group},
+  {path: '/subject',        component:Subject},
 ];
 
 const router = createRouter({

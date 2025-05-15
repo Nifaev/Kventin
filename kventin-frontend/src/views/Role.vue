@@ -31,7 +31,7 @@
             <em v-else class="no-role">Нет роли</em>
           </td>
 
-          <!-- одиночный дропдаун + кнопка сохранить -->
+          <!-- селект + кнопка сохранить -->
           <td class="col-action">
             <div class="action-cell">
               <select
@@ -60,6 +60,47 @@
 
     <p v-if="message" class="message">{{ message }}</p>
     <p v-if="error" class="error">{{ error }}</p>
+
+    <!-- Модалка выбора детей -->
+    <div v-if="showChildModal" class="modal-backdrop">
+      <div class="modal">
+        <h3>Привязать детей</h3>
+        <p>Дважды кликните по ребёнку, чтобы добавить его:</p>
+
+        <!-- выпадающий список -->
+        <select
+          class="child-select"
+          size="5"
+          @dblclick="onChildDblClick"
+        >
+          <option
+            v-for="s in students"
+            :key="s.userId"
+            :value="s.fullName"
+          >
+            {{ s.fullName }}
+          </option>
+        </select>
+
+        <div class="selected-children">
+          <span
+            v-for="name in selectedChildren"
+            :key="name"
+            class="child-chip"
+          >
+            {{ name }}
+          </span>
+        </div>
+
+        <button
+          class="btn-confirm"
+          @click="confirmChildren"
+          :disabled="!selectedChildren.length"
+        >
+          Сохранить
+        </button>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -68,11 +109,17 @@ import { ref, computed, onMounted } from 'vue';
 import axios from 'axios';
 import NavBar from '../components/NavBar.vue';
 
-const users = ref([]);
-const allRoles = ref([]);
-const selectedRole = ref({});
-const message = ref('');
-const error = ref('');
+const users             = ref([]);
+const allRoles          = ref([]);
+const selectedRole      = ref({});
+const message           = ref('');
+const error             = ref('');
+
+// modal state
+const showChildModal    = ref(false);
+const currentParentId   = ref(null);
+const students          = ref([]);
+const selectedChildren  = ref([]);
 
 const sortedUsers = computed(() => [
   ...users.value.filter(u => u.roles.length === 0),
@@ -83,10 +130,10 @@ async function fetchData() {
   message.value = '';
   error.value = '';
   try {
-    const { data: usersData } = await axios.post('/api/roles/getUsersRolesInfo');
-    users.value = usersData;
-    const { data: rolesData } = await axios.get('/api/roles/getAllRoles');
-    allRoles.value = rolesData;
+    const { data: udata } = await axios.post('/api/roles/getUsersRolesInfo');
+    users.value = udata;
+    const { data: rdata } = await axios.get('/api/roles/getAllRoles');
+    allRoles.value = rdata;
     users.value.forEach(u => {
       selectedRole.value[u.user.userId] = '';
     });
@@ -101,23 +148,50 @@ async function addRole(userId, role) {
   error.value = '';
   try {
     await axios.post(`/api/roles/${userId}/setRoles`, [role]);
-    message.value = `Роль "${role}" назначена.`;
-    await fetchData();
+    if (role !== 'Parent') {
+      await fetchData();
+    } else {
+      currentParentId.value = userId;
+      showChildModal.value   = true;
+      selectedChildren.value = [];
+      const { data } = await axios.get('/api/user/getAllStudents');
+      students.value = data;
+    }
   } catch {
     error.value = 'Ошибка назначения роли';
   }
 }
 
 async function removeRole(userId, role) {
-  if (!confirm(`Удалить роль "${role}"?`)) return;
+  if (!confirm(`Удалить роль «${role}»?`)) return;
   message.value = '';
   error.value = '';
   try {
     await axios.post(`/api/roles/${userId}/deleteRoles`, [role]);
-    message.value = `Роль "${role}" удалена.`;
+    message.value = `Роль «${role}» удалена`;
     await fetchData();
   } catch {
     error.value = 'Ошибка удаления роли';
+  }
+}
+
+function onChildDblClick(e) {
+  const name = e.target.value;
+  if (name && !selectedChildren.value.includes(name)) {
+    selectedChildren.value.push(name);
+  }
+}
+
+async function confirmChildren() {
+  try {
+    await axios.post(
+      `/api/user/${currentParentId.value}/addChildren`,
+      selectedChildren.value
+    );
+    showChildModal.value = false;
+    await fetchData();
+  } catch {
+    alert('Ошибка привязки детей');
   }
 }
 
@@ -125,31 +199,24 @@ onMounted(fetchData);
 </script>
 
 <style scoped>
-html,
-body {
-  margin: 0;
-  padding: 0;
-  height: 100%;
-  background-color: #f9fafb; /* тот же цвет, что и у .admin-page */
+html, body {
+  margin: 0; padding: 0; height: 100%;
+  background: #f9fafb;
 }
 
 .page-title {
+  margin-top: 3%;   /* вот это новое */
   text-align: center;
   margin-bottom: 16px;
 }
+
 .users-table {
   width: 90%;
   margin: 0 auto;
   background: white;
-
-  /* переключили модель ячеек */
   border-collapse: separate;
   border-spacing: 0;
-
-  /* рамка вокруг всей таблицы */
   border: 1px solid #ccc;
-
-  /* скругления + тень */
   border-radius: 10px;
   box-shadow: 0 4px 6px rgba(0,0,0,0.1);
   overflow: hidden;
@@ -157,12 +224,11 @@ body {
 
 .users-table th,
 .users-table td {
-  border-bottom: 1px solid #000000;
-  border-right: 1px solid #000000;
+  border-bottom: 1px solid #ccc;
+  border-right: 1px solid #ccc;
   padding: 12px;
+  vertical-align: middle;
 }
-
-/* у последнего столбца и последней строки убираем лишние бордеры */
 .users-table th:last-child,
 .users-table td:last-child {
   border-right: none;
@@ -170,9 +236,8 @@ body {
 .users-table tr:last-child td {
   border-bottom: none;
 }
-
-.col-name { width: 30%; }
-.col-roles { width: 45%; }
+.col-name   { width: 30%; }
+.col-roles  { width: 45%; }
 .col-action { width: 25%; text-align: center; }
 
 .roles-list {
@@ -182,8 +247,8 @@ body {
 }
 .role-chip {
   background: #e0f7fa;
-  padding: 3px 2px;
-  border-radius: 10px;
+  padding: 4px 8px;
+  border-radius: 16px;
   display: inline-flex;
   align-items: center;
   font-size: 0.9em;
@@ -206,35 +271,25 @@ body {
   justify-content: flex-end;
   gap: 8px;
 }
-
 .role-select {
-  width:100%;
+  width: 100%;
   padding: 6px;
   border: 1px solid #2ecccfa0;
   border-radius: 5px;
-  background: rgba(255, 255, 255, 0.614);
+  background: rgba(255,255,255,0.6);
   cursor: pointer;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
-
-.icon-btn {
-  background: none;
-  border: none;
-  cursor: pointer;
-  font-size: 1.2em;
-  line-height: 1;
-}
-
 .save-btn {
   flex-shrink: 0;
   width: 24px;
   height: 24px;
-  padding: 0;
   background: none;
   border: none;
   cursor: pointer;
+  padding: 0;
 }
 .save-btn img {
   width: 100%;
@@ -255,5 +310,46 @@ body {
   margin-top: 16px;
   text-align: center;
   color: red;
+}
+
+/* Модалка */
+.modal-backdrop {
+  position: fixed; top:0; left:0; right:0; bottom:0;
+  background: rgba(0,0,0,0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.modal {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  width: 300px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+.child-select {
+  width: 100%;
+  box-sizing: border-box;
+  margin-bottom: 12px;
+}
+.selected-children {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+.child-chip {
+  background: #e0f7fa;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: .9em;
+}
+.btn-confirm {
+  margin-top: 12px;
+  padding: 8px 12px;
+}
+.btn-confirm:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 </style>

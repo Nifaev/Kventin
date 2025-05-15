@@ -2,339 +2,321 @@
   <div class="schedule-page">
     <NavBar />
 
-    <div class="schedule-header">
-      <label for="date-picker">Выберите дату:</label>
-      <input
-        id="date-picker"
-        type="date"
-        v-model="selectedDate"
-        @change="fetchWeek"
-      />
-      <button @click="prevWeek">‹</button>
-      <button @click="nextWeek">›</button>
-      <button class="add-btn" @click="openModal()">+ Добавить занятие</button>
+    <div class="container">
+      <h1 class="page-title">Шаблон расписания</h1>
+
+      <!-- Селектор учебного года -->
+      <section class="year-selector">
+        <label>
+          Начало учебного года:
+          <select v-model.number="selectedStart">
+            <option v-for="y in availableYears" :key="y" :value="y">
+              {{ y }}
+            </option>
+          </select>
+        </label>
+        <span class="dash">—</span>
+        <label>
+          Конец учебного года:
+          <select v-model.number="selectedEnd">
+            <option v-for="y in availableYears" :key="y" :value="y + 1">
+              {{ y + 1 }}
+            </option>
+          </select>
+        </label>
+        <button class="btn-load" @click="loadSchedule">Загрузить</button>
+      </section>
+
+      <!-- Шапка шаблона -->
+      <section class="schedule-header" v-if="!loadingTemplate">
+        <div v-if="!currentSchedule">
+          <p>Для {{ selectedStart }}–{{ selectedEnd }} шаблон не найден.</p>
+          <button class="btn-add" @click="showCreateSchedule = true">
+            Создать расписание
+          </button>
+        </div>
+        <div v-else>
+          <p>
+            Шаблон для {{ currentSchedule.startYear }}–{{ currentSchedule.endYear }}:
+          </p>
+          <button class="btn-edit" @click="showCreateSchedule = true">
+            Изменить года
+          </button>
+        </div>
+      </section>
+      <div v-else class="loading">Загрузка...</div>
+
+      <!-- Список элементов расписания -->
+      <section v-if="currentSchedule" class="items-section">
+        <header class="items-header">
+          <h2>Элементы расписания</h2>
+          <button class="btn-add" @click="openItemModal()">Добавить элемент</button>
+        </header>
+
+        <table class="items-table">
+          <thead>
+            <tr>
+              <th>День недели</th>
+              <th>Время</th>
+              <th>Предмет</th>
+              <th>Преподаватель</th>
+              <th>Группа</th>
+              <th>Кабинет</th>
+              <th>Онлайн?</th>
+              <th>Действия</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="it in items" :key="it.scheduleItemId">
+              <td>{{ it.dayOfWeek }}</td>
+              <td>{{ it.startTime }}–{{ it.endTime }}</td>
+              <td>{{ it.subjectName }}</td>
+              <td>{{ it.teacher.fullName }}</td>
+              <td>{{ it.groupName }}</td>
+              <td>{{ it.classroom }}</td>
+              <td>{{ it.isOnline ? 'Да' : 'Нет' }}</td>
+              <td>
+                <button class="btn-small" @click="openItemModal(it)">✎</button>
+                <button class="btn-small danger" @click="deleteItem(it.scheduleItemId)">×</button>
+              </td>
+            </tr>
+            <tr v-if="!items.length">
+              <td colspan="8" class="empty">Пока нет ни одного элемента.</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
     </div>
 
-    <table class="schedule-table">
-      <thead>
-        <tr>
-          <th>Номер кабинета</th>
-          <th
-            v-for="day in weekDays"
-            :key="day"
-          >{{ formatDay(day) }}</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="room in classrooms" :key="room">
-          <td>{{ room }}</td>
-          <td v-for="day in weekDays" :key="room + day">
-            <div
-              v-for="item in itemsBy(room, day)"
-              :key="item.id"
-              class="lesson-card"
-              @click="openModal(item)"
-            >
-              <div class="time">{{ item.startTime }}–{{ item.endTime }}</div>
-              <div class="info">
-                {{ item.subjectName }}<br/>
-                {{ item.groupName }} · {{ item.teacherName }}
-              </div>
-            </div>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-
-    <div
-      v-if="modalVisible"
-      class="modal-backdrop"
-      @click.self="closeModal"
-    >
-      <div class="modal">
-        <h3>{{ form.id ? 'Редактировать занятие' : 'Добавить занятие' }}</h3>
-        <form @submit.prevent="saveItem">
-          <label>День недели:
-            <select v-model="form.dayOfWeek" required>
-              <option
-                v-for="(label, index) in ['Пн','Вт','Ср','Чт','Пт','Сб','Вс']"
-                :key="index"
-                :value="index + 1"
-              >
-                {{ label }}
-              </option>
-            </select>
-          </label>
-
-          <label>Время начала:
-            <input type="time" v-model="form.startTime" required />
-          </label>
-
-          <label>Время конца:
-            <input type="time" v-model="form.endTime" required />
-          </label>
-
-          <label>Кабинет:
-            <input v-model="form.classroom" required />
-          </label>
-
-          <label>Предмет:
-            <select v-model="form.subjectId" required>
-              <option
-                v-for="s in subjects"
-                :key="s.id"
-                :value="s.id"
-              >{{ s.name }}</option>
-            </select>
-          </label>
-
-          <label>Группа:
-            <select v-model="form.groupId" required>
-              <option
-                v-for="g in groups"
-                :key="g.id"
-                :value="g.id"
-              >{{ g.name }}</option>
-            </select>
-          </label>
-
-          <label>Преподаватель:
-            <select v-model="form.teacherId" required>
-              <option
-                v-for="t in teachers"
-                :key="t.id"
-                :value="t.id"
-              >{{ t.name }}</option>
-            </select>
-          </label>
-
-          <label class="checkbox">
-            <input type="checkbox" v-model="form.isOnline" />
-            Онлайн
-          </label>
-
-          <div class="modal-actions">
-            <button type="submit">Сохранить</button>
-            <button
-              v-if="form.id"
-              type="button"
-              class="delete-btn"
-              @click="deleteItem"
-            >Удалить</button>
-            <button
-              type="button"
-              @click="closeModal"
-            >Отмена</button>
-          </div>
-        </form>
-      </div>
-    </div>
+    <!-- Модалки -->
+    <CreateScheduleModal
+      v-if="showCreateSchedule"
+      :initial="currentSchedule"
+      @close="showCreateSchedule = false"
+      @saved="onTemplateSaved"
+    />
+    <EditItemModal
+      v-if="showItemModal"
+      :initial="editingItem"
+      :schedule-id="currentSchedule.scheduleId"
+      :teachers="teachers"
+      :subjects="subjects"
+      :groups="groups"
+      @close="showItemModal = false"
+      @saved="onItemSaved"
+    />
   </div>
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
-import axios from 'axios'
-import NavBar from '../components/NavBar.vue'
+import { ref, onMounted, computed } from 'vue';
+import axios from 'axios';
+import NavBar               from '../components/NavBar.vue';
+import CreateScheduleModal  from '../components/CreateScheduleModal.vue';
+import EditItemModal        from '../components/EditItemModal.vue';
 
-const selectedDate = ref(new Date().toISOString().substr(0,10))
-const scheduleId = ref(null)
-const items = ref([])
-const classrooms = ref([1,2,3,4,5,6])  // или загрузить из API
-const subjects = ref([])
-const groups = ref([])
-const teachers = ref([])
+const today = new Date().getFullYear();
+const availableYears = computed(() =>
+  Array.from({ length: 6 }, (_, i) => today - i)
+);
 
-const modalVisible = ref(false)
-const form = ref({})
+const selectedStart = ref(today);
+const selectedEnd   = ref(today + 1);
 
-const weekDays = computed(() => {
-  const d = new Date(selectedDate.value)
-  const shift = (d.getDay() + 6) % 7
-  d.setDate(d.getDate() - shift)
-  return Array.from({ length: 7 }, (_, i) => {
-    const dd = new Date(d)
-    dd.setDate(d.getDate() + i)
-    return dd.toISOString().substr(0,10)
-  })
-})
+const currentSchedule    = ref(null);
+const items              = ref([]);
+const loadingTemplate    = ref(false);
+const teachers           = ref([]);
+const subjects           = ref([]);
+const groups             = ref([]);
 
-function formatDay(iso) {
-  const d = new Date(iso)
-  return d.toLocaleDateString('ru-RU', { weekday: 'short', day: 'numeric', month: 'numeric' })
+const showCreateSchedule = ref(false);
+const showItemModal      = ref(false);
+const editingItem        = ref(null);
+
+const weekdays = [
+  '—','Понедельник','Вторник','Среда',
+  'Четверг','Пятница','Суббота','Воскресенье'
+];
+
+// загрузка списков для выпадающих
+async function loadRefs() {
+  const [t,s,g] = await Promise.all([
+    axios.get('/api/user/getAllTeachers'),
+    axios.get('/api/subject/all'),
+    axios.get('/api/studyGroup/all'),
+  ]);
+  teachers.value = t.data;
+  subjects.value = s.data;
+  groups.value   = g.data;
 }
 
-function itemsBy(room, day) {
-  const dow = new Date(day).getDay()
-  return items.value.filter(i => i.classroom == room && i.dayOfWeek == dow)
-}
-
-async function ensureSchedule() {
-  if (!scheduleId.value) {
-    const dto = { startYear: new Date().getFullYear(), endYear: new Date().getFullYear()+1 }
-    const res = await axios.post('/api/schedule/create', dto)
-    scheduleId.value = res.data.id
+// загрузка шаблона и сразу его элементов
+async function loadSchedule() {
+  loadingTemplate.value = true;
+  currentSchedule.value = null;
+  items.value = [];
+  try {
+    const { data } = await axios.post('/api/schedule', {
+      startYear: selectedStart.value,
+      endYear:   selectedEnd.value
+    });
+    currentSchedule.value = data;
+    items.value = data.scheduleItems || [];
+  } catch (err) {
+    if (!(err.response && err.response.status === 400)) {
+      console.error(err);
+    }
+  } finally {
+    loadingTemplate.value = false;
   }
 }
 
-async function fetchWeek() {
-  await ensureSchedule()
-  // получаем расписание на год (если нужно)
-  await axios.post('/api/schedule', { startYear:0, endYear:0 })
-    .then(r => scheduleId.value = r.data.id)
-
-  const payload = {
-    scheduleId: scheduleId.value,
-    startDate: weekDays.value[0],
-    endDate:   weekDays.value[6]
-  }
-  await axios.post('/api/schedule/getItems', payload)
-    .then(r => items.value = r.data)
+// после создания/редактирования шаблона
+function onTemplateSaved() {
+  showCreateSchedule.value = false;
+  loadSchedule();
 }
 
-async function loadLookups() {
-  const [subRes, grpRes, tchRes] = await Promise.all([
-    axios.get('/api/subjects'),
-    axios.get('/api/groups'),
-    axios.get('/api/users/teachers')
-  ])
-  subjects.value = subRes.data
-  groups.value   = grpRes.data
-  teachers.value = tchRes.data
+// открываем форму добавления/редактирования элемента
+function openItemModal(item = null) {
+  editingItem.value = item
+    ? { ...item }
+    : { dayOfWeek:1, startTime:'08:00', endTime:'09:30',
+        classroom:'', teacherId:null, subjectId:null, groupId:null, isOnline:false };
+  showItemModal.value = true;
 }
 
-function prevWeek() {
-  const d = new Date(selectedDate.value)
-  d.setDate(d.getDate() - 7)
-  selectedDate.value = d.toISOString().substr(0,10)
-  fetchWeek()
-}
-function nextWeek() {
-  const d = new Date(selectedDate.value)
-  d.setDate(d.getDate() + 7)
-  selectedDate.value = d.toISOString().substr(0,10)
-  fetchWeek()
+// после сохранения элемента
+function onItemSaved() {
+  showItemModal.value = false;
+  loadSchedule();
 }
 
-function openModal(item = {}) {
-  form.value = { ...item }
-  modalVisible.value = true
-}
-function closeModal() {
-  modalVisible.value = false
-}
-
-async function saveItem() {
-  if (form.value.id) {
-    await axios.post(`/api/schedule/updateItem/${form.value.id}`, form.value)
-  } else {
-    await axios.post('/api/schedule/addItem', { ...form.value, scheduleId: scheduleId.value })
-  }
-  closeModal()
-  fetchWeek()
+// удаляем элемент и перезагружаем список
+async function deleteItem(id) {
+  if (!confirm('Удалить элемент?')) return;
+  await axios.delete(`/api/schedule/deleteItem/${id}`);
+  loadSchedule();
 }
 
-async function deleteItem() {
-  await axios.delete(`/api/schedule/deleteItem/${form.value.id}`)
-  closeModal()
-  fetchWeek()
-}
-
-onMounted(() => {
-  fetchWeek()
-  loadLookups()
-})
+onMounted(async () => {
+  await loadRefs();
+  await loadSchedule();
+});
 </script>
 
 <style scoped>
 .schedule-page {
-  background: #f2f5f9;
+  padding: 20px;
+  background: #f5f7fa;
   min-height: 100vh;
 }
-.schedule-header {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 16px;
-  background: #fff;
-}
-.schedule-header label {
-  font-weight: bold;
-}
-.schedule-header input[type="date"] {
-  padding: 4px;
-}
-.schedule-header button {
-  padding: 4px 8px;
-  cursor: pointer;
-}
-.add-btn {
-  margin-left: auto;
-  background: #28a745;
-  color: #fff;
-  border: none;
-  padding: 6px 12px;
-  border-radius: 4px;
-}
-.schedule-table {
-  width: 95%;
+.container {
+  max-width: 1000px;
   margin: 0 auto;
-  border-collapse: collapse;
 }
-.schedule-table th,
-.schedule-table td {
-  border: 1px solid #ccc;
-  padding: 8px;
-  vertical-align: top;
+.page-title {
+  text-align: center;
+  margin-bottom: 24px;
+  font-size: 28px;
 }
-.lesson-card {
-  background: #ffdca8;
-  margin: 4px 0;
+.year-selector {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+.year-selector label {
+  display: flex;
+  flex-direction: column;
+  font-size: 14px;
+}
+.year-selector select {
+  margin-top: 4px;
   padding: 6px;
+  border: 1px solid #ccc;
   border-radius: 4px;
+}
+.dash {
+  font-size: 20px;
+  line-height: 1.6;
+}
+.btn-load {
+  background: #007bff;
+  color: #fff;
+  padding: 8px 16px;
+  border-radius: 6px;
+  border: none;
   cursor: pointer;
 }
-.lesson-card .time {
-  font-weight: bold;
-}
-.modal-backdrop {
-  position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background: rgba(0,0,0,0.5);
-  display: flex; align-items: center; justify-content: center;
-}
-.modal {
+.btn-load:hover { background: #0069d9; }
+
+.schedule-header {
   background: #fff;
-  padding: 20px;
+  padding: 16px;
   border-radius: 8px;
-  width: 300px;
-}
-.modal h3 {
-  margin-top: 0;
+  margin-bottom: 24px;
   text-align: center;
 }
-.modal form label {
-  display: block;
-  margin: 8px 0;
+.loading {
+  text-align: center;
+  padding: 16px;
+  color: #666;
 }
-.modal .checkbox {
+
+.items-section {
+  background: #fff;
+  padding: 16px;
+  border-radius: 8px;
+}
+.items-header {
   display: flex;
+  justify-content: space-between;
   align-items: center;
-  gap: 4px;
+  margin-bottom: 12px;
 }
-.modal-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 8px;
-  margin-top: 12px;
+.items-table {
+  width: 100%;
+  border-collapse: collapse;
 }
-.modal-actions button {
-  padding: 6px 12px;
+.items-table th,
+.items-table td {
+  border: 1px solid #ddd;
+  padding: 8px;
+}
+.empty {
+  text-align: center;
+  color: #888;
+  font-style: italic;
+}
+.btn-add {
+  background: #5cb85c;
+  color: #fff;
+  padding: 8px 14px;
+  border: none;
+  border-radius: 6px;
   cursor: pointer;
 }
-.delete-btn {
-  background: #dc3545;
+.btn-edit {
+  background: #f0ad4e;
   color: #fff;
+  padding: 8px 14px;
   border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+.btn-small {
+  padding: 4px 6px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  background: #ccc;
+  margin: 0 2px;
+}
+.btn-small.danger {
+  background: #d9534f;
+  color: #fff;
 }
 </style>
