@@ -83,19 +83,35 @@ namespace Kventin.Services.Services
             }
         }
 
-        public async Task<List<StudyGroupShortInfoDto>> GetAllStudyGroupsShortInfo()
+        public async Task<List<StudyGroupShortInfoDto>> GetAllStudyGroupsShortInfo(int userId, List<string> userRoles, int childId)
         {
-            var take = 50;
-            var groupsCount = await _db.StudyGroups.CountAsync();
-            var pageCount = Math.Ceiling(groupsCount / (double)take);
-
             var result = new List<StudyGroupShortInfoDto>();
+
+            var groupsQuery = _db.StudyGroups.AsQueryable();
+
+            if (userRoles.Contains("Parent"))
+            {
+                if (childId == 0)
+                    throw new Exception("Не выбран ребенок");
+                else
+                    groupsQuery = groupsQuery.Where(x => x.Students.Any(y => y.Id == childId));
+            }
+            else if (userRoles.Contains("Student"))
+                groupsQuery = groupsQuery.Where(x => x.Students.Any(y => y.Id == userId));
+            else if (userRoles.Contains("Teacher"))
+                groupsQuery = groupsQuery.Where(x => x.TeacherId == userId);
+
+            groupsQuery = groupsQuery
+                .Include(x => x.Teacher)
+                .Include(x => x.Subject);
+
+            var take = 100;
+            var groupsCount = await groupsQuery.CountAsync();
+            var pageCount = Math.Ceiling(groupsCount / (double)take);
 
             for (int pageNumber = 0; pageNumber < pageCount; pageNumber++)
             {
-                var groups = await _db.StudyGroups
-                    .Include(x => x.Subject)
-                    .Include(x => x.Teacher)
+                var groups = await groupsQuery
                     .Skip(pageNumber *  take)
                     .Take(take)
                     .ToListAsync();

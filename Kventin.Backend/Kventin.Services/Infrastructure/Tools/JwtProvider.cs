@@ -46,7 +46,7 @@ namespace Kventin.Services.Infrastructure.Tools
             {
                 var jwtToken = handler.ReadJwtToken(token);
 
-                userId = int.Parse(jwtToken.Claims.First(x => x.Type == "childId").Value);
+                userId = int.Parse(jwtToken.Claims.First(x => x.Type == "selectedChild").Value);
             }
 
             return userId;

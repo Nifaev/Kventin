@@ -11,5 +11,6 @@ namespace Kventin.Services.Interfaces.Services
         public int GetUserIdByCookie(IRequestCookieCollection cookie);
         public List<string> GetUserRolesByCookie(IRequestCookieCollection cookie);
         public Task<string> GetNewCookieWithChildId(IRequestCookieCollection cookie, int parentId, int childId);
+        public int GetChildIdByCookie(IRequestCookieCollection cookie);
     }
 }

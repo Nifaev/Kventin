@@ -7,9 +7,11 @@ namespace Kventin.WebApi.Controllers
 {
     [ApiController]
     [Route("api/studyGroup")]
-    public class StudyGroupController(IStudyGroupService studyGroupService) : ControllerBase
+    public class StudyGroupController(IStudyGroupService studyGroupService,
+        IAuthService authService) : ControllerBase
     {
         private readonly IStudyGroupService _studyGroupService = studyGroupService;
+        private readonly IAuthService _authService = authService;
 
         /// <summary>
         /// Создать группу (SuperUser, AdminGroups)
@@ -105,18 +107,26 @@ namespace Kventin.WebApi.Controllers
         }
 
         /// <summary>
-        /// Получить список всех групп (SuperUser, AdminGroups)
+        /// Получить список всех доступных групп (SuperUser, AdminGroups, Teacher, Student, Parent)
+        /// SuperUser и AdminGroups получают все группы
+        /// Teacher получает группы, в которых он назначен преподавателем
+        /// Student получает свои группы,
+        /// Parent получает группы выбранного ребенка
         /// </summary>
         /// <returns>Возвращает массив StudyGroupShortInfoDto</returns>
         /// <response code="200">Успешно</response>
         /// <response code="400">Ошибка (см. сообщение)</response>
         [HttpGet("all")]
-        [Authorize(Roles = "SuperUser, AdminGroups")]
+        [Authorize(Roles = "SuperUser, AdminGroups, Teacher, Parent, Student")]
         public async Task<ActionResult<List<StudyGroupShortInfoDto>>> GetAllStudyGroupsShortInfo()
         {
             try
             {
-                var result = await _studyGroupService.GetAllStudyGroupsShortInfo();
+                var userId = _authService.GetUserIdByCookie(Request.Cookies);
+                var userRoles = _authService.GetUserRolesByCookie(Request.Cookies);
+                var childId = _authService.GetChildIdByCookie(Request.Cookies);
+
+                var result = await _studyGroupService.GetAllStudyGroupsShortInfo(userId, userRoles, childId);
 
                 return Ok(result);
             }

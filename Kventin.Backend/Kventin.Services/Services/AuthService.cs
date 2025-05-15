@@ -164,5 +164,14 @@ namespace Kventin.Services.Services
 
             return roles;
         }
+
+        public int GetChildIdByCookie(IRequestCookieCollection cookie)
+        {
+            var token = cookie["choco-cookies"] ?? string.Empty;
+
+            var childId = _jwtProvider.GetChildIdByToken(token);
+
+            return childId;
+        }
     }
 }
