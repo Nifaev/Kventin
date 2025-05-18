@@ -11,7 +11,7 @@ namespace Kventin.DataAccess.Domain
         /// <summary>
         /// Комментарий преподавателя
         /// </summary>
-        public required string Comment { get; set; }
+        public string? Comment { get; set; }
 
         /// <summary>
         /// Непосредственно оценка
@@ -49,13 +49,18 @@ namespace Kventin.DataAccess.Domain
         public Lesson? Lesson { get; set; }
 
         /// <summary>
-        /// Id занятия
+        /// Id задания
         /// </summary>
         public int? ExerciseId { get; set; }
 
         /// <summary>
-        /// Занятие
+        /// Задание
         /// </summary>
         public Exercise? Exercise { get; set; }
+
+        /// <summary>
+        /// Тип оценки (за что поставлена)
+        /// </summary>
+        public MarkType MarkType { get; set; }
     }
 }

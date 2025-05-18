@@ -1,4 +1,5 @@
 ﻿using Kventin.DataAccess.Domain;
+using Kventin.DataAccess.Enums;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

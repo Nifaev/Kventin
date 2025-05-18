@@ -17,9 +17,6 @@ namespace Kventin.DataAccess.Mappings
 
             builder.HasOne(x => x.Exercise)
                 .WithMany(x => x.Answers);
-
-            builder.Property(x => x.Content)
-                .HasMaxLength(500);
         }
     }
 }

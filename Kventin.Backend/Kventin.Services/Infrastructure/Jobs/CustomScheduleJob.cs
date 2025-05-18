@@ -10,8 +10,9 @@ namespace Kventin.Services.Infrastructure.Jobs
             Console.WriteLine($"Задача \"CustomScheduleJob\" запущена в {DateTime.Now}");
 
             var connectionString = context.JobDetail.JobDataMap.GetString("connectionString") ?? string.Empty;
+            var weeksCount = context.JobDetail.JobDataMap.GetIntValue("weeksCount");
 
-            var lessonGenerator = new LessonGenerator(connectionString);
+            var lessonGenerator = new LessonGenerator(connectionString, weeksCount);
 
             await lessonGenerator.GenerateLessons();
 

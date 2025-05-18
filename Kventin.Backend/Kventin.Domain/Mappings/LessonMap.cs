@@ -20,15 +20,6 @@ namespace Kventin.DataAccess.Mappings
 
             builder.HasOne(x => x.ScheduleItem)
                 .WithMany(x => x.Lessons);
-
-            builder.Property(x => x.Description)
-                .HasMaxLength(500);
-
-            builder.Property(x => x.Classroom)
-                .HasMaxLength(10);
-
-            builder.Property(x => x.Topic)
-                .HasMaxLength(100);
         }
     }
 }

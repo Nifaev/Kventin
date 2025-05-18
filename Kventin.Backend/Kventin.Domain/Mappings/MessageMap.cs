@@ -19,9 +19,6 @@ namespace Kventin.DataAccess.Mappings
                 .WithMany(x => x.RecievedMessages)
                 .OnDelete(DeleteBehavior.NoAction)
                 .IsRequired();
-
-            builder.Property(x => x.Content)
-                .HasMaxLength(500);
         }
     }
 }

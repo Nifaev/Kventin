@@ -1,134 +1,236 @@
 ﻿using Kventin.DataAccess;
 using Kventin.DataAccess.Domain;
+using Kventin.DataAccess.Enums;
+using Kventin.Services.Config;
 using Kventin.Services.Dtos.Exercises;
+using Kventin.Services.Dtos.Files;
 using Kventin.Services.Dtos.Lessons;
+using Kventin.Services.Dtos.Marks;
+using Kventin.Services.Dtos.Users;
 using Kventin.Services.Infrastructure.Exceptions;
 using Kventin.Services.Infrastructure.Extensions;
 using Kventin.Services.Interfaces.Services;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 
 namespace Kventin.Services.Services
 {
-    public class LessonService(KventinContext db) : ILessonService
+    public class LessonService(KventinContext db,
+        IOptions<LessonsGeneratorOptions> lessonsOptions,
+        IFileService fileService) : ILessonService
     {
         private readonly KventinContext _db = db;
-
-        public async Task<GetLessonInfoForStudentOrParentDto> GetStudentOrParentLessonInfo(int lessonId, int userId)
+        private readonly IFileService _fileService = fileService;
+        private readonly LessonsGeneratorOptions _options = lessonsOptions.Value;
+        private readonly int _take = 100;
+        public async Task<SchoolWeekDto> GetSchoolWeek(int skipWeeksCount, int userId, List<string> userRoles, int childId)
         {
-            var lesson = await GetLessonFullInfo(lessonId);
+            if (skipWeeksCount > _options.WeeksCount)
+                throw new ArgumentException($"Значение параметра skipWeeksCount не должно превышать {_options.WeeksCount}");
 
-            if (lesson == null)
-                throw new EntityNotFoundException("Занятие с указанным id не найдено");
+            var (startOfWeek, endOfWeek) = GetWeek(skipWeeksCount);
 
-            var userChildren = await _db.Users
-                .Where(x => x.Parents
-                    .Select(y => y.Id)
-                    .Contains(userId))
-                .Select(x => x.Id)
-                .ToListAsync();
-
-            var isStudent = lesson.StudyGroup.Students.Any(x => x.Id == userId);
-
-            var isParent = lesson.StudyGroup.Students.Any(x => userChildren.Contains(x.Id));
-
-            if (!isStudent && !isParent)
-                throw new NoAccessException("Вы можете просматривать только занятия ваших групп или групп ваших детей");
-
-            User student;
-
-            // Если детей несколько, то нужно получить того ребенка, который выбран
-            // Надо реализовать
-            // Может даже разбить на два метода: для родителей и для ребенка?
-            if (isStudent)
-                student = lesson.StudyGroup.Students.First(x => x.Id == userId);
-            else if (isParent)
-            {
-                //student = lesson.StudyGroup.Students.First(x => )
-            }
-
-            var result = FillLessonDtoWithBaseInfo<GetLessonInfoForStudentOrParentDto>(lesson);
-
-            throw new NotImplementedException();
-        }
-
-        public async Task<GetLessonInfoForTeacherDto> GetTeacherLessonInfo(int lessonId, int userId)
-        {
-            var lesson = await GetLessonFullInfo(lessonId);
-
-            if (lesson == null)
-                throw new EntityNotFoundException("Занятие с указанным id не найдено");
-
-            var isSuperUser = (await _db.Users.FindAsync(userId))!.IsSuperUser;
-
-            if (lesson.TeacherId != userId && !isSuperUser)
-                throw new NoAccessException("Вы можете просматривать только те занятия, в которых назначены преподавателем");
-
-            var result = FillLessonDtoWithBaseInfo<GetLessonInfoForTeacherDto>(lesson);
-
-            result.Students = lesson.StudentsAttended
-                .Select(x =>
+            var result = new SchoolWeekDto
                 {
-                    var mark = lesson.Marks.FirstOrDefault(y => y.StudentId == x.Id);
+                    SchoolDays = [],
+                    StartOfWeek = startOfWeek,
+                    EndOFWeek = endOfWeek
+                };
 
-                    return new StudentLessonDto
-                    {
-                        StudentId = x.Id,
-                        StudentFullName = x.GetFullName(),
-                        StudentShortName = x.GetShortName(),
-                        Attended = true,
-                        Mark = mark?.Value,
-                        TeacherComment = mark?.Comment,
-                    };
-                })
-                .ToList();
+            var lessonsQuery = _db.Lessons
+                .Where(x => x.Date >= startOfWeek &&
+                            x.Date <= endOfWeek);
 
-            var notAttendedStudents = lesson.StudyGroup.Students
-                .Where(x => !result.Students.Select(y => y.StudentId).Contains(x.Id))
-                .Select(x => new StudentLessonDto
+            lessonsQuery = GetLessonsQueryForRoles(lessonsQuery, userId, userRoles, childId);
+
+            lessonsQuery = lessonsQuery
+                .Include(x => x.Teacher)
+                .Include(x => x.Subject)
+                .Include(x => x.StudyGroup);
+
+            var lessons = await GetEntitiesPaged(lessonsQuery);
+
+            if (!lessons.Any())
+                return result;
+
+            result.SchoolDays = lessons
+                .GroupBy(x => x.Date)
+                .ToDictionary(
+                    x => x.Key,
+                    y => y
+                        .OrderBy(y => y.StartTime)
+                            .ThenBy(y => y.EndTime)
+                        .ToList())
+                .Select(x => new SchoolDayDto
                 {
-                    StudentId = x.Id,
-                    StudentFullName = x.GetFullName(),
-                    StudentShortName = x.GetShortName(),
-                    Attended = false,
-                })
-                .ToList();
-
-            result.Students.AddRange(notAttendedStudents);
-
-            result.Exercises = lesson.Exercises
-                .Select(x => new TeacherExerciseShortInfoDto
-                { 
-                    ExerciseId = x.Id,
-                    Deadline = x.DeadlineDateTime,
-                    Content = x.Content,
-                    IsIndividual = x.IsIndividual,
-                    IndividualStudentId = x.IndividualStudentId,
-                    IndividualStudentFullName = x.IndividualStudent?.GetFullName(),
-                    IndividualStudentShortName = x.IndividualStudent?.GetShortName(),
+                    Date = x.Key,
+                    DayOfWeek = x.Key.DayOfWeek.MapToDayOfTheWeek(),
+                    Lessons = x.Value
+                        .Select(y => new LessonShortInfoDto(y))
+                        .ToList()
                 })
                 .ToList();
 
             return result;
         }
 
-        private async Task<Lesson?> GetLessonFullInfo(int lessonId)
+        public async Task<SchoolDayDto> GetSchoolDay(DateOnly date, int userId, List<string> userRoles, int childId)
         {
-            var lesson = await _db.Lessons
-                .Include(x => x.Subject)
-                .Include(x => x.Teacher)
-                .Include(x => x.Marks)
-                .Include(x => x.StudentsAttended)
-                .Include(x => x.StudyGroup)
-                    .ThenInclude(x => x.Students)
-                .Include(x => x.Exercises)
-                .FirstOrDefaultAsync(x => x.Id == lessonId);
+            var result = new SchoolDayDto
+            {
+                Date = date,
+                DayOfWeek = date.DayOfWeek.MapToDayOfTheWeek(),
+                Lessons = []
+            };
 
-            return lesson;
+            var lessonsQuery = _db.Lessons
+                .Where(x => x.Date == date);
+
+            lessonsQuery = GetLessonsQueryForRoles(lessonsQuery, userId, userRoles, childId);
+
+            lessonsQuery = lessonsQuery
+                .Include(x => x.Teacher)
+                .Include(x => x.StudyGroup)
+                .Include(x => x.Subject);
+
+            var lessons = await GetEntitiesPaged(lessonsQuery);
+
+            if (!lessons.Any())
+                return result;
+
+            result.Lessons = lessons
+                .OrderBy(x => x.StartTime)
+                    .ThenBy(x => x.EndTime)
+                .Select(x => new LessonShortInfoDto(x))
+                .ToList();
+
+            return result;
         }
 
-        private T FillLessonDtoWithBaseInfo<T>(Lesson lesson) where T : GetLessonBaseInfoDto
+        public async Task<LessonFullInfoDto> GetLessonFullInfo(int lessonId, int userId, List<string> userRoles, int childId)
         {
-            var baseDto = new GetLessonBaseInfoDto
+            var studentId = 0;
+
+            if (userRoles.Contains("Parent"))
+            {
+                if (childId == 0)
+                    throw new ArgumentException("Не выбран ребенок");
+
+                studentId = childId;
+            }
+            else if (userRoles.Contains("Student"))
+                studentId = userId;
+
+            var lesson = await GetLessonWithAllIncludes(lessonId);
+
+            if (lesson == null)
+                throw new EntityNotFoundException("Занятие с таким Id не найдено");
+
+            var dto = GetLessonFullDtoWithBaseInfo(lesson);
+
+            if (lesson.Files.Count != 0)
+            {
+                var fileDtos = lesson.Files
+                    .Select(x => new FileInfoDto(x))
+                    .ToList();
+
+                dto.Files.AddRange(fileDtos);
+            }
+
+            var studentsEnumerable = lesson.StudyGroup.Students
+                .Select(x => new LessonStudentInfoDto(x)
+                {
+                    Attended = lesson.StudentsAttended
+                        .Any(y => y.Id == x.Id),
+                    Marks = lesson.Marks
+                        .Where(x => x.StudentId == x.Id &&
+                                    x.LessonId.HasValue &&
+                                    x.MarkType == MarkType.ForLesson)
+                        .Select(x => new MarkInfoForLessonDto
+                        {
+                            MarkType = x.MarkType.GetDescription(),
+                            MarkId = x.Id,
+                            MarkValue = x.Value,
+                            TeacherComment = x.Comment,
+                        })
+                        .ToList(),
+                });
+
+            var exercisesEnumerable = lesson.Exercises
+                .Select(x => new ExerciseShortInfoDto
+                {
+                    ExeriseId = x.Id,
+                    IsIndividual = x.IsIndividual,
+                    IndividualStudent = x.IsIndividual && x.IndividualStudentId.HasValue
+                        ? new UserShortInfoDto(x.IndividualStudent!)
+                        : null,
+                    CreateDateTime = x.CreateDateTime,
+                    DeadlineDateTime = x.DeadlineDateTime,
+                });
+
+            if (studentId != 0)
+            {
+                var student = studentsEnumerable
+                    .FirstOrDefault(x => x.UserId == studentId);
+
+                if (student == null)
+                    throw new ArgumentException("Указанный ученик не найден среди учеников группы");
+
+                dto.Students.Add(student);
+
+                if (lesson.Exercises.Count != 0)
+                {
+                    var exercises = exercisesEnumerable
+                        .Where(x => x.IsIndividual &&
+                                    x.IndividualStudent != null &&
+                                    x.IndividualStudent!.UserId == studentId ||
+                                    !x.IsIndividual)
+                        .ToList();
+
+                    exercises.ForEach(x =>
+                    {
+                        var mark = lesson.Exercises
+                            .FirstOrDefault(y => y.Id == x.ExeriseId)?
+                            .Marks
+                            .FirstOrDefault(y => y.StudentId == studentId);
+
+                        if (mark == null)
+                        {
+                            x.Mark = null;
+
+                            return;
+                        }
+
+                        var markDto = new MarkInfoForLessonDto
+                        {
+                            MarkId = mark.Id,
+                            MarkValue = mark.Value,
+                            MarkType = mark.MarkType.GetDescription(),
+                            TeacherComment = mark.Comment,
+                        };
+
+                        x.Mark = markDto;
+                    });
+
+                    dto.Exercises = exercises;
+                }
+            }
+            else
+            {
+                var students = studentsEnumerable.ToList();
+                var exercises = exercisesEnumerable.ToList();
+
+                dto.Students = students;
+                dto.Exercises = exercises;
+            }
+
+            return dto;
+        }
+
+        private LessonFullInfoDto GetLessonFullDtoWithBaseInfo(Lesson lesson)
+        {
+            var dto = new LessonFullInfoDto
             {
                 LessonId = lesson.Id,
                 SubjectId = lesson.SubjectId,
@@ -137,19 +239,168 @@ namespace Kventin.Services.Services
                 StartTime = lesson.StartTime,
                 EndTime = lesson.EndTime,
                 Classroom = lesson.Classroom,
-                TeacherFullName = lesson.Teacher.GetFullName(),
-                TeacherId = lesson.TeacherId,
+                Teacher = new UserShortInfoDto(lesson.Teacher),
                 IsOnline = lesson.IsOnline,
                 Topic = lesson.Topic,
                 Description = lesson.Description,
-                Status = lesson.Status,
+                LessonStatus = lesson.Status.GetDescription(),
                 GroupName = lesson.StudyGroup.Name,
                 GroupId = lesson.StudyGroup.Id,
+                Students = [],
+                Files = [],
+                Exercises = [],
             };
 
-            var result = baseDto as T;
+            return dto;
+        }
 
-            return result!;
+        private async Task<List<T>> GetEntitiesPaged<T>(IQueryable<T> query)
+        {
+            var entitiesCount = await query.CountAsync();
+            var pageCount = entitiesCount / (double)_take;
+            var entities = new List<T>();
+
+            if (entitiesCount == 0)
+                return entities;
+
+            for (int pageNumber = 0; pageNumber < pageCount; pageNumber++)
+            {
+                var partOfEntities = await query
+                    .Skip(pageNumber * _take)
+                    .Take(_take)
+                    .ToListAsync();
+
+                entities.AddRange(partOfEntities);
+            }
+
+            return entities;
+        }
+        
+        private async Task<Lesson?> GetLessonWithAllIncludes(int lessonId)
+        {
+            var lesson = await _db.Lessons
+                .AsNoTracking()
+                .Include(x => x.Subject)
+                .Include(x => x.Teacher)
+                .Include(x => x.Marks)
+                .Include(x => x.StudentsAttended)
+                .Include(x => x.StudyGroup)
+                    .ThenInclude(x => x.Students)
+                .Include(x => x.Exercises)
+                    .ThenInclude(x => x.IndividualStudent)
+                .Include(x => x.Files)
+                    .ThenInclude(x => x.UploadedByUser)
+                .FirstOrDefaultAsync(x => x.Id == lessonId);
+
+            return lesson;
+        }
+
+        private IQueryable<Lesson> GetLessonsQueryForRoles(IQueryable<Lesson> lessonsQuery, int userId, List<string> userRoles, int childId)
+        {
+            IQueryable<Lesson> result = lessonsQuery;
+
+            if (userRoles.Contains("Parent"))
+            {
+                if (childId == 0)
+                    throw new ArgumentException("Вы не выбрали ребенка");
+                else
+                    result = result
+                        .Where(x => x.StudyGroup.Students.
+                            Any(y => y.Id == childId));
+            }
+            else if (userRoles.Contains("Teacher"))
+                result = result
+                    .Where(x => x.TeacherId == userId);
+            else if (userRoles.Contains("Student"))
+                result = result
+                    .Where(x => x.StudyGroup.Students
+                        .Any(y => y.Id == userId));
+
+            return result;
+        }
+
+        private (DateOnly StartOfWeek, DateOnly EndOfWeek) GetWeek(int skipWeeksCount)
+        {
+            var today = DateTime.Today.AddDays(7 * skipWeeksCount);
+
+            var diff = (7 + (today.DayOfWeek - DayOfWeek.Monday)) % 7;
+
+            var startOfWeek = DateOnly.FromDateTime(today.AddDays(-1 * diff).Date);
+
+            var endOfWeek = startOfWeek.AddDays(6);
+
+            return (startOfWeek, endOfWeek);
+        }
+
+        public async Task UpdateLesson(int lessonId, UpdateLessonDto dto)
+        {
+            var lesson = await _db.Lessons.FindAsync(lessonId)
+                ?? throw new EntityNotFoundException("Занятие с указанным Id не найдено");
+
+            if (dto.IsOnline.HasValue)
+                lesson.IsOnline = dto.IsOnline.Value;
+
+            if (dto.LessonStatus.HasValue)
+                dto.LessonStatus = dto.LessonStatus.Value;
+
+            if (!string.IsNullOrWhiteSpace(dto.Classroom))
+                lesson.Classroom = dto.Classroom;
+
+            if (!string.IsNullOrWhiteSpace(dto.Description))
+                lesson.Description = dto.Description;
+
+            if (!string.IsNullOrWhiteSpace(dto.Topic))
+                lesson.Topic = dto.Topic;
+
+            if (dto.TeacherId.HasValue)
+            {
+                var teacher = await _db.Users
+                    .FirstOrDefaultAsync(x => x.Id == dto.TeacherId.Value &&
+                                              x.Roles.Any(y => y.Name == "Teacher"))
+                    ?? throw new EntityNotFoundException("Преподаватель с таким Id не найден");
+
+                lesson.TeacherId = teacher.Id;
+                lesson.Teacher = teacher;
+            }
+
+            if (dto.SubjectId.HasValue)
+            {
+                var subject = await _db.Subjects.FindAsync(dto.SubjectId.Value)
+                    ?? throw new EntityNotFoundException("Предмет с таким Id не найден");
+
+                lesson.SubjectId = subject.Id;
+                lesson.Subject = subject;
+            }
+
+            await _db.SaveChangesAsync();
+        }
+
+        public async Task AttachFileToLesson(int lessonId, IFormFile file, int uploadedByUserId)
+        {
+            await _fileService.UploadFile<Lesson>(file, uploadedByUserId, FileLinkType.Lesson, lessonId);
+        }
+
+        public async Task DetachFileFromLesson(int lessonId, int fileId)
+        {
+            await _fileService.DeleteFile(fileId);
+        }
+
+        public async Task MarkAttendance(int lessonId, List<int> studentIds)
+        {
+            var students = await _db.Users
+                .Where(x => studentIds.Contains(x.Id) &&
+                            x.Roles.Any(y => y.Name == "Student"))
+                .ToListAsync();
+
+            if (students.Count == 0)
+                throw new EntityNotFoundException("Ни один ученик с переданным Id не найден");
+
+            var lesson = await _db.Lessons.FindAsync(lessonId)
+                ?? throw new EntityNotFoundException("Занятие с переданным Id не найдено");
+
+            lesson.StudentsAttended.AddRange(students);
+
+            await _db.SaveChangesAsync();
         }
     }
 }

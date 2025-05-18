@@ -2,12 +2,10 @@
 using Kventin.Services.Interfaces.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.ComponentModel.DataAnnotations;
 
 namespace Kventin.WebApi.Controllers
 {
     [ApiController]
-    [Authorize]
     [Route("api/file")]
     public class FileController(IFileService fileService,
         IAuthService authService) : ControllerBase
@@ -16,24 +14,26 @@ namespace Kventin.WebApi.Controllers
         private readonly IAuthService _authService = authService;
 
         /// <summary>
-        /// Загрузить файл
+        /// Загрузить файл - тестовый вариант на всякий случай (SuperUser)
         /// </summary>
         /// <param name="file"></param>
         /// <returns></returns>
         [HttpPost("upload")]
+        [Authorize(Roles = "SuperUser")]
         public async Task<ActionResult> UploadFile(IFormFile file)
         {
             var uploadedByUserId = _authService.GetUserIdByCookie(Request.Cookies);
 
-            await _fileService.UploadFile(file, uploadedByUserId);
+            await _fileService.UploadFileWithoutLinks(file, uploadedByUserId);
 
             return Ok();
         }
 
         /// <summary>
-        /// Получить метаинформацию по ID
+        /// Получить метаинформацию по ID - тестовый вариант на всякий случай (SuperUser)
         /// </summary>
         [HttpGet("{fileId}")]
+        [Authorize(Roles = "SuperUser")]
         public async Task<ActionResult<FileInfoDto>> GetFileInfo(int fileId)
         {
             var result = await _fileService.GetFileInfo(fileId);
@@ -42,9 +42,10 @@ namespace Kventin.WebApi.Controllers
         }
 
         /// <summary>
-        /// Скачать файл по ID
+        /// Скачать файл по Id - использовать для скачивания любого файла (Все авторизованные пользователи)
         /// </summary>
         [HttpGet("{fileId}/download")]
+        [Authorize]
         public async Task<ActionResult> DownloadFile(int fileId)
         {
             var dto = await _fileService.DownloadFile(fileId);
@@ -53,9 +54,10 @@ namespace Kventin.WebApi.Controllers
         }
 
         /// <summary>
-        /// Удалить файл по ID
+        /// Удалить файл по ID - тестовый вариант на всякий случай (SuperUser)
         /// </summary>
         [HttpDelete("{fileId}")]
+        [Authorize(Roles = "SuperUser")]
         public async Task<ActionResult> DeleteFile(int fileId)
         {
             await _fileService.DeleteFile(fileId);

@@ -9,9 +9,6 @@ namespace Kventin.DataAccess.Mappings
         public void Configure(EntityTypeBuilder<Subject> builder)
         {
             builder.HasKey(x => x.Id);
-
-            builder.Property(x => x.Name)
-                .HasMaxLength(50);
         }
     }
 }

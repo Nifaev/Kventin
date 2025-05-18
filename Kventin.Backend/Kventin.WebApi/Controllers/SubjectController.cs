@@ -7,9 +7,11 @@ namespace Kventin.WebApi.Controllers
 {
     [ApiController]
     [Route("api/subject")]
-    public class SubjectController(ISubjectService subjectService) : ControllerBase
+    public class SubjectController(ISubjectService subjectService,
+        IAuthService authService) : ControllerBase
     {
         private readonly ISubjectService _subjectService = subjectService;
+        private readonly IAuthService _authService = authService;
 
         /// <summary>
         /// Создать предмет (SuperUser, AdminSchedule)
@@ -36,13 +38,30 @@ namespace Kventin.WebApi.Controllers
 
         /// <summary>
         /// Получить все предметы (Все авторизованные пользователи)
+        /// SuperUser и AdminSchedule получают список всех предметов
+        /// Teacher/Student получают список своих предметов
+        /// Parent получае тсписок предметов выбранного ребенка
         /// </summary>
         /// <returns></returns>
         [HttpGet("all")]
         [Authorize]
         public async Task<ActionResult<List<SubjectDto>>> GetAllSubjects()
         {
-            return await _subjectService.GetAllSubjects();
+            var userId = _authService.GetUserIdByCookie(Request.Cookies);
+            var userRoles = _authService.GetUserRolesByCookie(Request.Cookies);
+            var childId = _authService.GetChildIdByCookie(Request.Cookies);
+
+            try
+            {
+                var result = await _subjectService.GetAllSubjects(userId, userRoles, childId);
+                
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+
         }
 
         /// <summary>

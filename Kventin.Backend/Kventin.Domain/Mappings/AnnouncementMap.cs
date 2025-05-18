@@ -13,12 +13,6 @@ namespace Kventin.DataAccess.Mappings
             builder.HasOne(x => x.Author)
                 .WithMany(x => x.Announcements)
                 .IsRequired();
-
-            builder.Property(x => x.Title)
-                .HasMaxLength(100);
-
-            builder.Property(x => x.Content)
-                .HasMaxLength(1000);
         }
     }
 }

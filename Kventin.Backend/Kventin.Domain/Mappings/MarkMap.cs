@@ -29,9 +29,6 @@ namespace Kventin.DataAccess.Mappings
 
             builder.HasOne(x => x.Lesson)
                 .WithMany(x => x.Marks);
-
-            builder.Property(x => x.Comment)
-                .HasMaxLength(500);
         }
     }
 }

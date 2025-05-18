@@ -17,8 +17,4 @@
     <ProjectReference Include="..\Kventin.Domain\Kventin.DataAccess.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Dtos\Marks\" />
-  </ItemGroup>
-
 </Project>

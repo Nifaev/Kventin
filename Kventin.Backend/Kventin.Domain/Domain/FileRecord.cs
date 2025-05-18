@@ -1,4 +1,5 @@
 ﻿using Kventin.DataAccess.Domain.Base;
+using Kventin.DataAccess.Enums;
 
 namespace Kventin.DataAccess.Domain
 {
@@ -26,6 +27,11 @@ namespace Kventin.DataAccess.Domain
         /// Размер файла
         /// </summary>
         public long FileSize { get; set; } 
+
+        /// <summary>
+        /// С какой сущностью связан файл
+        /// </summary>
+        public FileLinkType LinkedWith { get; set; }
 
         /// <summary>
         /// Id пользователя, загрузившего файл
@@ -96,7 +102,5 @@ namespace Kventin.DataAccess.Domain
         /// Объявление, к которому прикреплен файл
         /// </summary>
         public Announcement? Announcement { get; set; }
-
-
     }
 }

@@ -1,5 +1,4 @@
-﻿using Kventin.DataAccess.Enums;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Reflection;
 
 namespace Kventin.Services.Infrastructure.Extensions

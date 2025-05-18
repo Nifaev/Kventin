@@ -9,7 +9,7 @@ using Kventin.Services.Interfaces.Tools;
 using Kventin.Services.Services;
 using Microsoft.AspNetCore.CookiePolicy;
 using Microsoft.Extensions.FileProviders;
-using Microsoft.OpenApi.Models;
+using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -61,11 +61,15 @@ builder.Services.AddScoped<IStudyGroupService, StudyGroupService>();
 builder.Services.AddScoped<IRoleService, RoleService>();
 builder.Services.AddScoped<IFileService, FileService>();
 builder.Services.AddScoped<IFileRecordFactory, FileRecordFactory>();
+builder.Services.AddScoped<IMarkService, MarkService>();
 
 builder.Services.AddSingleton<IFileStorageProvider, YandexCloudFileStorageProvider>();
 
 builder.Services.Configure<YandexCloudFileStorageOptions>(
-    builder.Configuration.GetSection("YandexCloudObjectStorage"));
+    builder.Configuration.GetSection("YandexCloudObjectStorageOptions"));
+
+builder.Services.Configure<LessonsGeneratorOptions>(
+    builder.Configuration.GetSection("LessonsGeneratorOptions"));
 
 builder
     .Services
@@ -119,6 +123,8 @@ if (Directory.Exists(frontendPath))
 
 app.MapControllers();
 
-await JobScheduler.Start(connectionString);
+var lessonsGeneratorOptions = app.Services.GetRequiredService<IOptions<LessonsGeneratorOptions>>();
+
+await JobScheduler.Start(connectionString, lessonsGeneratorOptions);
 
 app.Run();

@@ -9,21 +9,31 @@ namespace Kventin.Services.Infrastructure.Tools
     public class LessonGenerator
     {
         private readonly KventinContext _db;
-        private readonly  DateOnly _today = DateOnly.FromDateTime(DateTime.Now);
+        private readonly int _weeksCount;
+        private readonly int _daysCount;
+        private readonly DateOnly _today;
+        private readonly DateOnly _lastDate;
+        private readonly int _take = 100;
 
-        public LessonGenerator(string connectionString)
+        public LessonGenerator(string connectionString, int weeksCount)
         {
             var optionsBuilder = new DbContextOptionsBuilder<KventinContext>();
 
             optionsBuilder.UseSqlServer(connectionString);
 
             _db = new KventinContext(optionsBuilder.Options);
+
+            _weeksCount = weeksCount;
+
+            _daysCount = _weeksCount * 7;
+
+            _today = DateOnly.FromDateTime(DateTime.Now);
+
+            _lastDate = DateOnly.FromDateTime(DateTime.Now).AddDays(_daysCount);
         }
 
         public async Task GenerateLessons()
         {
-            var inTwoWeeks = _today.AddDays(14);
-
             // Если на текущий момент январь - август, то текущий год - конец 
             // Если сентябрь - декабрь - начало
             var schedule = _today.Month >= 1 && _today.Month <= 8
@@ -34,15 +44,28 @@ namespace Kventin.Services.Infrastructure.Tools
             if (schedule == null)
                 return;
 
-            var scheduleItems = await _db.ScheduleItems
+            var scheduleItemsQuery = _db.ScheduleItems
                 .Include(x => x.Subject)
                 .Include(x => x.Teacher)
                 .Include(x => x.StudyGroup)
-                .Where(x => x.ScheduleId == schedule.Id)
-                .ToListAsync();
+                .Where(x => x.ScheduleId == schedule.Id);
 
-            if (scheduleItems.Count == 0)
+            var itemsCount = await scheduleItemsQuery.CountAsync();
+            var scheduleItems = new List<ScheduleItem>();
+            var pageCount = Math.Ceiling(itemsCount / (double)_take);
+
+            if (itemsCount == 0)
                 return;
+
+            for (int pageNumber = 0; pageNumber < pageCount; pageNumber++)
+            {
+                var items = await scheduleItemsQuery
+                    .Skip(pageNumber * _take)
+                    .Take(_take)
+                    .ToListAsync();
+
+                scheduleItems.AddRange(items);
+            }
 
             var scheduleItemIds = scheduleItems.Select(x => x.Id).ToList();
 
@@ -54,7 +77,7 @@ namespace Kventin.Services.Infrastructure.Tools
                 .Where(x => x.ScheduleItem != null &&
                             scheduleItemIds.Contains(x.ScheduleItem.Id) &&
                             x.Date > _today &&
-                            x.Date <= inTwoWeeks)
+                            x.Date <= _lastDate)
                 .Select(x => new
                 {
                     LessonId = x.Id,
@@ -69,22 +92,16 @@ namespace Kventin.Services.Infrastructure.Tools
                     .Where(x => x.ScheduleItemId == scheduleItem.Id)
                     .ToList();
 
-                var intoWeek = scheduleItem.DayOfWeek.GetNext(_today);
-                var intoTwoWeeks = scheduleItem.DayOfWeek.GetNext(_today, 1);
-
-                var lessonIntoWeekCreated = createdLessons.Any(x => x.Date == intoWeek);
-                var lessonIntoTwoWeeksCreated = createdLessons.Any(x => x.Date == intoTwoWeeks);
-
-                if (lessonIntoWeekCreated && lessonIntoTwoWeeksCreated)
-                    continue;
-                else if (lessonIntoWeekCreated)
-                    await MapScheduleItemToLesson(scheduleItem, intoTwoWeeks);
-                else if (lessonIntoTwoWeeksCreated)
-                    await MapScheduleItemToLesson(scheduleItem, intoWeek);
-                else
+                for (int weekNumber = 0; weekNumber < _weeksCount; weekNumber++)
                 {
-                    await MapScheduleItemToLesson(scheduleItem, intoWeek);
-                    await MapScheduleItemToLesson(scheduleItem, intoTwoWeeks);
+                    var thisWeekLessonDate = scheduleItem.DayOfWeek.GetNext(_today, weekNumber);
+
+                    var wasLessonCreated = createdLessons.Any(x => x.Date == thisWeekLessonDate);
+
+                    if (!wasLessonCreated)
+                    {
+                        await MapScheduleItemToLesson(scheduleItem, thisWeekLessonDate);
+                    }
                 }
             }
 
@@ -107,9 +124,8 @@ namespace Kventin.Services.Infrastructure.Tools
                 ScheduleItem = scheduleItem,
             };
 
-            await _db.Lessons.AddAsync(lesson);
-
             scheduleItem.Lessons.Add(lesson);
+            await _db.Lessons.AddAsync(lesson);
         }
     }
 }

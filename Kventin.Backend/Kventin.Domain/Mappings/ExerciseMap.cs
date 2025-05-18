@@ -25,9 +25,6 @@ namespace Kventin.DataAccess.Mappings
             builder.HasOne(x => x.StudyGroup)
                 .WithMany(x => x.RecievedExercises)
                 .IsRequired();
-
-            builder.Property(x => x.Content)
-                .HasMaxLength(500);
         }
     }
 }

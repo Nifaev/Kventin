@@ -1,4 +1,6 @@
-﻿using Kventin.Services.Infrastructure.Jobs;
+﻿using Kventin.Services.Config;
+using Kventin.Services.Infrastructure.Jobs;
+using Microsoft.Extensions.Options;
 using Quartz;
 using Quartz.Impl;
 
@@ -6,7 +8,7 @@ namespace Kventin.Services.Infrastructure
 {
     public class JobScheduler
     {
-        public static async Task Start(string connectionString)
+        public static async Task Start(string connectionString, IOptions<LessonsGeneratorOptions> options)
         {
             IScheduler scheduler = await StdSchedulerFactory.GetDefaultScheduler();
             await scheduler.Start();
@@ -14,6 +16,7 @@ namespace Kventin.Services.Infrastructure
             IJobDetail job = JobBuilder.Create<CustomScheduleJob>()
                 .WithIdentity("CustomScheduleJob")
                 .UsingJobData("connectionString", connectionString)
+                .UsingJobData("weeksCount", options.Value.WeeksCount)
                 .Build();
 
             ITrigger trigger = TriggerBuilder.Create()

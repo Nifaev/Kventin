@@ -121,8 +121,12 @@ namespace Kventin.Services.Services
             {
                 FirstName = dto.FirstName,
                 LastName = dto.LastName,
-                MiddleName = dto.MiddleName,
-                Email = dto.Email,
+                MiddleName = !string.IsNullOrWhiteSpace(dto.MiddleName) 
+                    ? dto.MiddleName
+                    : null,
+                Email = !string.IsNullOrWhiteSpace(dto.Email)
+                    ? dto.Email
+                    : null,
                 PhoneNumber = shortPhoneNumber,
                 HashedPassword = hashedPassword,
             };

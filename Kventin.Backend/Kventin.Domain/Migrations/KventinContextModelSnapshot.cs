@@ -35,8 +35,7 @@ namespace Kventin.DataAccess.Migrations
 
                     b.Property<string>("Content")
                         .IsRequired()
-                        .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("CreateDateTime")
                         .HasColumnType("datetime2");
@@ -46,8 +45,7 @@ namespace Kventin.DataAccess.Migrations
 
                     b.Property<string>("Title")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -178,8 +176,7 @@ namespace Kventin.DataAccess.Migrations
 
                     b.Property<string>("Content")
                         .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("CreateDateTime")
                         .HasColumnType("datetime2");
@@ -228,8 +225,7 @@ namespace Kventin.DataAccess.Migrations
 
                     b.Property<string>("Content")
                         .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("CreateDateTime")
                         .HasColumnType("datetime2");
@@ -285,6 +281,9 @@ namespace Kventin.DataAccess.Migrations
                     b.Property<int?>("LessonId")
                         .HasColumnType("int");
 
+                    b.Property<int>("LinkedWith")
+                        .HasColumnType("int");
+
                     b.Property<int?>("MessageId")
                         .HasColumnType("int");
 
@@ -330,8 +329,7 @@ namespace Kventin.DataAccess.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Classroom")
-                        .HasMaxLength(10)
-                        .HasColumnType("nvarchar(10)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("CreateDateTime")
                         .HasColumnType("datetime2");
@@ -343,8 +341,7 @@ namespace Kventin.DataAccess.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Description")
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<TimeOnly>("EndTime")
                         .HasColumnType("time");
@@ -371,8 +368,7 @@ namespace Kventin.DataAccess.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Topic")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -396,9 +392,7 @@ namespace Kventin.DataAccess.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Comment")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("CreateDateTime")
                         .HasColumnType("datetime2");
@@ -410,6 +404,9 @@ namespace Kventin.DataAccess.Migrations
                         .HasColumnType("int");
 
                     b.Property<int?>("LessonId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("MarkType")
                         .HasColumnType("int");
 
                     b.Property<int>("StudentId")
@@ -444,8 +441,7 @@ namespace Kventin.DataAccess.Migrations
 
                     b.Property<string>("Content")
                         .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("CreateDateTime")
                         .HasColumnType("datetime2");
@@ -481,8 +477,7 @@ namespace Kventin.DataAccess.Migrations
 
                     b.Property<string>("Content")
                         .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("CreateDateTime")
                         .HasColumnType("datetime2");
@@ -566,7 +561,7 @@ namespace Kventin.DataAccess.Migrations
                         {
                             Id = 7,
                             CreateDateTime = new DateTime(2025, 1, 18, 19, 30, 0, 0, DateTimeKind.Unspecified),
-                            Name = "AdminStudyProgress"
+                            Name = "AdminBase"
                         },
                         new
                         {
@@ -591,6 +586,12 @@ namespace Kventin.DataAccess.Migrations
                             Id = 11,
                             CreateDateTime = new DateTime(2025, 1, 18, 19, 30, 0, 0, DateTimeKind.Unspecified),
                             Name = "AdminRegistration"
+                        },
+                        new
+                        {
+                            Id = 12,
+                            CreateDateTime = new DateTime(2025, 1, 18, 19, 30, 0, 0, DateTimeKind.Unspecified),
+                            Name = "AdminLessons"
                         });
                 });
 
@@ -763,8 +764,7 @@ namespace Kventin.DataAccess.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -853,8 +853,7 @@ namespace Kventin.DataAccess.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("ContractNumber")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("CreateDateTime")
                         .HasColumnType("datetime2");
@@ -863,43 +862,35 @@ namespace Kventin.DataAccess.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Email")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("FirstName")
                         .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("HashedPassword")
                         .IsRequired()
-                        .HasMaxLength(96)
-                        .HasColumnType("nvarchar(96)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsSuperUser")
                         .HasColumnType("bit");
 
                     b.Property<string>("LastName")
                         .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("MiddleName")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PhoneNumber")
                         .IsRequired()
-                        .HasMaxLength(10)
-                        .HasColumnType("nvarchar(10)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("TgLink")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("VkLink")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 

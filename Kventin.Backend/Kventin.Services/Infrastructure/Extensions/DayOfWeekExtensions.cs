@@ -8,7 +8,7 @@ namespace Kventin.Services.Infrastructure.Extensions
         {
             var dayNumber = (int)dayOfWeek;
 
-            dayNumber = dayNumber == 0 ? dayNumber + 1 : dayNumber;
+            dayNumber = dayNumber == 0 ? 7 : dayNumber;
 
             return (DayOfTheWeek)dayNumber;
         }

@@ -1,5 +1,7 @@
 ﻿using Kventin.DataAccess;
 using Kventin.DataAccess.Domain;
+using Kventin.DataAccess.Domain.Base;
+using Kventin.DataAccess.Enums;
 using Kventin.Services.Dtos.Files;
 using Kventin.Services.Interfaces.Services;
 using Kventin.Services.Interfaces.Tools;
@@ -18,7 +20,8 @@ namespace Kventin.Services.Services
 
         public async Task DeleteFile(int fileId)
         {
-            var fileRecord = await _db.FileRecords.FindAsync(fileId);
+            var fileRecord = await _db.FileRecords.FindAsync(fileId)
+                ?? throw new Exception("Файл с таким Id не найден");
 
             await _fileStorageProvider.DeleteFileAsync(fileRecord!.StorageFileName);
         
@@ -54,11 +57,22 @@ namespace Kventin.Services.Services
             return dto;
         }
 
-        public async Task UploadFile(IFormFile file, int uploadedByUserId)
+        public async Task UploadFile<T>(IFormFile file, int uploadedByUserId, FileLinkType fileLinkType, int linkedEntityId = 0) where T : BaseEntity
         {
             var uploadedByUser = await _db.Users.FindAsync(uploadedByUserId);
 
-            var fileRecord = _fileRecordFactory.Create(file, file.FileName, uploadedByUser!);
+            if (fileLinkType != FileLinkType.None && linkedEntityId == 0)
+                throw new ArgumentException("Не передано зачение параметра linkedEntityId");
+
+            T? entity;
+
+            if (fileLinkType != FileLinkType.None)
+                entity = await _db.Set<T>().FindAsync(linkedEntityId)
+                    ?? throw new ArgumentException($"Сущность {fileLinkType} с переданным Id не найдена");
+            else
+                entity = null;
+
+            var fileRecord = _fileRecordFactory.Create<T>(file, file.FileName, uploadedByUser!, fileLinkType, entity);
 
             var stream = file.OpenReadStream();
 
@@ -67,6 +81,11 @@ namespace Kventin.Services.Services
             await _db.AddAsync(fileRecord);
 
             await _db.SaveChangesAsync();
+        }
+
+        public async Task UploadFileWithoutLinks(IFormFile file, int uploadedByUserId)
+        {
+            await UploadFile<Lesson>(file, uploadedByUserId, FileLinkType.None);
         }
     }
 }

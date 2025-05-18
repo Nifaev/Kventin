@@ -58,33 +58,6 @@ namespace Kventin.DataAccess.Mappings
                     CreateDateTime = new DateTime(2025, 1, 18, 19, 30, 00)
                 }
             ]);
-
-            builder.Property(x => x.FirstName)
-                .HasMaxLength(50);
-            
-            builder.Property(x => x.LastName)
-                .HasMaxLength(50);
-            
-            builder.Property(x => x.MiddleName)
-                .HasMaxLength(50);
-            
-            builder.Property(x => x.PhoneNumber)
-                .HasMaxLength(10);
-
-            builder.Property(x => x.Email)
-                .HasMaxLength(50);
-
-            builder.Property(x => x.VkLink)
-                .HasMaxLength(100);
-            
-            builder.Property(x => x.TgLink)
-                .HasMaxLength(100);
-
-            builder.Property(x => x.HashedPassword)
-                .HasMaxLength(96);
-
-            builder.Property(x => x.ContractNumber)
-                .HasMaxLength(100);
         }
     }
 }

@@ -21,11 +21,12 @@ namespace Kventin.DataAccess.Mappings
                     new() { Id = 4, Name = "SuperUser", CreateDateTime = new DateTime(2025, 1, 18, 19, 30, 00)},
                     new() { Id = 5, Name = "AdminSchedule", CreateDateTime = new DateTime(2025, 1, 18, 19, 30, 00)},
                     new() { Id = 6, Name = "AdminGroups", CreateDateTime = new DateTime(2025, 1, 18, 19, 30, 00)},
-                    new() { Id = 7, Name = "AdminStudyProgress", CreateDateTime = new DateTime(2025, 1, 18, 19, 30, 00)},
+                    new() { Id = 7, Name = "AdminBase", CreateDateTime = new DateTime(2025, 1, 18, 19, 30, 00)},
                     new() { Id = 8, Name = "AdminAnnouncements", CreateDateTime = new DateTime(2025, 1, 18, 19, 30, 00)},
                     new() { Id = 9, Name = "AdminFinances", CreateDateTime = new DateTime(2025, 1, 18, 19, 30, 00)},
                     new() { Id = 10, Name = "AdminPersonalAccounts", CreateDateTime = new DateTime(2025, 1, 18, 19, 30, 00)},
                     new() { Id = 11, Name = "AdminRegistration", CreateDateTime = new DateTime(2025, 1, 18, 19, 30, 00)},
+                    new() { Id = 12, Name = "AdminLessons", CreateDateTime = new DateTime(2025, 1, 18, 19, 30, 00)},
                 ]);
         }
     }
