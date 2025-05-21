@@ -6,53 +6,60 @@
     </div>
 
     <!-- Навигация + кнопка Выйти -->
-      <!-- Ссылки + spacer + кнопка Выйти -->
-      <ul class="nav-links">
-        <li><router-link to="/grades"       active-class="active-link">Оценки</router-link></li>
-        <li><router-link to="/announcements" active-class="active-link">Объявления</router-link></li>
-        <li><router-link to="/messages"     active-class="active-link">Сообщения</router-link></li>
-        <li><router-link to="/schedule"     active-class="active-link">Расписание</router-link></li>
-        <li><router-link to="/dashboard"    active-class="active-link">Личный кабинет</router-link></li>
-        <li v-if="isAdminOrSuper">
-          <router-link to="/roles" active-class="active-link">Роли</router-link>
-        </li>
-        <li><router-link to="/group"    active-class="active-link">Группы</router-link></li>
-        <li><router-link to="/subject"    active-class="active-link">Предмет</router-link></li>
-        <!-- этот li растягивается и «отодвигает» кнопку вправо -->
-        <li class="spacer"></li>
-        <li>
-          <button class="logout-btn" @click="logout">
-            <img src="/images/back.jpg" alt="←" class="logout-icon" />
-            Выйти
-          </button>
-        </li>
-      </ul>
-    <!-- разделитель -->
+    <ul class="nav-links">
+      <li><router-link to="/grades"        active-class="active-link">Оценки</router-link></li>
+      <li><router-link to="/announcements" active-class="active-link">Объявления</router-link></li>
+      <li><router-link to="/messages"      active-class="active-link">Сообщения</router-link></li>
+      <li><router-link to="/schedule"      active-class="active-link">Расписание</router-link></li>
+      <li><router-link to="/dashboard"     active-class="active-link">Личный кабинет</router-link></li>
+
+      <!-- Роли доступно только SuperUser и AdminGroups -->
+      <li v-if="canManageRoles">
+        <router-link to="/roles" active-class="active-link">Роли</router-link>
+      </li>
+      <!-- Группы доступно только SuperUser и AdminGroups -->
+        <router-link to="/group" active-class="active-link">Группы</router-link>
+      <!-- Предметы тоже только SuperUser и AdminGroups -->
+      <li v-if="canManageRoles">
+        <router-link to="/subject" active-class="active-link">Предмет</router-link>
+      </li>
+
+      <!-- отсуп -->
+      <li class="spacer"></li>
+      <li>
+        <button class="logout-btn" @click="logout">
+          <img src="/images/back.jpg" alt="←" class="logout-icon" />
+          Выйти
+        </button>
+      </li>
+    </ul>
+
     <div class="nav-divider"></div>
   </nav>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
-import { useRouter } from 'vue-router';
-import axios from 'axios';
+import { ref, onMounted } from 'vue'
+import axios from 'axios'
+import { useRouter } from 'vue-router'
 
-const router = useRouter();
-const isAdminOrSuper = ref(false);
+const router = useRouter()
+const canManageRoles = ref(false)
 
 onMounted(async () => {
   try {
-    const { data } = await axios.get('/api/roles/getMyRoles');
-    isAdminOrSuper.value = data.includes('AdminRegistration')
-                         || data.includes('SuperUser');
+    const { data: roles } = await axios.get('/api/roles/getMyRoles')
+    // открываем доступ к Роли/Группам/Предметам только для этих ролей
+    canManageRoles.value = roles.includes('SuperUser')
+                         || roles.includes('AdminGroups')
   } catch (e) {
-    console.error('Не удалось узнать роли', e);
+    console.error('Не удалось получить роли', e)
   }
-});
+})
 
 function logout() {
-  // Здесь можно добавить логику очистки токена
-  router.push('/');
+  // очистка токена и редирект на логин
+  router.push('/')
 }
 </script>
 
@@ -64,28 +71,20 @@ function logout() {
   background: #f9fafb;
   padding: 0 20px;
 }
-
 .logo {
   margin: 10px 0;
 }
 .logo-img {
   height: 50px;
 }
-
-
-/* сам список ссылок */
 .nav-links {
   display: flex;
   align-items: center;
   width: 100%;
-  margin: 0 auto 0 0 ;
   padding: 0;
   list-style: none;
   gap: 30px;
-
 }
-
-/* обычные пункты меню */
 .nav-links a {
   text-decoration: none;
   color: #000;
@@ -93,17 +92,13 @@ function logout() {
   font-weight: 300;
   padding: 8px 4px;
 }
-.nav-links .active-link {
+.active-link {
   font-weight: bold;
   border-bottom: 2px solid #000;
 }
-
-/* этот li растягивается, чтобы отодвинуть кнопку
 .spacer {
-  flex: 0.4;
-} */
-
-/* кнопка «Выйти» */
+  flex: 1;
+}
 .logout-btn {
   display: inline-flex;
   align-items: center;
@@ -123,8 +118,6 @@ function logout() {
   width: 18px;
   height: 18px;
 }
-
-/* разделитель */
 .nav-divider {
   width: 100%;
   height: 1px;

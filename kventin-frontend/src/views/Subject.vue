@@ -23,8 +23,10 @@
       Добавить предмет
     </button>
 
+    <!-- здесь передаём массив subjects -->
     <AddSubjectModal
       v-if="showAdd"
+      :existing-subjects="subjects"
       @close="showAdd = false"
       @created="reload"
     />
@@ -33,6 +35,7 @@
       v-if="showEdit"
       :subject-id="currentId"
       :initial="editData"
+      :existing-subjects="subjects"
       @close="showEdit = false"
       @saved="reload"
       @deleted="reload"
@@ -71,7 +74,6 @@ function openAddModal() {
 }
 
 async function openEditModal(id) {
-  // подгружаем данные предмета
   const { data } = await axios.get(`/api/subject/${id}`);
   editData.value = data;
   currentId.value = id;
@@ -81,15 +83,20 @@ async function openEditModal(id) {
 onMounted(loadAll);
 </script>
 
+
 <style scoped>
 html, body {
   margin: 0; padding: 0; height: 100%;
   background: #f9fafb;
+
 }
 .subject-page {
-  background: #f5f7fa;
-  min-height: 100vh;
-  padding: 20px;
+  position: relative; z-index: 0; min-height: 100vh;
+}
+.subject-page::before {
+  content: ""; position: absolute; inset: 0; z-index: -1;
+  background: url('/images/background.png') center/cover no-repeat;
+  opacity: 0.5;
 }
 .page-title {
   margin-top: 3%;   /* вот это новое */

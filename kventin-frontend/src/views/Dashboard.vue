@@ -178,8 +178,20 @@ async function saveField(field) {
 
 <style>
 .dashboard {
-  background-color: #f9fafb;
+  position: relative;
   min-height: 100vh;
+  /* чтобы дочерний контент был над фоном */
+  z-index: 0;
+}
+
+/* Псевдо-элемент с фоном */
+.dashboard::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1; /* за основным контентом */
+  background: url('/images/background.png') center/cover no-repeat;
+  opacity: 0.5; /* здесь регулируете прозрачность */
 }
 .content {
   padding: 20px;
