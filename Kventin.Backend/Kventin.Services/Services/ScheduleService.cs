@@ -13,6 +13,7 @@ namespace Kventin.Services.Services
     public class ScheduleService(KventinContext db) : IScheduleService
     {
         private readonly KventinContext _db = db;
+        private readonly int _take = 100;
 
         public async Task CreateSchedule(ScheduleDto dto)
         {
@@ -141,6 +142,33 @@ namespace Kventin.Services.Services
                 _db.ScheduleItems.Remove(scheduleItem);
                 await _db.SaveChangesAsync();
             }
+        }
+
+        public async Task<List<string>> GetSchoolYears()
+        {
+            var schoolYears = new List<string>();
+
+            var scheduleQuery = _db.Schedules
+                .Select(x => $"{x.StartYear}/{x.EndYear}");
+
+            var schedulesCount = await scheduleQuery.CountAsync();
+
+            if (schedulesCount == 0)
+                return schoolYears;
+
+            var pageCount = Math.Ceiling(schedulesCount / (double)_take);
+
+            for (int pageNumber = 0; pageNumber < pageCount; pageNumber++)
+            {
+                var data = await scheduleQuery
+                    .Skip(pageNumber * _take)
+                    .Take(_take)
+                    .ToListAsync();
+
+                schoolYears.AddRange(data);
+            }
+
+            return schoolYears;
         }
     }
 }
