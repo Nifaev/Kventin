@@ -8,19 +8,14 @@
       <!-- Селектор учебного года -->
       <section class="year-selector">
         <label>
-          Начало учебного года:
-          <select v-model.number="selectedStart">
-            <option v-for="y in availableYears" :key="y" :value="y">
-              {{ y }}
-            </option>
-          </select>
-        </label>
-        <span class="dash">—</span>
-        <label>
-          Конец учебного года:
-          <select v-model.number="selectedEnd">
-            <option v-for="y in availableYears" :key="y" :value="y + 1">
-              {{ y + 1 }}
+          Учебный год:
+          <select v-model="selectedYearPair">
+            <option
+              v-for="pair in yearPairs"
+              :key="pair.value"
+              :value="pair.value"
+            >
+              {{ pair.label }}
             </option>
           </select>
         </label>
@@ -30,15 +25,13 @@
       <!-- Шапка шаблона -->
       <section class="schedule-header" v-if="!loadingTemplate">
         <div v-if="!currentSchedule">
-          <p>Для {{ selectedStart }}–{{ selectedEnd }} шаблон не найден.</p>
+          <p>Для {{ currentPairLabel }} шаблон не найден.</p>
           <button class="btn-add" @click="showCreateSchedule = true">
             Создать расписание
           </button>
         </div>
         <div v-else>
-          <p>
-            Шаблон для {{ currentSchedule.startYear }}–{{ currentSchedule.endYear }}:
-          </p>
+          <p>Шаблон для {{ currentSchedule.startYear }}–{{ currentSchedule.endYear }}:</p>
           <button class="btn-edit" @click="showCreateSchedule = true">
             Изменить года
           </button>
@@ -52,7 +45,6 @@
           <h2>Элементы расписания</h2>
           <button class="btn-add" @click="openItemModal()">Добавить элемент</button>
         </header>
-
         <table class="items-table">
           <thead>
             <tr>
@@ -68,7 +60,11 @@
           </thead>
           <tbody>
             <tr v-for="it in items" :key="it.scheduleItemId">
-              <td>{{ it.dayOfWeek }}</td>
+              <td>
+                {{
+                  weekdays[Number(it.dayOfWeek)] || it.dayOfWeek || '—'
+                }}
+              </td>
               <td>{{ it.startTime }}–{{ it.endTime }}</td>
               <td>{{ it.subjectName }}</td>
               <td>{{ it.teacher.fullName }}</td>
@@ -116,12 +112,27 @@ import CreateScheduleModal  from '../components/CreateScheduleModal.vue';
 import EditItemModal        from '../components/EditItemModal.vue';
 
 const today = new Date().getFullYear();
-const availableYears = computed(() =>
-  Array.from({ length: 6 }, (_, i) => today - i)
-);
 
-const selectedStart = ref(today);
-const selectedEnd   = ref(today + 1);
+// массив пар лет: value '2025-2026', label '25/26'
+const yearPairs = computed(() => {
+  const arr = [];
+  for (let y = today; y >= today - 5; y--) {
+    arr.push({
+      value: `${y}-${y+1}`,
+      label: `${String(y).slice(-2)}/${String(y+1).slice(-2)}`,
+      start: y,
+      end:   y+1
+    });
+  }
+  return arr;
+});
+
+const selectedYearPair = ref(yearPairs.value[0].value);
+
+const currentPair = computed(() =>
+  yearPairs.value.find(p => p.value === selectedYearPair.value)
+);
+const currentPairLabel = computed(() => currentPair.value?.label || '');
 
 const currentSchedule    = ref(null);
 const items              = ref([]);
@@ -139,27 +150,26 @@ const weekdays = [
   'Четверг','Пятница','Суббота','Воскресенье'
 ];
 
-// загрузка списков для выпадающих
 async function loadRefs() {
-  const [t,s,g] = await Promise.all([
+  const [tRes, sRes, gRes] = await Promise.all([
     axios.get('/api/user/getAllTeachers'),
     axios.get('/api/subject/all'),
     axios.get('/api/studyGroup/all'),
   ]);
-  teachers.value = t.data;
-  subjects.value = s.data;
-  groups.value   = g.data;
+  teachers.value = tRes.data;
+  subjects.value = sRes.data;
+  groups.value   = gRes.data;
 }
 
-// загрузка шаблона и сразу его элементов
 async function loadSchedule() {
   loadingTemplate.value = true;
   currentSchedule.value = null;
   items.value = [];
   try {
+    const pair = currentPair.value;
     const { data } = await axios.post('/api/schedule', {
-      startYear: selectedStart.value,
-      endYear:   selectedEnd.value
+      startYear: pair.start,
+      endYear:   pair.end
     });
     currentSchedule.value = data;
     items.value = data.scheduleItems || [];
@@ -172,28 +182,26 @@ async function loadSchedule() {
   }
 }
 
-// после создания/редактирования шаблона
 function onTemplateSaved() {
   showCreateSchedule.value = false;
   loadSchedule();
 }
 
-// открываем форму добавления/редактирования элемента
-function openItemModal(item = null) {
-  editingItem.value = item
-    ? { ...item }
-    : { dayOfWeek:1, startTime:'08:00', endTime:'09:30',
-        classroom:'', teacherId:null, subjectId:null, groupId:null, isOnline:false };
-  showItemModal.value = true;
-}
-
-// после сохранения элемента
 function onItemSaved() {
   showItemModal.value = false;
   loadSchedule();
 }
 
-// удаляем элемент и перезагружаем список
+function openItemModal(item = null) {
+  editingItem.value = item
+    ? { ...item }
+    : {
+        dayOfWeek:1, startTime:'08:00', endTime:'09:30',
+        classroom:'', teacherId:null, subjectId:null, groupId:null, isOnline:false
+      };
+  showItemModal.value = true;
+}
+
 async function deleteItem(id) {
   if (!confirm('Удалить элемент?')) return;
   await axios.delete(`/api/schedule/deleteItem/${id}`);
@@ -238,10 +246,6 @@ onMounted(async () => {
   padding: 6px;
   border: 1px solid #ccc;
   border-radius: 4px;
-}
-.dash {
-  font-size: 20px;
-  line-height: 1.6;
 }
 .btn-load {
   background: #007bff;

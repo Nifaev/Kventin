@@ -139,9 +139,14 @@ const login = async () => {
 }
 
 .otstyp {
-  width: 450px;
+  display: block;
+  width: 100%;         /* займет всю доступную ширину контейнера */
+  max-width: 440px;    /* но не будет шире 400px */
+  padding: 10px;
+  margin: 0 0 10px;
+  border: 1px solid #151515;
+  border-radius: 5px;
 }
-
 .form-section {
   flex: 1;
   display: flex;
@@ -202,14 +207,14 @@ const login = async () => {
   border-bottom: 2px solid #fff;
 }
 
-input {
+/* input{
   display: block;
-  width: 100%;
+  width: 550px;
   padding: 10px;
-  margin: 10px 0;
+  margin: 0px 0;
   border: 1px solid #151515;
   border-radius: 5px;
-}
+} */
 
 button {
   width: 100%;

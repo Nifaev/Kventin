@@ -5,7 +5,7 @@
       <h2>{{ initial ? 'Изменить расписание' : 'Создать расписание' }}</h2>
       <div class="modal-body">
         <label>
-          Год начала:
+          <span>Год начала:</span>
           <input
             v-model.number="form.startYear"
             type="number"
@@ -14,12 +14,11 @@
           />
         </label>
         <label>
-          Год окончания:
+          <span>Год окончания:</span>
           <input
-            v-model.number="form.endYear"
+            :value="form.startYear + 1"
             type="number"
-            min="2000"
-            max="2100"
+            readonly
           />
         </label>
       </div>
@@ -42,29 +41,34 @@ const props = defineProps({
 });
 const emit = defineEmits(['close','saved']);
 
-// Форма: либо из initial, либо текущий/следующий год
+// Начальное значение формы
 const form = ref({
-  startYear: props.initial?.startYear || new Date().getFullYear(),
-  endYear:   props.initial?.endYear   || new Date().getFullYear() + 1,
+  startYear: props.initial?.startYear || new Date().getFullYear()
 });
 
-// Если initial меняется, обновляем форму
-watch(() => props.initial, v => {
-  if (v) {
-    form.value.startYear = v.startYear;
-    form.value.endYear   = v.endYear;
+// Если initial обновился — подхватываем его
+watch(
+  () => props.initial,
+  v => {
+    if (v) {
+      form.value.startYear = v.startYear;
+    }
   }
-});
+);
 
-// Разрешаем сохранить только если start < end
-const canSave = computed(() => form.value.startYear < form.value.endYear);
+// Кнопка доступна, когда год в диапазоне и не пуст
+const canSave = computed(() =>
+  form.value.startYear >= 2000 &&
+  form.value.startYear <= 2100
+);
 
 async function save() {
-  // Всегда POST на /api/schedule/create
-  await axios.post('/api/schedule/create', {
+  const dto = {
     startYear: form.value.startYear,
-    endYear:   form.value.endYear
-  });
+    endYear:   form.value.startYear + 1
+  };
+  // Всегда POST на /api/schedule/create
+  await axios.post('/api/schedule/create', dto);
   emit('saved');
   close();
 }
@@ -90,11 +94,23 @@ function close() {
   text-align: center; margin-bottom: 16px;
 }
 .modal-body label {
-  display: block; margin-bottom: 12px; font-weight: 500;
+  display: block;
+  margin-bottom: 12px;
+  font-weight: 500;
+}
+.modal-body label span {
+  display: block;
+  margin-bottom: 4px;
 }
 .modal-body input {
-  width: 100%; padding: 6px; margin-top: 4px;
-  box-sizing: border-box; border:1px solid #ccc; border-radius:4px;
+  width: 100%;
+  padding: 6px;
+  box-sizing: border-box;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+.modal-body input[readonly] {
+  background: #f5f5f5;
 }
 .modal-actions {
   display: flex; justify-content: flex-end; gap:10px; margin-top:16px;
