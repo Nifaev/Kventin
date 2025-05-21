@@ -33,6 +33,19 @@ namespace Kventin.WebApi.Controllers
             }
         }
 
+        [HttpGet("getSchoolYears")]
+        public async Task<ActionResult<List<string>>> GetScheduleSchoolYears()
+        {
+            try
+            {
+                return Ok(await _scheduleService.GetSchoolYears());
+            }
+            catch (EntityNotFoundException e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
+
         /// <summary>
         /// Добавить элемент расписания ("SuperUser, AdminSchedule")
         /// </summary>
