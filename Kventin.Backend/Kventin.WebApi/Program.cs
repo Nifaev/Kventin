@@ -62,6 +62,8 @@ builder.Services.AddScoped<IRoleService, RoleService>();
 builder.Services.AddScoped<IFileService, FileService>();
 builder.Services.AddScoped<IFileRecordFactory, FileRecordFactory>();
 builder.Services.AddScoped<IMarkService, MarkService>();
+builder.Services.AddScoped<IExerciseService, ExerciseService>();
+builder.Services.AddScoped<IExerciseAnswerService, ExerciseAnswerService>();
 
 builder.Services.AddSingleton<IFileStorageProvider, YandexCloudFileStorageProvider>();
 

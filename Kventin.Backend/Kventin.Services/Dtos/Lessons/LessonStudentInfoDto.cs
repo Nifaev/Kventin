@@ -12,7 +12,7 @@ namespace Kventin.Services.Dtos.Lessons
         /// <summary>
         /// Оценки за занятие (без заданий)
         /// </summary>
-        public List<MarkInfoForLessonDto> Marks { get; set; } = [];
+        public List<MarkInfoDto> Marks { get; set; } = [];
 
         [Required]
         public bool Attended { get; set; }

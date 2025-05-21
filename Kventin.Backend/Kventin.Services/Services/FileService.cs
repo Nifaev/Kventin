@@ -18,14 +18,25 @@ namespace Kventin.Services.Services
         private readonly IFileStorageProvider _fileStorageProvider = fileStorageProvider;
         private readonly IFileRecordFactory _fileRecordFactory = fileRecordFactory;
 
-        public async Task DeleteFile(int fileId)
+        public async Task DeleteFiles(List<int> fileIds)
         {
-            var fileRecord = await _db.FileRecords.FindAsync(fileId)
-                ?? throw new Exception("Файл с таким Id не найден");
+            if (fileIds.Count == 0) 
+                return;
 
-            await _fileStorageProvider.DeleteFileAsync(fileRecord!.StorageFileName);
-        
-            _db.FileRecords.Remove(fileRecord);
+            var fileRecords = await _db.FileRecords
+                .Where(x => fileIds.Contains(x.Id))
+                .ToListAsync();
+
+            if (fileRecords.Count == 0)
+                return;
+
+            var storageFileNames = fileRecords
+                .Select(x => x.StorageFileName)
+                .ToList();
+
+            await _fileStorageProvider.DeleteFilesAsync(storageFileNames);
+
+            _db.FileRecords.RemoveRange(fileRecords);
 
             await _db.SaveChangesAsync();
         }
@@ -57,7 +68,7 @@ namespace Kventin.Services.Services
             return dto;
         }
 
-        public async Task UploadFile<T>(IFormFile file, int uploadedByUserId, FileLinkType fileLinkType, int linkedEntityId = 0) where T : BaseEntity
+        public async Task UploadFiles<T>(List<IFormFile> files, int uploadedByUserId, FileLinkType fileLinkType, int linkedEntityId = 0) where T : BaseEntity
         {
             var uploadedByUser = await _db.Users.FindAsync(uploadedByUserId);
 
@@ -72,20 +83,33 @@ namespace Kventin.Services.Services
             else
                 entity = null;
 
-            var fileRecord = _fileRecordFactory.Create<T>(file, file.FileName, uploadedByUser!, fileLinkType, entity);
+            var filesInfo = files
+                .Select(x => new
+                {
+                    File = x,
+                    FileRecord = _fileRecordFactory.Create<T>(x, x.FileName, uploadedByUser!, fileLinkType, entity)
+                })
+                .ToList();
 
-            var stream = file.OpenReadStream();
+            var uploadFileDtos = filesInfo
+                .Select(x => new UploadFileDto
+                { 
+                    ContentType = x.File.ContentType,
+                    Stream = x.File.OpenReadStream(),
+                    StorageFileName = x.FileRecord.StorageFileName,
+                })
+                .ToList();
 
-            await _fileStorageProvider.UploadFileAsync(stream!, fileRecord.StorageFileName, fileRecord.ContentType);
+            await _fileStorageProvider.UploadFilesAsync(uploadFileDtos);
 
-            await _db.AddAsync(fileRecord);
+            await _db.FileRecords.AddRangeAsync(filesInfo.Select(x => x.FileRecord));
 
             await _db.SaveChangesAsync();
         }
 
         public async Task UploadFileWithoutLinks(IFormFile file, int uploadedByUserId)
         {
-            await UploadFile<Lesson>(file, uploadedByUserId, FileLinkType.None);
+            await UploadFiles<Lesson>([file], uploadedByUserId, FileLinkType.None);
         }
     }
 }
