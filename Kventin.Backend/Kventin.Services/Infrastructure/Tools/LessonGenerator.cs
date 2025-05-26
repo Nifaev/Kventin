@@ -50,29 +50,11 @@ namespace Kventin.Services.Infrastructure.Tools
                 .Include(x => x.StudyGroup)
                 .Where(x => x.ScheduleId == schedule.Id);
 
-            var itemsCount = await scheduleItemsQuery.CountAsync();
-            var scheduleItems = new List<ScheduleItem>();
-            var pageCount = Math.Ceiling(itemsCount / (double)_take);
-
-            if (itemsCount == 0)
-                return;
-
-            for (int pageNumber = 0; pageNumber < pageCount; pageNumber++)
-            {
-                var items = await scheduleItemsQuery
-                    .Skip(pageNumber * _take)
-                    .Take(_take)
-                    .ToListAsync();
-
-                scheduleItems.AddRange(items);
-            }
+            var scheduleItems = await GetEntitiesPaged(scheduleItemsQuery);
 
             var scheduleItemIds = scheduleItems.Select(x => x.Id).ToList();
 
-            // Нужен ли Include?
-            // Выбираем уже созданные занятия, чтобы не дублировать их
-            // Не включаем сегодняшнюю дату, т.к. метод выполняется в 20:00 в воскресенье
-            var lessons = await _db.Lessons
+            var lessonsQuery = _db.Lessons
                 .Include(x => x.ScheduleItem)
                 .Where(x => x.ScheduleItem != null &&
                             scheduleItemIds.Contains(x.ScheduleItem.Id) &&
@@ -83,8 +65,9 @@ namespace Kventin.Services.Infrastructure.Tools
                     LessonId = x.Id,
                     ScheduleItemId = x.ScheduleItem!.Id,
                     x.Date,
-                })
-                .ToListAsync();
+                });
+
+            var lessons = await GetEntitiesPaged(lessonsQuery);
 
             foreach (var scheduleItem in scheduleItems)
             {
@@ -106,6 +89,29 @@ namespace Kventin.Services.Infrastructure.Tools
             }
 
             await _db.SaveChangesAsync();
+        }
+
+        private async Task<List<T>> GetEntitiesPaged<T>(IQueryable<T> query)
+        {
+            var itemsCount = await query.CountAsync();
+            var scheduleItems = new List<ScheduleItem>();
+            var pageCount = Math.Ceiling(itemsCount / (double)_take);
+            var result = new List<T>();
+
+            if (itemsCount == 0)
+                return result;
+
+            for (int pageNumber = 0; pageNumber < pageCount; pageNumber++)
+            {
+                var items = await query
+                    .Skip(pageNumber * _take)
+                    .Take(_take)
+                    .ToListAsync();
+
+                result.AddRange(items);
+            }
+
+            return result;
         }
 
         private async Task MapScheduleItemToLesson(ScheduleItem scheduleItem, DateOnly lessonDate)
