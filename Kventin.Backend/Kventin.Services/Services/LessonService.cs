@@ -144,15 +144,15 @@ namespace Kventin.Services.Services
                     Attended = lesson.StudentsAttended
                         .Any(y => y.Id == x.Id),
                     Marks = lesson.Marks
-                        .Where(x => x.StudentId == x.Id &&
-                                    x.LessonId.HasValue &&
-                                    x.MarkType == MarkType.ForLesson)
-                        .Select(x => new MarkInfoDto
+                        .Where(y => y.StudentId == x.Id &&
+                                    y.LessonId.HasValue &&
+                                    y.MarkType == MarkType.ForLesson)
+                        .Select(y => new MarkInfoDto
                         {
-                            MarkType = x.MarkType.GetDescription(),
-                            MarkId = x.Id,
-                            MarkValue = x.Value,
-                            TeacherComment = x.Comment,
+                            MarkType = y.MarkType.GetDescription(),
+                            MarkId = y.Id,
+                            MarkValue = y.Value,
+                            TeacherComment = y.Comment,
                         })
                         .ToList(),
                 });
