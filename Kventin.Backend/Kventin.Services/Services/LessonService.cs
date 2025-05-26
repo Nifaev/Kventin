@@ -144,15 +144,15 @@ namespace Kventin.Services.Services
                     Attended = lesson.StudentsAttended
                         .Any(y => y.Id == x.Id),
                     Marks = lesson.Marks
-                        .Where(x => x.StudentId == x.Id &&
-                                    x.LessonId.HasValue &&
-                                    x.MarkType == MarkType.ForLesson)
-                        .Select(x => new MarkInfoForLessonDto
+                        .Where(y => y.StudentId == x.Id &&
+                                    y.LessonId.HasValue &&
+                                    y.MarkType == MarkType.ForLesson)
+                        .Select(y => new MarkInfoDto
                         {
-                            MarkType = x.MarkType.GetDescription(),
-                            MarkId = x.Id,
-                            MarkValue = x.Value,
-                            TeacherComment = x.Comment,
+                            MarkType = y.MarkType.GetDescription(),
+                            MarkId = y.Id,
+                            MarkValue = y.Value,
+                            TeacherComment = y.Comment,
                         })
                         .ToList(),
                 });
@@ -202,7 +202,7 @@ namespace Kventin.Services.Services
                             return;
                         }
 
-                        var markDto = new MarkInfoForLessonDto
+                        var markDto = new MarkInfoDto
                         {
                             MarkId = mark.Id,
                             MarkValue = mark.Value,
@@ -375,14 +375,14 @@ namespace Kventin.Services.Services
             await _db.SaveChangesAsync();
         }
 
-        public async Task AttachFileToLesson(int lessonId, IFormFile file, int uploadedByUserId)
+        public async Task AttachFilesToLesson(int lessonId, List<IFormFile> files, int uploadedByUserId)
         {
-            await _fileService.UploadFile<Lesson>(file, uploadedByUserId, FileLinkType.Lesson, lessonId);
+            await _fileService.UploadFiles<Lesson>(files, uploadedByUserId, FileLinkType.Lesson, lessonId);
         }
 
-        public async Task DetachFileFromLesson(int lessonId, int fileId)
+        public async Task DetachFilesFromLesson(int lessonId, List<int> fileIds)
         {
-            await _fileService.DeleteFile(fileId);
+            await _fileService.DeleteFiles(fileIds);
         }
 
         public async Task MarkAttendance(int lessonId, List<int> studentIds)

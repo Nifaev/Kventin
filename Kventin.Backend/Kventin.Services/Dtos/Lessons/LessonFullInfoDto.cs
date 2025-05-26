@@ -28,16 +28,13 @@ namespace Kventin.Services.Dtos.Lessons
         [Required]
         public required TimeOnly EndTime { get; set; }
 
-        [Required]
         public string? Classroom { get; set; }
 
         [Required]
         public required bool IsOnline { get; set; }
 
-        [Required]
         public string? Topic { get; set; }
 
-        [Required]
         public string? Description { get; set; }
 
         [Required]

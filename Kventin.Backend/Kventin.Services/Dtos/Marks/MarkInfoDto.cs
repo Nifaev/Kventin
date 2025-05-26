@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Kventin.Services.Dtos.Marks
 {
-    public class MarkInfoForLessonDto
+    public class MarkInfoDto
     {
         [Required]
         public required string MarkType { get; set; }

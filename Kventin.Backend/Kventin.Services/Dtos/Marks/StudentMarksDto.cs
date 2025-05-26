@@ -1,5 +1,4 @@
-﻿using Kventin.DataAccess.Enums;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace Kventin.Services.Dtos.Marks
 {

@@ -60,7 +60,7 @@ namespace Kventin.WebApi.Controllers
         [Authorize(Roles = "SuperUser")]
         public async Task<ActionResult> DeleteFile(int fileId)
         {
-            await _fileService.DeleteFile(fileId);
+            await _fileService.DeleteFiles([fileId]);
 
             return Ok();
         }

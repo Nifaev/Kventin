@@ -123,18 +123,18 @@ namespace Kventin.WebApi.Controllers
         /// <summary>
         /// Прикрепить файл к занятию (Teacher, AdminLessons, SuperUser)
         /// </summary>
-        /// <param name="lessonId"></param>
-        /// <param name="file"></param>
+        /// <param name="lessonId">Id занятия</param>
+        /// <param name="files">Файлы</param>
         /// <returns></returns>
         [Authorize(Roles = "Teacher, AdminLessons, SuperUser")]
-        [HttpPost("{lessonId}/uploadFile")]
-        public async Task<ActionResult> UploadFile(int lessonId, IFormFile file)
+        [HttpPost("{lessonId}/uploadFiles")]
+        public async Task<ActionResult> UploadFiles(int lessonId, List<IFormFile> files)
         {
             var userId = _authService.GetUserIdByCookie(Request.Cookies);
 
             try
             {
-                await _lessonService.AttachFileToLesson(lessonId, file, userId);
+                await _lessonService.AttachFilesToLesson(lessonId, files, userId);
 
                 return Ok();
             }
@@ -148,15 +148,15 @@ namespace Kventin.WebApi.Controllers
         /// Удалить файл из занятия (Teacher, AdminLessons, SuperUser)
         /// </summary>
         /// <param name="lessonId">Id занятия</param>
-        /// <param name="fileId">Id файла</param>
+        /// <param name="fileIds">Id файлов</param>
         /// <returns></returns>
         [Authorize(Roles = "Teacher, AdminLessons, SuperUser")]
-        [HttpPost("{lessonId}/deleteFile/{fileId}")]
-        public async Task<ActionResult> DeleteFile(int lessonId, int fileId)
+        [HttpDelete("{lessonId}/deleteFiles")]
+        public async Task<ActionResult> DeleteFiles(int lessonId, List<int> fileIds)
         {
             try
             {
-                await _lessonService.DetachFileFromLesson(lessonId, fileId);
+                await _lessonService.DetachFilesFromLesson(lessonId, fileIds);
 
                 return Ok();
             }

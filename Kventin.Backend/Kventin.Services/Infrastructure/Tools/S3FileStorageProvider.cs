@@ -1,5 +1,6 @@
 ﻿using Amazon.S3;
 using Amazon.S3.Model;
+using Kventin.Services.Dtos.Files;
 using Kventin.Services.Interfaces.Tools;
 using System.Net;
 
@@ -9,6 +10,50 @@ namespace Kventin.Services.Infrastructure.Tools
     {
         protected abstract IAmazonS3 CreateClient();
         protected abstract string BucketName { get; }
+
+        public async Task DeleteFilesAsync(List<string> storageFileNames)
+        {
+            using var client = CreateClient();
+
+            try
+            {
+                var request = new DeleteObjectsRequest
+                {
+                    BucketName = BucketName,
+                    Quiet = true
+                };
+
+                // Добавляем файлы в запрос на удаление
+                foreach (var fileName in storageFileNames)
+                {
+                    if (string.IsNullOrWhiteSpace(fileName)) 
+                        continue;
+
+                    request.Objects.Add(new KeyVersion { Key = fileName });
+                }
+
+                var response = await client.DeleteObjectsAsync(request);
+
+                if (response.HttpStatusCode != HttpStatusCode.OK)
+                {
+                    throw new Exception($"Не удалось удалить файлы. Status code: {response.HttpStatusCode}");
+                }
+
+                if (response.DeleteErrors?.Count > 0)
+                {
+                    var errorMessages = string.Join("; ", response.DeleteErrors.Select(e => $"{e.Key}: {e.Message}"));
+                    throw new Exception($"Ошибка удаления некоторых файлов: {errorMessages}");
+                }
+            }
+            catch (AmazonS3Exception ex)
+            {
+                throw new Exception($"S3-ошибка при удалении файлов: {ex.Message}", ex);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Неожиданная ошибка при удалении файлов", ex);
+            }
+        }
 
         public async Task DeleteFileAsync(string fileName)
         {
@@ -73,6 +118,43 @@ namespace Kventin.Services.Infrastructure.Tools
             catch (Exception ex)
             {
                 throw new Exception("Неожиданная ошибка при скачивании файла", ex);
+            }
+        }
+
+        public async Task UploadFilesAsync(List<UploadFileDto> files)
+        {
+            using var client = CreateClient();
+
+            foreach (var file in files)
+            {
+                try
+                {
+                    if (string.IsNullOrWhiteSpace(file.ContentType) ||
+                        string.IsNullOrWhiteSpace(file.StorageFileName))
+                        throw new ArgumentException("Неверный формат ContentType или StorageFileName");
+
+                    var request = new PutObjectRequest
+                    {
+                        BucketName = BucketName,
+                        Key = file.StorageFileName,
+                        InputStream = file.Stream,
+                        ContentType = file.ContentType ?? "application/octet-stream",
+                        AutoCloseStream = true
+                    };
+
+                    var response = await client.PutObjectAsync(request);
+
+                    if (response.HttpStatusCode != HttpStatusCode.OK)
+                        throw new Exception($"Не удалось загрузить файл {file.StorageFileName}. Status code: {response.HttpStatusCode}");
+                }
+                catch (AmazonS3Exception ex)
+                {
+                    throw new Exception($"S3-ошибка при загрузке файла {file.StorageFileName}: {ex.Message}", ex);
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception($"Неожиданная ошибка при загрузке файла {file.StorageFileName}: {ex.Message}", ex);
+                }
             }
         }
 
