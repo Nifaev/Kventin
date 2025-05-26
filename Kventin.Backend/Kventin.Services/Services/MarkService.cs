@@ -66,7 +66,9 @@ namespace Kventin.Services.Services
 
         public async Task AssignMarksForLesson(int teacherId, AssignMarksForLessonDto dto)
         {
-            var lesson = await _db.Lessons.FindAsync(dto.LessonId)
+            var lesson = await _db.Lessons
+                .Include(x => x.StudentsAttended)
+                .FirstOrDefaultAsync(x => x.Id == dto.LessonId)
                 ?? throw new EntityNotFoundException("Занятие с таким Id не найдено");
 
             var teacher = await _db.Users.FindAsync(teacherId);
