@@ -11,6 +11,8 @@ import Register from './views/Register.vue';
 import Role from './views/Role.vue';  
 import Group from './views/Group.vue';       // ← новый импорт
 import Subject from './views/Subject.vue';
+import ScheduleUsers from './views/ScheduleUsers.vue';
+import LessonDetails from './views/LessonDetails.vue';
 
 const routes = [
   { path: '/register',    component: Register },
@@ -23,6 +25,9 @@ const routes = [
   { path: '/roles',       component: Role },   // ← новая страница
   {path: '/group',        component:Group},
   {path: '/subject',        component:Subject},
+  {path: '/scheduleusers',        component:ScheduleUsers},
+  { path: '/lessons/:lessonId', component: LessonDetails },
+
 ];
 
 const router = createRouter({

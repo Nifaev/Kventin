@@ -99,10 +99,7 @@ html, body {
   opacity: 0.5;
 }
 .page-title {
-  margin-top: 3%;   /* вот это новое */
-  text-align: center;
-  margin-bottom: 16px;
-  font-size: 25px;
+  margin-top: 3%; text-align: center; margin-bottom: 16px;
 }
 .cards-container {
   display: grid;

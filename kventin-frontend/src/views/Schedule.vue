@@ -24,16 +24,16 @@
 
       <!-- Шапка шаблона -->
       <section class="schedule-header" v-if="!loadingTemplate">
-        <div v-if="!currentSchedule">
-          <p>Для {{ currentPairLabel }} шаблон не найден.</p>
-          <button class="btn-add" @click="showCreateSchedule = true">
+        <div v-if="!currentSchedule" class="header-row">
+          <span>Для {{ currentPairLabel }} шаблон не найден.</span>
+          <button class="btn-add-small" @click="createSchedule">
             Создать расписание
           </button>
         </div>
-        <div v-else>
-          <p>Шаблон для {{ currentSchedule.startYear }}–{{ currentSchedule.endYear }}:</p>
-          <button class="btn-edit" @click="showCreateSchedule = true">
-            Изменить года
+        <div v-else class="header-row">
+          <span>Добавить расписание: {{ currentSchedule.startYear }}{{ currentSchedule.endYear }}:</span>
+          <button class="btn-edit" @click="createSchedule">
+            Добавить
           </button>
         </div>
       </section>
@@ -42,13 +42,12 @@
       <!-- Список элементов расписания -->
       <section v-if="currentSchedule" class="items-section">
         <header class="items-header">
-          <h2>Элементы расписания</h2>
+          <h2>Расписание</h2>
           <button class="btn-add" @click="openItemModal()">Добавить элемент</button>
         </header>
         <table class="items-table">
           <thead>
             <tr>
-              <th>День недели</th>
               <th>Время</th>
               <th>Предмет</th>
               <th>Преподаватель</th>
@@ -59,26 +58,36 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="it in items" :key="it.scheduleItemId">
-              <td>
-                {{
-                  weekdays[Number(it.dayOfWeek)] || it.dayOfWeek || '—'
-                }}
-              </td>
-              <td>{{ it.startTime }}–{{ it.endTime }}</td>
-              <td>{{ it.subjectName }}</td>
-              <td>{{ it.teacher.fullName }}</td>
-              <td>{{ it.groupName }}</td>
-              <td>{{ it.classroom }}</td>
-              <td>{{ it.isOnline ? 'Да' : 'Нет' }}</td>
-              <td>
-                <button class="btn-small" @click="openItemModal(it)">✎</button>
-                <button class="btn-small danger" @click="deleteItem(it.scheduleItemId)">×</button>
-              </td>
-            </tr>
+            <!-- Если нет ни одного элемента -->
             <tr v-if="!items.length">
               <td colspan="8" class="empty">Пока нет ни одного элемента.</td>
             </tr>
+
+            <!-- Группируем по дням недели -->
+            <template v-else>
+              <template v-for="group in groupedItems" :key="group.day">
+                <!-- Заголовок дня -->
+                <tr class="day-header">
+                  <td colspan="8">{{ group.day }}</td>
+                </tr>
+                <!-- Строки с парами -->
+                <tr
+                  v-for="it in group.items"
+                  :key="it.scheduleItemId"
+                >
+                  <td>{{ it.startTime }}–{{ it.endTime }}</td>
+                  <td>{{ it.subjectName }}</td>
+                  <td>{{ it.teacher.fullName }}</td>
+                  <td>{{ it.groupName }}</td>
+                  <td>{{ it.classroom }}</td>
+                  <td>{{ it.isOnline ? 'Да' : 'Нет' }}</td>
+                  <td>
+                    <button class="btn-small" @click="openItemModal(it)">✎</button>
+                    <button class="btn-small danger" @click="deleteItem(it.scheduleItemId)">×</button>
+                  </td>
+                </tr>
+              </template>
+            </template>
           </tbody>
         </table>
       </section>
@@ -105,120 +114,172 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue';
-import axios from 'axios';
-import NavBar               from '../components/NavBar.vue';
-import CreateScheduleModal  from '../components/CreateScheduleModal.vue';
-import EditItemModal        from '../components/EditItemModal.vue';
+import { ref, onMounted, computed } from 'vue'
+import axios from 'axios'
+import NavBar              from '../components/NavBar.vue'
+import CreateScheduleModal from '../components/CreateScheduleModal.vue'
+import EditItemModal       from '../components/EditItemModal.vue'
 
-const today = new Date().getFullYear();
+const yearPairs         = ref([])
+const selectedYearPair = ref(null)
 
-// массив пар лет: value '2025-2026', label '25/26'
-const yearPairs = computed(() => {
-  const arr = [];
-  for (let y = today; y >= today - 5; y--) {
-    arr.push({
-      value: `${y}-${y+1}`,
-      label: `${String(y).slice(-2)}/${String(y+1).slice(-2)}`,
-      start: y,
-      end:   y+1
-    });
-  }
-  return arr;
-});
+const currentSchedule = ref(null)
+const items           = ref([])
+const loadingTemplate = ref(false)
 
-const selectedYearPair = ref(yearPairs.value[0].value);
+const teachers      = ref([])
+const subjects      = ref([])
+const groups        = ref([])
+
+const showCreateSchedule = ref(false)
+const showItemModal      = ref(false)
+const editingItem        = ref(null)
+
+// Жёстко заданный порядок дней:
+const weekdays = [
+  'Понедельник','Вторник','Среда',
+  'Четверг','Пятница','Суббота','Воскресенье'
+]
 
 const currentPair = computed(() =>
   yearPairs.value.find(p => p.value === selectedYearPair.value)
-);
-const currentPairLabel = computed(() => currentPair.value?.label || '');
+)
+const currentPairLabel = computed(() => currentPair.value?.label || '')
 
-const currentSchedule    = ref(null);
-const items              = ref([]);
-const loadingTemplate    = ref(false);
-const teachers           = ref([]);
-const subjects           = ref([]);
-const groups             = ref([]);
+// Новая группировка
+const groupedItems = computed(() => {
+  const map = items.value.reduce((acc, it) => {
+    const day = it.dayOfWeek || '—'
+    if (!acc[day]) acc[day] = []
+    acc[day].push(it)
+    return acc
+  }, {})
+  return Object.entries(map)
+    .map(([day, arr]) => ({ day, items: arr }))
+    .sort((a, b) => {
+      const i1 = weekdays.indexOf(a.day)
+      const i2 = weekdays.indexOf(b.day)
+      if (i1 === -1 && i2 === -1) return 0
+      if (i1 === -1) return 1
+      if (i2 === -1) return -1
+      return i1 - i2
+    })
+})
 
-const showCreateSchedule = ref(false);
-const showItemModal      = ref(false);
-const editingItem        = ref(null);
-
-const weekdays = [
-  '—','Понедельник','Вторник','Среда',
-  'Четверг','Пятница','Суббота','Воскресенье'
-];
+async function loadYearPairs() {
+  try {
+    const { data: years } = await axios.get('/api/schedule/getSchoolYears')
+    yearPairs.value = years.map(pairStr => {
+      const [start, end] = pairStr.split('/').map(Number)
+      return { value: pairStr, label: pairStr, start, end }
+    })
+    if (yearPairs.value.length) {
+      selectedYearPair.value = yearPairs.value[0].value
+    }
+  } catch (e) {
+    console.error('Не удалось загрузить учебные года', e)
+  }
+}
 
 async function loadRefs() {
   const [tRes, sRes, gRes] = await Promise.all([
     axios.get('/api/user/getAllTeachers'),
     axios.get('/api/subject/all'),
     axios.get('/api/studyGroup/all'),
-  ]);
-  teachers.value = tRes.data;
-  subjects.value = sRes.data;
-  groups.value   = gRes.data;
+  ])
+  teachers.value = tRes.data
+  subjects.value = sRes.data
+  groups.value   = gRes.data
 }
 
 async function loadSchedule() {
-  loadingTemplate.value = true;
-  currentSchedule.value = null;
-  items.value = [];
+  if (!currentPair.value) return
+  loadingTemplate.value = true
+  currentSchedule.value = null
+  items.value = []
   try {
-    const pair = currentPair.value;
-    const { data } = await axios.post('/api/schedule', {
-      startYear: pair.start,
-      endYear:   pair.end
-    });
-    currentSchedule.value = data;
-    items.value = data.scheduleItems || [];
+    const { start, end } = currentPair.value
+    const { data } = await axios.post('/api/schedule', { startYear: start, endYear: end })
+    currentSchedule.value = data
+    items.value = data.scheduleItems || []
   } catch (err) {
     if (!(err.response && err.response.status === 400)) {
-      console.error(err);
+      console.error(err)
     }
   } finally {
-    loadingTemplate.value = false;
+    loadingTemplate.value = false
   }
 }
 
-function onTemplateSaved() {
-  showCreateSchedule.value = false;
-  loadSchedule();
+function createSchedule() {
+  showCreateSchedule.value = true
 }
-
-function onItemSaved() {
-  showItemModal.value = false;
-  loadSchedule();
+function onTemplateSaved() {
+  showCreateSchedule.value = false
+  loadSchedule()
 }
 
 function openItemModal(item = null) {
   editingItem.value = item
     ? { ...item }
-    : {
-        dayOfWeek:1, startTime:'08:00', endTime:'09:30',
-        classroom:'', teacherId:null, subjectId:null, groupId:null, isOnline:false
-      };
-  showItemModal.value = true;
+    : { dayOfWeek:'Понедельник', startTime:'08:00', endTime:'09:30',
+        classroom:'', teacherId:null, subjectId:null, groupId:null, isOnline:false }
+  showItemModal.value = true
+}
+function onItemSaved() {
+  showItemModal.value = false
+  loadSchedule()
 }
 
 async function deleteItem(id) {
-  if (!confirm('Удалить элемент?')) return;
-  await axios.delete(`/api/schedule/deleteItem/${id}`);
-  loadSchedule();
+  if (!confirm('Удалить элемент?')) return
+  await axios.delete(`/api/schedule/deleteItem/${id}`)
+  loadSchedule()
 }
 
 onMounted(async () => {
-  await loadRefs();
-  await loadSchedule();
-});
+  await loadYearPairs()
+  await loadRefs()
+  await loadSchedule()
+})
 </script>
 
 <style scoped>
+.container {
+  max-width: 900px;
+  margin: auto;
+}
+
+.items-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1em;
+}
+
+.items-table th,
+.items-table td {
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+}
+
+.items-table .day-header td {
+  background-color: #f5f7fa;
+  font-weight: bold;
+  text-align: center;
+}
+
+.items-table .empty {
+  text-align: center;
+  color: #666;
+}
+/* ваш существующий CSS без изменений */
 .schedule-page {
-  padding: 20px;
-  background: #f5f7fa;
-  min-height: 100vh;
+  position: relative; z-index: 0; min-height: 100vh;
+}
+.schedule-page::before {
+  content: ""; position: absolute; inset: 0; z-index: -1;
+  background: url('/images/background.png') center/cover no-repeat;
+  opacity: 0.5;
 }
 .container {
   max-width: 1000px;
@@ -230,14 +291,11 @@ onMounted(async () => {
   font-size: 28px;
 }
 .year-selector {
-  display: flex;
   justify-content: center;
-  align-items: center;
   gap: 12px;
-  margin-bottom: 24px;
+  margin: 10px ;
 }
 .year-selector label {
-  display: flex;
   flex-direction: column;
   font-size: 14px;
 }
@@ -248,21 +306,20 @@ onMounted(async () => {
   border-radius: 4px;
 }
 .btn-load {
-  background: #007bff;
-  color: #fff;
+  background: #7fcdd3b3;
+  border: 1px solid rgb(0, 0, 0);
+  color: #000000;
   padding: 8px 16px;
   border-radius: 6px;
-  border: none;
+  margin-left: 10px;
+  width: 150px;
   cursor: pointer;
 }
 .btn-load:hover { background: #0069d9; }
 
 .schedule-header {
-  background: #fff;
   padding: 16px;
   border-radius: 8px;
-  margin-bottom: 24px;
-  text-align: center;
 }
 .loading {
   text-align: center;
@@ -296,20 +353,31 @@ onMounted(async () => {
   font-style: italic;
 }
 .btn-add {
-  background: #5cb85c;
-  color: #fff;
+  background: #5cb85ca4;
+  color: #000000;
   padding: 8px 14px;
-  border: none;
+  width: 150px;
+  border: 1px solid rgb(0, 0, 0);
   border-radius: 6px;
   cursor: pointer;
 }
 .btn-edit {
-  background: #f0ad4e;
-  color: #fff;
+  background: #7fcdd3b3;
+  display: flex;
+  color: #000000;
   padding: 8px 14px;
-  border: none;
   border-radius: 6px;
+  border: 1px solid rgb(0, 0, 0);
   cursor: pointer;
+  margin-left: 10px;
+  text-align: center;
+  width: 150px;
+}
+.schedule-header .header-row {
+  display: flex;
+  font-size: 15px;
+  align-items: center;
+  border-radius: 8px;
 }
 .btn-small {
   padding: 4px 6px;

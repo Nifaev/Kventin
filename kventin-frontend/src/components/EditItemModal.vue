@@ -35,7 +35,12 @@
         <!-- Кабинет -->
         <label>
           Кабинет:
-          <input v-model="form.classroom" type="text" placeholder="№ кабинета" />
+          <input
+            v-model="form.classroom"
+            :disabled="form.isOnline"
+            type="text"
+            :placeholder="form.isOnline ? 'Не требуется при онлайн' : '№ кабинета'"
+          />
         </label>
 
         <!-- Учитель -->
@@ -129,7 +134,7 @@ const weekdays = [
   'Воскресенье'
 ];
 
-// Форма
+// Инициализация формы
 const form = ref({
   scheduleItemId: null,
   dayOfWeek:      null,
@@ -142,7 +147,7 @@ const form = ref({
   isOnline:       false
 });
 
-// При открытии копируем initial
+// При каждом открытии копируем initial
 watch(
   () => props.initial,
   (v) => {
@@ -161,23 +166,34 @@ watch(
   { immediate: true }
 );
 
-// Кнопка Save доступна, когда обязательные поля заполнены
-const canSave = computed(() =>
-  form.value.dayOfWeek &&
-  form.value.startTime &&
-  form.value.endTime &&
-  form.value.classroom.trim() &&
-  form.value.teacherId &&
-  form.value.groupId &&
-  form.value.subjectId
+// Если переключили на онлайн — стираем кабинет
+watch(
+  () => form.value.isOnline,
+  (online) => {
+    if (online) form.value.classroom = null;
+  }
 );
+
+// Валидация: кабинет обязателен только offline
+const canSave = computed(() => {
+  return (
+    form.value.dayOfWeek &&
+    form.value.startTime &&
+    form.value.endTime &&
+    form.value.teacherId &&
+    form.value.groupId &&
+    form.value.subjectId &&
+    (form.value.isOnline || (form.value.classroom && form.value.classroom.trim()))
+  );
+});
 
 async function save() {
   const dto = {
     dayOfWeek:  form.value.dayOfWeek,
     startTime:  form.value.startTime,
     endTime:    form.value.endTime,
-    classroom:  form.value.classroom,
+    // если онлайн — отправляем null
+    classroom:  form.value.isOnline ? null : form.value.classroom.trim(),
     teacherId:  form.value.teacherId,
     groupId:    form.value.groupId,
     subjectId:  form.value.subjectId,
@@ -186,13 +202,11 @@ async function save() {
   };
 
   if (form.value.scheduleItemId) {
-    // редактирование
     await axios.post(
       `/api/schedule/updateItem/${form.value.scheduleItemId}`,
       dto
     );
   } else {
-    // создание
     await axios.post(`/api/schedule/addItem`, dto);
   }
 
@@ -244,6 +258,9 @@ function close() {
   padding: 6px;
   border: 1px solid #ccc;
   border-radius: 4px;
+}
+.modal-body input[disabled] {
+  background: #f5f5f5;
 }
 .checkbox {
   flex-direction: row;

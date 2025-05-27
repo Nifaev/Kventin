@@ -1,3 +1,4 @@
+<!-- src/components/NavBar.vue -->
 <template>
   <nav class="navbar">
     <!-- Логотип -->
@@ -7,24 +8,59 @@
 
     <!-- Навигация + кнопка Выйти -->
     <ul class="nav-links">
-      <li><router-link to="/grades"        active-class="active-link">Оценки</router-link></li>
-      <li><router-link to="/announcements" active-class="active-link">Объявления</router-link></li>
-      <li><router-link to="/messages"      active-class="active-link">Сообщения</router-link></li>
-      <li><router-link to="/schedule"      active-class="active-link">Расписание</router-link></li>
-      <li><router-link to="/dashboard"     active-class="active-link">Личный кабинет</router-link></li>
-
-      <!-- Роли доступно только SuperUser и AdminGroups -->
-      <li v-if="canManageRoles">
-        <router-link to="/roles" active-class="active-link">Роли</router-link>
+      <li>
+        <router-link to="/grades" active-class="active-link">
+          Оценки
+        </router-link>
       </li>
-      <!-- Группы доступно только SuperUser и AdminGroups -->
-        <router-link to="/group" active-class="active-link">Группы</router-link>
-      <!-- Предметы тоже только SuperUser и AdminGroups -->
-      <li v-if="canManageRoles">
-        <router-link to="/subject" active-class="active-link">Предмет</router-link>
+      <li>
+        <router-link to="/announcements" active-class="active-link">
+          Объявления
+        </router-link>
+      </li>
+      <li>
+        <router-link to="/messages" active-class="active-link">
+          Сообщения
+        </router-link>
       </li>
 
-      <!-- отсуп -->
+      <!-- Для админа: шаблон расписания -->
+      <li v-if="canAdminSchedule">
+        <router-link to="/schedule" active-class="active-link">
+          Расписание
+        </router-link>
+      </li>
+      <!-- Для школьника/учителя/родителя: своё расписание -->
+      <li v-if="canViewUserSchedule">
+        <router-link to="/scheduleusers" active-class="active-link">
+          Моё расписание
+        </router-link>
+      </li>
+
+      <li>
+        <router-link to="/dashboard" active-class="active-link">
+          Личный кабинет
+        </router-link>
+      </li>
+
+      <!-- Роли/Группы/Предметы только для SuperUser и AdminGroups -->
+      <li v-if="canManageRoles">
+        <router-link to="/roles" active-class="active-link">
+          Роли
+        </router-link>
+      </li>
+      <li v-if="canManageRoles">
+        <router-link to="/group" active-class="active-link">
+          Группы
+        </router-link>
+      </li>
+      <li v-if="canManageRoles">
+        <router-link to="/subject" active-class="active-link">
+          Предметы
+        </router-link>
+      </li>
+
+      <!-- Отступ -->
       <li class="spacer"></li>
       <li>
         <button class="logout-btn" @click="logout">
@@ -44,21 +80,41 @@ import axios from 'axios'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
-const canManageRoles = ref(false)
+
+// роли пользователя
+const roles = ref([])
+
+// флаги доступа
+const canManageRoles      = ref(false) // SuperUser, AdminGroups
+const canAdminSchedule    = ref(false) // SuperUser, AdminSchedule
+const canViewUserSchedule = ref(false) // Student, Teacher, Parent, SuperUser
 
 onMounted(async () => {
   try {
-    const { data: roles } = await axios.get('/api/roles/getMyRoles')
-    // открываем доступ к Роли/Группам/Предметам только для этих ролей
-    canManageRoles.value = roles.includes('SuperUser')
-                         || roles.includes('AdminGroups')
+    const { data: myRoles } = await axios.get('/api/roles/getMyRoles')
+    roles.value = myRoles
+
+    canManageRoles.value =
+      roles.value.includes('SuperUser') ||
+      roles.value.includes('AdminGroups')
+
+    canAdminSchedule.value =
+      roles.value.includes('SuperUser') ||
+      roles.value.includes('AdminSchedule')
+
+    canViewUserSchedule.value =
+      roles.value.includes('SuperUser') ||
+      roles.value.includes('Student')   ||
+      roles.value.includes('Teacher')   ||
+      roles.value.includes('Parent')
+
   } catch (e) {
     console.error('Не удалось получить роли', e)
   }
 })
 
 function logout() {
-  // очистка токена и редирект на логин
+  // здесь можно очистить токен из стора/localStorage
   router.push('/')
 }
 </script>
