@@ -164,7 +164,7 @@ namespace Kventin.Services.Services
                 studentDto.Marks = studentMarks;
 
                 exerciseDto.Answers.AddRange(studentAnswers);
-                exerciseDto.Students.Add(studentDto);
+                exerciseDto.IndividualStudent = studentDto;
             }
             else
             {

@@ -163,7 +163,7 @@ namespace Kventin.Services.Services
                     ExeriseId = x.Id,
                     IsIndividual = x.IsIndividual,
                     IndividualStudent = x.IsIndividual && x.IndividualStudentId.HasValue
-                        ? new UserShortInfoDto(x.IndividualStudent!)
+                        ? new ExerciseStudentInfoDto(x.IndividualStudent!)
                         : null,
                     CreateDateTime = x.CreateDateTime,
                     DeadlineDateTime = x.DeadlineDateTime,
@@ -199,15 +199,18 @@ namespace Kventin.Services.Services
                             .ToList();
 
                         var markDtos = marks.Select(y => new MarkInfoDto
-                            {
-                                MarkId = y.Id,
-                                MarkValue = y.Value,
-                                MarkType = y.MarkType.GetDescription(),
-                                TeacherComment = y.Comment,
-                            })
-                            .ToList();
+                        {
+                            MarkId = y.Id,
+                            MarkValue = y.Value,
+                            MarkType = y.MarkType.GetDescription(),
+                            TeacherComment = y.Comment,
+                        })
+                        .ToList();
 
-                        x.Marks = markDtos;
+                        if (x.IsIndividual && x.IndividualStudent != null && x.IndividualStudent.UserId == studentId)
+                            x.IndividualStudent.Marks = markDtos;
+                        else 
+                            x.Marks = markDtos;
                     });
 
                     dto.Exercises = exercises;
