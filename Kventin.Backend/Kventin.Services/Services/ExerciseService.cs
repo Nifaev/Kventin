@@ -26,10 +26,7 @@ namespace Kventin.Services.Services
             if (dto.IsIndividual && !dto.IndividualStudentId.HasValue)
                 throw new ArgumentException("Индивидуальное занятие должно быть кому то назначено");
 
-            var teacher = await _db.Users
-                .FirstOrDefaultAsync(x => x.Id == teacherId &&
-                                          x.Roles.Any(y => y.Name == "Teacher"))
-                ?? throw new EntityNotFoundException("Преподаватель с таким Id не найден");
+            var teacher = await _db.Users.FindAsync(teacherId);
 
             var lesson = await _db.Lessons
                 .Include(x => x.Teacher)
@@ -123,14 +120,17 @@ namespace Kventin.Services.Services
                     .ToList();
 
             if (exercise.IsIndividual && exercise.IndividualStudentId.HasValue)
-                exerciseDto.IndividualStudent = new UserShortInfoDto(exercise.IndividualStudent!);
+                exerciseDto.IndividualStudent = new ExerciseStudentInfoDto(exercise.IndividualStudent!);
 
             if (studentId != 0)
             {
                 if (exercise.IndividualStudentId.HasValue && exercise.IndividualStudentId.Value != studentId)
                     throw new Exception("Посмотреть это индивидуальное задание может только тот ученик, которому оно выдано");
 
-                var student = await _db.Users.FindAsync(studentId);
+                var student = exercise.StudyGroup.Students
+                    .FirstOrDefault(x => x.Id == studentId)
+                    ?? throw new Exception("Посмотреть это задание может только ученик из группы, которой оно выдано");
+
 
                 var studentDto = new ExerciseStudentInfoDto(student!);
 
@@ -165,6 +165,54 @@ namespace Kventin.Services.Services
 
                 exerciseDto.Answers.AddRange(studentAnswers);
                 exerciseDto.Students.Add(studentDto);
+            }
+            else
+            {
+                exerciseDto.Answers = exercise.Answers
+                    .Select(x => new ExerciseAnswerInfoDto
+                    {
+                        LessonId = exercise.LessonId,
+                        Student = new UserShortInfoDto(x.Student),
+                        ExerciseId = exerciseId,
+                        ExerciseAnswerId = x.Id,
+                        Content = x.Content,
+                        Files = x.Files
+                            .Select(y => new FileInfoDto(y))
+                            .ToList(),
+                    })
+                    .ToList();
+
+                if (!exercise.IsIndividual)
+                    exerciseDto.Students = exercise.StudyGroup.Students
+                        .Select(x =>  new ExerciseStudentInfoDto(x)
+                        {
+                            Marks = exercise.Marks
+                                .Where(y => y.StudentId == x.Id &&
+                                            y.MarkType == MarkType.ForExercise)
+                                .Select(y => new MarkInfoDto
+                                {
+                                    MarkId = y.Id,
+                                    MarkValue = y.Value,
+                                    MarkType = y.MarkType.ToString(),
+                                    TeacherComment = y.Comment,
+                                })
+                                .ToList()
+                        })
+                        .ToList();
+                else if (exercise.IndividualStudentId.HasValue)
+                {
+                    exerciseDto.IndividualStudent!.Marks = exercise.Marks
+                        .Where(x => x.StudentId == exercise.IndividualStudentId.Value &&
+                                    x.MarkType == MarkType.ForExercise)
+                        .Select(x => new MarkInfoDto
+                        {
+                            MarkId = x.Id,
+                            MarkValue = x.Value,
+                            MarkType = x.MarkType.ToString(),
+                            TeacherComment = x.Comment,
+                        })
+                        .ToList();
+                }
             }
 
             return exerciseDto;

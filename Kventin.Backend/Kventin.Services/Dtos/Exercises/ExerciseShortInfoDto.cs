@@ -22,6 +22,6 @@ namespace Kventin.Services.Dtos.Exercises
         /// <summary>
         /// Это поле будет заполнено только для ученика и родителя (если оценка есть)
         /// </summary>
-        public MarkInfoDto? Mark { get; set; }
+        public List<MarkInfoDto> Marks { get; set; } = [];
     }
 }

@@ -15,20 +15,20 @@ namespace Kventin.Services.Services
         public async Task AssignMarksForExercise(int teacherId, AssignMarksForExerciseDto dto)
         {
             var exercise = await _db.Exercises
-            .Include(x => x.StudyGroup)
-                .ThenInclude(x => x.Students)
-            .Include(x => x.IndividualStudent)
-            .FirstOrDefaultAsync(x => x.Id == dto.ExerciseId)
-            ?? throw new EntityNotFoundException("Задание с таким Id не найдено");
+                .Include(x => x.StudyGroup)
+                    .ThenInclude(x => x.Students)
+                .Include(x => x.IndividualStudent)
+                .FirstOrDefaultAsync(x => x.Id == dto.ExerciseId)
+                ?? throw new EntityNotFoundException("Задание с таким Id не найдено");
 
             var studentIds = dto.StudentMarks
                 .Select(x => x.StudentId)
                 .ToList();
 
             if (exercise.IsIndividual && 
-                studentIds.Count != 1 && 
                 exercise.IndividualStudentId.HasValue &&
-                !studentIds.Contains(exercise.IndividualStudentId.Value))
+                (!studentIds.Contains(exercise.IndividualStudentId.Value) ||
+                studentIds.Count != 1))
             {
                 throw new ArgumentException("Вы можете поставить оценку за индивидуальное задание только тому ученику, которому оно выдано");
             }
@@ -36,9 +36,9 @@ namespace Kventin.Services.Services
             var teacher = await _db.Users.FindAsync(teacherId);
 
             var students = await _db.Users
-            .Where(x => studentIds.Contains(x.Id) &&
-                        x.Roles.Any(y => y.Name == "Student"))
-            .ToListAsync();
+                .Where(x => studentIds.Contains(x.Id) &&
+                            x.Roles.Any(y => y.Name == "Student"))
+                .ToListAsync();
 
             foreach (var studentMark in dto.StudentMarks)
             {

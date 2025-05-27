@@ -96,7 +96,7 @@ namespace Kventin.WebApi.Controllers
             {
                 var result = await _exerciseService.GetExerciseFullInfo(exerciseId, userId, userRoles, childId);
 
-                return Ok();
+                return Ok(result);
             }
             catch (Exception ex)
             {

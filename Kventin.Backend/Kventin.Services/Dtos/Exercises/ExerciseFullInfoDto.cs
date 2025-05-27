@@ -1,6 +1,5 @@
 ﻿using Kventin.Services.Dtos.ExerciseAnswers;
 using Kventin.Services.Dtos.Files;
-using Kventin.Services.Dtos.Lessons;
 using Kventin.Services.Dtos.Users;
 using System.ComponentModel.DataAnnotations;
 
@@ -34,7 +33,7 @@ namespace Kventin.Services.Dtos.Exercises
         [Required]
         public required UserShortInfoDto Teacher { get; set; }
 
-        public UserShortInfoDto? IndividualStudent { get; set; }
+        public ExerciseStudentInfoDto? IndividualStudent { get; set; }
 
         public List<ExerciseAnswerInfoDto> Answers { get; set; } = [];
 

@@ -124,7 +124,7 @@ namespace Kventin.Services.Services
 
             var lesson = await GetLessonWithAllIncludes(lessonId);
 
-            if (lesson == null)
+           if (lesson == null)
                 throw new EntityNotFoundException("Занятие с таким Id не найдено");
 
             var dto = GetLessonFullDtoWithBaseInfo(lesson);
@@ -190,27 +190,24 @@ namespace Kventin.Services.Services
 
                     exercises.ForEach(x =>
                     {
-                        var mark = lesson.Exercises
-                            .FirstOrDefault(y => y.Id == x.ExeriseId)?
-                            .Marks
-                            .FirstOrDefault(y => y.StudentId == studentId);
+                        var exercise = lesson.Exercises
+                            .First(y => y.Id == x.ExeriseId);
 
-                        if (mark == null)
-                        {
-                            x.Mark = null;
+                        var marks = exercise.Marks
+                            .Where(y => y.StudentId == studentId &&
+                                        y.MarkType == MarkType.ForExercise)
+                            .ToList();
 
-                            return;
-                        }
+                        var markDtos = marks.Select(y => new MarkInfoDto
+                            {
+                                MarkId = y.Id,
+                                MarkValue = y.Value,
+                                MarkType = y.MarkType.GetDescription(),
+                                TeacherComment = y.Comment,
+                            })
+                            .ToList();
 
-                        var markDto = new MarkInfoDto
-                        {
-                            MarkId = mark.Id,
-                            MarkValue = mark.Value,
-                            MarkType = mark.MarkType.GetDescription(),
-                            TeacherComment = mark.Comment,
-                        };
-
-                        x.Mark = markDto;
+                        x.Marks = markDtos;
                     });
 
                     dto.Exercises = exercises;
@@ -288,6 +285,8 @@ namespace Kventin.Services.Services
                     .ThenInclude(x => x.Students)
                 .Include(x => x.Exercises)
                     .ThenInclude(x => x.IndividualStudent)
+                .Include(x => x.Exercises)
+                    .ThenInclude(x => x.Marks)
                 .Include(x => x.Files)
                     .ThenInclude(x => x.UploadedByUser)
                 .FirstOrDefaultAsync(x => x.Id == lessonId);
