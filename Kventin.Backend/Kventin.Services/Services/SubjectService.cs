@@ -29,7 +29,7 @@ namespace Kventin.Services.Services
             await _db.SaveChangesAsync();
         }
 
-        public async Task DeleteSubjectById(int subjectId)
+        public async Task DeleteSubjectById(long subjectId)
         {
             var subject = await _db.Subjects
                 .FindAsync(subjectId)
@@ -40,7 +40,7 @@ namespace Kventin.Services.Services
             await _db.SaveChangesAsync();
         }
 
-        public async Task<List<SubjectDto>> GetAllSubjects(int userId, List<string> userRoles, int childId)
+        public async Task<List<SubjectDto>> GetAllSubjects(long userId, List<string> userRoles, long childId)
         {
             var subjectsQuery = _db.Subjects.AsQueryable();
 
@@ -88,7 +88,7 @@ namespace Kventin.Services.Services
             return result;
         }
 
-        public async Task<SubjectDto> GetSubjectByid(int subjectId)
+        public async Task<SubjectDto> GetSubjectByid(long subjectId)
         {
             var subject = await _db.Subjects
                 .FindAsync(subjectId)
@@ -101,7 +101,7 @@ namespace Kventin.Services.Services
             };
         }
 
-        public async Task UpdateSubjectById(int subjectId, string newSubjectName)
+        public async Task UpdateSubjectById(long subjectId, string newSubjectName)
         {
             var subject = await _db.Subjects
                 .FindAsync(subjectId)

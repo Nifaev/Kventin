@@ -13,11 +13,11 @@ namespace Kventin.Services.Dtos.Exercises
         public required bool IsIndividual { get; set; }
 
         [Required]
-        public int StudyGroupId { get; set; }
+        public long StudyGroupId { get; set; }
 
         [Required]
-        public int LessonId { get; set; }
+        public long LessonId { get; set; }
 
-        public int? IndividualStudentId { get; set; }
+        public long? IndividualStudentId { get; set; }
     }
 }

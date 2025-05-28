@@ -8,7 +8,7 @@ namespace Kventin.Services.Dtos.Exercises
     public class ExerciseFullInfoDto
     {
         [Required]
-        public required int ExerciseId { get; set; } 
+        public required long ExerciseId { get; set; } 
         
         public DateTime? DeadlineDateTime { get; set; }
 
@@ -22,13 +22,13 @@ namespace Kventin.Services.Dtos.Exercises
         public required bool IsIndividual { get; set; }
 
         [Required]
-        public required int StudyGroupId { get; set; }
+        public required long StudyGroupId { get; set; }
 
         [Required]
         public required string StudyGroupName { get; set; }
 
         [Required]
-        public required int LessonId { get; set; }
+        public required long LessonId { get; set; }
 
         [Required]
         public required UserShortInfoDto Teacher { get; set; }

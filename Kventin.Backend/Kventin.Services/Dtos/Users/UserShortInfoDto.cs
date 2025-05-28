@@ -17,7 +17,7 @@ namespace Kventin.Services.Dtos.Users
         }
 
         [Required]
-        public int UserId { get; set; }
+        public long UserId { get; set; }
         
         [Required]
         public string FirstName { get; set; }

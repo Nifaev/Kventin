@@ -3,7 +3,7 @@
     public class UpdateStudyGroupDto
     {
         public string? GroupName { get; set; }
-        public int? SubjectId { get; set; }
-        public int? TeacherId { get; set; }
+        public long? SubjectId { get; set; }
+        public long? TeacherId { get; set; }
     }
 }

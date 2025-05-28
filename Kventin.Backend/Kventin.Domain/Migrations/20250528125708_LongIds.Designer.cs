@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Kventin.DataAccess.Migrations
 {
     [DbContext(typeof(KventinContext))]
-    [Migration("20250515134529_NewRoleAdminLessons")]
-    partial class NewRoleAdminLessons
+    [Migration("20250528125708_LongIds")]
+    partial class LongIds
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -27,19 +27,18 @@ namespace Kventin.DataAccess.Migrations
 
             modelBuilder.Entity("Kventin.DataAccess.Domain.Announcement", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("bigint");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
-                    b.Property<int>("AuthorId")
-                        .HasColumnType("int");
+                    b.Property<long>("AuthorId")
+                        .HasColumnType("bigint");
 
                     b.Property<string>("Content")
                         .IsRequired()
-                        .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("CreateDateTime")
                         .HasColumnType("datetime2");
@@ -49,8 +48,7 @@ namespace Kventin.DataAccess.Migrations
 
                     b.Property<string>("Title")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -61,11 +59,11 @@ namespace Kventin.DataAccess.Migrations
 
             modelBuilder.Entity("Kventin.DataAccess.Domain.EmployeeActivity", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("bigint");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
                     b.Property<DateTime>("CreateDateTime")
                         .HasColumnType("datetime2");
@@ -73,8 +71,8 @@ namespace Kventin.DataAccess.Migrations
                     b.Property<DateTime?>("DeleteDateTime")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("EmployeeId")
-                        .HasColumnType("int");
+                    b.Property<long>("EmployeeId")
+                        .HasColumnType("bigint");
 
                     b.Property<int>("GroupLessonsCount")
                         .HasColumnType("int");
@@ -100,11 +98,11 @@ namespace Kventin.DataAccess.Migrations
 
             modelBuilder.Entity("Kventin.DataAccess.Domain.EmployeeRate", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("bigint");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
                     b.Property<DateTime>("CreateDateTime")
                         .HasColumnType("datetime2");
@@ -112,8 +110,8 @@ namespace Kventin.DataAccess.Migrations
                     b.Property<DateTime?>("DeleteDateTime")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("EmployeeId")
-                        .HasColumnType("int");
+                    b.Property<long>("EmployeeId")
+                        .HasColumnType("bigint");
 
                     b.Property<double>("GroupLessonRate")
                         .HasColumnType("float");
@@ -137,11 +135,11 @@ namespace Kventin.DataAccess.Migrations
 
             modelBuilder.Entity("Kventin.DataAccess.Domain.EmployeeSalary", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("bigint");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
                     b.Property<DateTime>("CreateDateTime")
                         .HasColumnType("datetime2");
@@ -149,8 +147,8 @@ namespace Kventin.DataAccess.Migrations
                     b.Property<DateTime?>("DeleteDateTime")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("EmployeeId")
-                        .HasColumnType("int");
+                    b.Property<long>("EmployeeId")
+                        .HasColumnType("bigint");
 
                     b.Property<DateTime?>("PaymentDateTime")
                         .HasColumnType("datetime2");
@@ -173,16 +171,15 @@ namespace Kventin.DataAccess.Migrations
 
             modelBuilder.Entity("Kventin.DataAccess.Domain.Exercise", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("bigint");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
                     b.Property<string>("Content")
                         .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("CreateDateTime")
                         .HasColumnType("datetime2");
@@ -193,20 +190,20 @@ namespace Kventin.DataAccess.Migrations
                     b.Property<DateTime?>("DeleteDateTime")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("IndividualStudentId")
-                        .HasColumnType("int");
+                    b.Property<long?>("IndividualStudentId")
+                        .HasColumnType("bigint");
 
                     b.Property<bool>("IsIndividual")
                         .HasColumnType("bit");
 
-                    b.Property<int>("LessonId")
-                        .HasColumnType("int");
+                    b.Property<long>("LessonId")
+                        .HasColumnType("bigint");
 
-                    b.Property<int>("StudyGroupId")
-                        .HasColumnType("int");
+                    b.Property<long>("StudyGroupId")
+                        .HasColumnType("bigint");
 
-                    b.Property<int>("TeacherId")
-                        .HasColumnType("int");
+                    b.Property<long>("TeacherId")
+                        .HasColumnType("bigint");
 
                     b.HasKey("Id");
 
@@ -223,16 +220,15 @@ namespace Kventin.DataAccess.Migrations
 
             modelBuilder.Entity("Kventin.DataAccess.Domain.ExerciseAnswer", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("bigint");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
                     b.Property<string>("Content")
                         .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("CreateDateTime")
                         .HasColumnType("datetime2");
@@ -240,11 +236,11 @@ namespace Kventin.DataAccess.Migrations
                     b.Property<DateTime?>("DeleteDateTime")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("ExerciseId")
-                        .HasColumnType("int");
+                    b.Property<long>("ExerciseId")
+                        .HasColumnType("bigint");
 
-                    b.Property<int>("StudentId")
-                        .HasColumnType("int");
+                    b.Property<long>("StudentId")
+                        .HasColumnType("bigint");
 
                     b.HasKey("Id");
 
@@ -257,14 +253,14 @@ namespace Kventin.DataAccess.Migrations
 
             modelBuilder.Entity("Kventin.DataAccess.Domain.FileRecord", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("bigint");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
-                    b.Property<int?>("AnnouncementId")
-                        .HasColumnType("int");
+                    b.Property<long?>("AnnouncementId")
+                        .HasColumnType("bigint");
 
                     b.Property<string>("ContentType")
                         .IsRequired()
@@ -276,23 +272,26 @@ namespace Kventin.DataAccess.Migrations
                     b.Property<DateTime?>("DeleteDateTime")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("ExerciseAnswerId")
-                        .HasColumnType("int");
+                    b.Property<long?>("ExerciseAnswerId")
+                        .HasColumnType("bigint");
 
-                    b.Property<int?>("ExerciseId")
-                        .HasColumnType("int");
+                    b.Property<long?>("ExerciseId")
+                        .HasColumnType("bigint");
 
                     b.Property<long>("FileSize")
                         .HasColumnType("bigint");
 
-                    b.Property<int?>("LessonId")
+                    b.Property<long?>("LessonId")
+                        .HasColumnType("bigint");
+
+                    b.Property<int>("LinkedWith")
                         .HasColumnType("int");
 
-                    b.Property<int?>("MessageId")
-                        .HasColumnType("int");
+                    b.Property<long?>("MessageId")
+                        .HasColumnType("bigint");
 
-                    b.Property<int?>("NotificationId")
-                        .HasColumnType("int");
+                    b.Property<long?>("NotificationId")
+                        .HasColumnType("bigint");
 
                     b.Property<string>("OriginalFileName")
                         .IsRequired()
@@ -302,8 +301,8 @@ namespace Kventin.DataAccess.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("UploadedByUserId")
-                        .HasColumnType("int");
+                    b.Property<long>("UploadedByUserId")
+                        .HasColumnType("bigint");
 
                     b.HasKey("Id");
 
@@ -326,15 +325,14 @@ namespace Kventin.DataAccess.Migrations
 
             modelBuilder.Entity("Kventin.DataAccess.Domain.Lesson", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("bigint");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
                     b.Property<string>("Classroom")
-                        .HasMaxLength(10)
-                        .HasColumnType("nvarchar(10)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("CreateDateTime")
                         .HasColumnType("datetime2");
@@ -346,8 +344,7 @@ namespace Kventin.DataAccess.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Description")
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<TimeOnly>("EndTime")
                         .HasColumnType("time");
@@ -355,8 +352,8 @@ namespace Kventin.DataAccess.Migrations
                     b.Property<bool>("IsOnline")
                         .HasColumnType("bit");
 
-                    b.Property<int?>("ScheduleItemId")
-                        .HasColumnType("int");
+                    b.Property<long?>("ScheduleItemId")
+                        .HasColumnType("bigint");
 
                     b.Property<TimeOnly>("StartTime")
                         .HasColumnType("time");
@@ -364,18 +361,17 @@ namespace Kventin.DataAccess.Migrations
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
-                    b.Property<int>("StudyGroupId")
-                        .HasColumnType("int");
+                    b.Property<long>("StudyGroupId")
+                        .HasColumnType("bigint");
 
-                    b.Property<int>("SubjectId")
-                        .HasColumnType("int");
+                    b.Property<long>("SubjectId")
+                        .HasColumnType("bigint");
 
-                    b.Property<int>("TeacherId")
-                        .HasColumnType("int");
+                    b.Property<long>("TeacherId")
+                        .HasColumnType("bigint");
 
                     b.Property<string>("Topic")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -392,16 +388,14 @@ namespace Kventin.DataAccess.Migrations
 
             modelBuilder.Entity("Kventin.DataAccess.Domain.Mark", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("bigint");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
                     b.Property<string>("Comment")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("CreateDateTime")
                         .HasColumnType("datetime2");
@@ -409,17 +403,20 @@ namespace Kventin.DataAccess.Migrations
                     b.Property<DateTime?>("DeleteDateTime")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("ExerciseId")
+                    b.Property<long?>("ExerciseId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long?>("LessonId")
+                        .HasColumnType("bigint");
+
+                    b.Property<int>("MarkType")
                         .HasColumnType("int");
 
-                    b.Property<int?>("LessonId")
-                        .HasColumnType("int");
+                    b.Property<long>("StudentId")
+                        .HasColumnType("bigint");
 
-                    b.Property<int>("StudentId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("TeacherId")
-                        .HasColumnType("int");
+                    b.Property<long>("TeacherId")
+                        .HasColumnType("bigint");
 
                     b.Property<int>("Value")
                         .HasColumnType("int");
@@ -439,16 +436,15 @@ namespace Kventin.DataAccess.Migrations
 
             modelBuilder.Entity("Kventin.DataAccess.Domain.Message", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("bigint");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
                     b.Property<string>("Content")
                         .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("CreateDateTime")
                         .HasColumnType("datetime2");
@@ -459,15 +455,18 @@ namespace Kventin.DataAccess.Migrations
                     b.Property<int>("RecieverId")
                         .HasColumnType("int");
 
-                    b.Property<int>("SenderId")
-                        .HasColumnType("int");
+                    b.Property<long>("RecieverId1")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("SenderId")
+                        .HasColumnType("bigint");
 
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("RecieverId");
+                    b.HasIndex("RecieverId1");
 
                     b.HasIndex("SenderId");
 
@@ -476,16 +475,15 @@ namespace Kventin.DataAccess.Migrations
 
             modelBuilder.Entity("Kventin.DataAccess.Domain.Notification", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("bigint");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
                     b.Property<string>("Content")
                         .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("CreateDateTime")
                         .HasColumnType("datetime2");
@@ -496,23 +494,26 @@ namespace Kventin.DataAccess.Migrations
                     b.Property<int>("RecieverId")
                         .HasColumnType("int");
 
+                    b.Property<long>("RecieverId1")
+                        .HasColumnType("bigint");
+
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("RecieverId");
+                    b.HasIndex("RecieverId1");
 
                     b.ToTable("Notifications");
                 });
 
             modelBuilder.Entity("Kventin.DataAccess.Domain.Role", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("bigint");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
                     b.Property<DateTime>("CreateDateTime")
                         .HasColumnType("datetime2");
@@ -531,73 +532,73 @@ namespace Kventin.DataAccess.Migrations
                     b.HasData(
                         new
                         {
-                            Id = 1,
+                            Id = 1L,
                             CreateDateTime = new DateTime(2025, 1, 18, 19, 30, 0, 0, DateTimeKind.Unspecified),
                             Name = "Student"
                         },
                         new
                         {
-                            Id = 2,
+                            Id = 2L,
                             CreateDateTime = new DateTime(2025, 1, 18, 19, 30, 0, 0, DateTimeKind.Unspecified),
                             Name = "Teacher"
                         },
                         new
                         {
-                            Id = 3,
+                            Id = 3L,
                             CreateDateTime = new DateTime(2025, 1, 18, 19, 30, 0, 0, DateTimeKind.Unspecified),
                             Name = "Parent"
                         },
                         new
                         {
-                            Id = 4,
+                            Id = 4L,
                             CreateDateTime = new DateTime(2025, 1, 18, 19, 30, 0, 0, DateTimeKind.Unspecified),
                             Name = "SuperUser"
                         },
                         new
                         {
-                            Id = 5,
+                            Id = 5L,
                             CreateDateTime = new DateTime(2025, 1, 18, 19, 30, 0, 0, DateTimeKind.Unspecified),
                             Name = "AdminSchedule"
                         },
                         new
                         {
-                            Id = 6,
+                            Id = 6L,
                             CreateDateTime = new DateTime(2025, 1, 18, 19, 30, 0, 0, DateTimeKind.Unspecified),
                             Name = "AdminGroups"
                         },
                         new
                         {
-                            Id = 7,
+                            Id = 7L,
                             CreateDateTime = new DateTime(2025, 1, 18, 19, 30, 0, 0, DateTimeKind.Unspecified),
-                            Name = "AdminStudyProgress"
+                            Name = "AdminBase"
                         },
                         new
                         {
-                            Id = 8,
+                            Id = 8L,
                             CreateDateTime = new DateTime(2025, 1, 18, 19, 30, 0, 0, DateTimeKind.Unspecified),
                             Name = "AdminAnnouncements"
                         },
                         new
                         {
-                            Id = 9,
+                            Id = 9L,
                             CreateDateTime = new DateTime(2025, 1, 18, 19, 30, 0, 0, DateTimeKind.Unspecified),
                             Name = "AdminFinances"
                         },
                         new
                         {
-                            Id = 10,
+                            Id = 10L,
                             CreateDateTime = new DateTime(2025, 1, 18, 19, 30, 0, 0, DateTimeKind.Unspecified),
                             Name = "AdminPersonalAccounts"
                         },
                         new
                         {
-                            Id = 11,
+                            Id = 11L,
                             CreateDateTime = new DateTime(2025, 1, 18, 19, 30, 0, 0, DateTimeKind.Unspecified),
                             Name = "AdminRegistration"
                         },
                         new
                         {
-                            Id = 12,
+                            Id = 12L,
                             CreateDateTime = new DateTime(2025, 1, 18, 19, 30, 0, 0, DateTimeKind.Unspecified),
                             Name = "AdminLessons"
                         });
@@ -605,11 +606,11 @@ namespace Kventin.DataAccess.Migrations
 
             modelBuilder.Entity("Kventin.DataAccess.Domain.Schedule", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("bigint");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
                     b.Property<DateTime>("CreateDateTime")
                         .HasColumnType("datetime2");
@@ -630,11 +631,11 @@ namespace Kventin.DataAccess.Migrations
 
             modelBuilder.Entity("Kventin.DataAccess.Domain.ScheduleItem", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("bigint");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
                     b.Property<string>("Classroom")
                         .HasColumnType("nvarchar(max)");
@@ -654,20 +655,20 @@ namespace Kventin.DataAccess.Migrations
                     b.Property<bool>("IsOnline")
                         .HasColumnType("bit");
 
-                    b.Property<int>("ScheduleId")
-                        .HasColumnType("int");
+                    b.Property<long>("ScheduleId")
+                        .HasColumnType("bigint");
 
                     b.Property<TimeOnly>("StartTime")
                         .HasColumnType("time");
 
-                    b.Property<int>("StudyGroupId")
-                        .HasColumnType("int");
+                    b.Property<long>("StudyGroupId")
+                        .HasColumnType("bigint");
 
-                    b.Property<int>("SubjectId")
-                        .HasColumnType("int");
+                    b.Property<long>("SubjectId")
+                        .HasColumnType("bigint");
 
-                    b.Property<int>("TeacherId")
-                        .HasColumnType("int");
+                    b.Property<long>("TeacherId")
+                        .HasColumnType("bigint");
 
                     b.HasKey("Id");
 
@@ -684,11 +685,11 @@ namespace Kventin.DataAccess.Migrations
 
             modelBuilder.Entity("Kventin.DataAccess.Domain.StudentActivity", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("bigint");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
                     b.Property<DateTime>("CreateDateTime")
                         .HasColumnType("datetime2");
@@ -708,11 +709,11 @@ namespace Kventin.DataAccess.Migrations
                     b.Property<DateOnly>("PeriodStartDate")
                         .HasColumnType("date");
 
-                    b.Property<int>("StudentId")
-                        .HasColumnType("int");
+                    b.Property<long>("StudentId")
+                        .HasColumnType("bigint");
 
-                    b.Property<int>("TariffId")
-                        .HasColumnType("int");
+                    b.Property<long>("TariffId")
+                        .HasColumnType("bigint");
 
                     b.HasKey("Id");
 
@@ -725,11 +726,11 @@ namespace Kventin.DataAccess.Migrations
 
             modelBuilder.Entity("Kventin.DataAccess.Domain.StudyGroup", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("bigint");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
                     b.Property<DateTime>("CreateDateTime")
                         .HasColumnType("datetime2");
@@ -741,11 +742,11 @@ namespace Kventin.DataAccess.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("SubjectId")
-                        .HasColumnType("int");
+                    b.Property<long>("SubjectId")
+                        .HasColumnType("bigint");
 
-                    b.Property<int>("TeacherId")
-                        .HasColumnType("int");
+                    b.Property<long>("TeacherId")
+                        .HasColumnType("bigint");
 
                     b.HasKey("Id");
 
@@ -758,11 +759,11 @@ namespace Kventin.DataAccess.Migrations
 
             modelBuilder.Entity("Kventin.DataAccess.Domain.Subject", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("bigint");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
                     b.Property<DateTime>("CreateDateTime")
                         .HasColumnType("datetime2");
@@ -772,8 +773,7 @@ namespace Kventin.DataAccess.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -782,11 +782,11 @@ namespace Kventin.DataAccess.Migrations
 
             modelBuilder.Entity("Kventin.DataAccess.Domain.TuitionPayment", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("bigint");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
                     b.Property<string>("ContractBumber")
                         .HasColumnType("nvarchar(max)");
@@ -797,8 +797,8 @@ namespace Kventin.DataAccess.Migrations
                     b.Property<DateTime?>("DeleteDateTime")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("PayerId")
-                        .HasColumnType("int");
+                    b.Property<long>("PayerId")
+                        .HasColumnType("bigint");
 
                     b.Property<DateTime?>("PaymentDateTime")
                         .HasColumnType("datetime2");
@@ -821,11 +821,11 @@ namespace Kventin.DataAccess.Migrations
 
             modelBuilder.Entity("Kventin.DataAccess.Domain.TuitionTariff", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("bigint");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
                     b.Property<DateTime>("CreateDateTime")
                         .HasColumnType("datetime2");
@@ -855,15 +855,14 @@ namespace Kventin.DataAccess.Migrations
 
             modelBuilder.Entity("Kventin.DataAccess.Domain.User", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("bigint");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
                     b.Property<string>("ContractNumber")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("CreateDateTime")
                         .HasColumnType("datetime2");
@@ -872,43 +871,38 @@ namespace Kventin.DataAccess.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Email")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<long?>("EmployeeRateId")
+                        .HasColumnType("bigint");
 
                     b.Property<string>("FirstName")
                         .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("HashedPassword")
                         .IsRequired()
-                        .HasMaxLength(96)
-                        .HasColumnType("nvarchar(96)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsSuperUser")
                         .HasColumnType("bit");
 
                     b.Property<string>("LastName")
                         .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("MiddleName")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PhoneNumber")
                         .IsRequired()
-                        .HasMaxLength(10)
-                        .HasColumnType("nvarchar(10)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("TgLink")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("VkLink")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -917,7 +911,7 @@ namespace Kventin.DataAccess.Migrations
                     b.HasData(
                         new
                         {
-                            Id = 1,
+                            Id = 1L,
                             CreateDateTime = new DateTime(2025, 1, 18, 19, 30, 0, 0, DateTimeKind.Unspecified),
                             FirstName = "Суперпользователь",
                             HashedPassword = "$2a$11$fOB6qIW/7qIQzJWq.mcS6ugc6UoFPAWctpSDZJQj5uaKTNiqiQ9xO",
@@ -929,11 +923,11 @@ namespace Kventin.DataAccess.Migrations
 
             modelBuilder.Entity("ParentsChildren", b =>
                 {
-                    b.Property<int>("ParentId")
-                        .HasColumnType("int");
+                    b.Property<long>("ParentId")
+                        .HasColumnType("bigint");
 
-                    b.Property<int>("StudentId")
-                        .HasColumnType("int");
+                    b.Property<long>("StudentId")
+                        .HasColumnType("bigint");
 
                     b.HasKey("ParentId", "StudentId");
 
@@ -944,11 +938,11 @@ namespace Kventin.DataAccess.Migrations
 
             modelBuilder.Entity("StudentLessons", b =>
                 {
-                    b.Property<int>("LessonId")
-                        .HasColumnType("int");
+                    b.Property<long>("LessonId")
+                        .HasColumnType("bigint");
 
-                    b.Property<int>("StudentId")
-                        .HasColumnType("int");
+                    b.Property<long>("StudentId")
+                        .HasColumnType("bigint");
 
                     b.HasKey("LessonId", "StudentId");
 
@@ -959,11 +953,11 @@ namespace Kventin.DataAccess.Migrations
 
             modelBuilder.Entity("StudentStudyGroups", b =>
                 {
-                    b.Property<int>("StudentId")
-                        .HasColumnType("int");
+                    b.Property<long>("StudentId")
+                        .HasColumnType("bigint");
 
-                    b.Property<int>("StudyGroupId")
-                        .HasColumnType("int");
+                    b.Property<long>("StudyGroupId")
+                        .HasColumnType("bigint");
 
                     b.HasKey("StudentId", "StudyGroupId");
 
@@ -974,11 +968,11 @@ namespace Kventin.DataAccess.Migrations
 
             modelBuilder.Entity("StudentsTariffs", b =>
                 {
-                    b.Property<int>("StudentId")
-                        .HasColumnType("int");
+                    b.Property<long>("StudentId")
+                        .HasColumnType("bigint");
 
-                    b.Property<int>("TariffId")
-                        .HasColumnType("int");
+                    b.Property<long>("TariffId")
+                        .HasColumnType("bigint");
 
                     b.HasKey("StudentId", "TariffId");
 
@@ -989,11 +983,11 @@ namespace Kventin.DataAccess.Migrations
 
             modelBuilder.Entity("UsersRoles", b =>
                 {
-                    b.Property<int>("RoleId")
-                        .HasColumnType("int");
+                    b.Property<long>("RoleId")
+                        .HasColumnType("bigint");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
+                    b.Property<long>("UserId")
+                        .HasColumnType("bigint");
 
                     b.HasKey("RoleId", "UserId");
 
@@ -1004,8 +998,8 @@ namespace Kventin.DataAccess.Migrations
                     b.HasData(
                         new
                         {
-                            RoleId = 4,
-                            UserId = 1
+                            RoleId = 4L,
+                            UserId = 1L
                         });
                 });
 
@@ -1220,7 +1214,7 @@ namespace Kventin.DataAccess.Migrations
                 {
                     b.HasOne("Kventin.DataAccess.Domain.User", "Reciever")
                         .WithMany("RecievedMessages")
-                        .HasForeignKey("RecieverId")
+                        .HasForeignKey("RecieverId1")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
@@ -1239,7 +1233,7 @@ namespace Kventin.DataAccess.Migrations
                 {
                     b.HasOne("Kventin.DataAccess.Domain.User", "Reciever")
                         .WithMany("Notifications")
-                        .HasForeignKey("RecieverId")
+                        .HasForeignKey("RecieverId1")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 

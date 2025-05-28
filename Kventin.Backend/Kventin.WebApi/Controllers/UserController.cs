@@ -2,6 +2,7 @@
 using Kventin.Services.Interfaces.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Runtime.CompilerServices;
 
 namespace Kventin.WebApi.Controllers
 {
@@ -19,7 +20,7 @@ namespace Kventin.WebApi.Controllers
         /// <returns>Возвращает UserIdDto</returns>
         [Authorize]
         [HttpGet("getMyId")]
-        public ActionResult<int> GetCurrentUserId()
+        public ActionResult<long> GetCurrentUserId()
         {
             var result = _authService.GetUserIdByCookie(Request.Cookies);
 
@@ -37,7 +38,7 @@ namespace Kventin.WebApi.Controllers
         /// <response code="400">Ошибка (см. сообщение)</response>
         [Authorize(Roles = "SuperUser, AdminRegistration")]
         [HttpPost("{parentId}/addChildren")]
-        public async Task<ActionResult> SetChildrenForParent(int parentId, List<int> childrenIds)
+        public async Task<ActionResult> SetChildrenForParent(long parentId, List<long> childrenIds)
         {
             try
             {
@@ -58,7 +59,7 @@ namespace Kventin.WebApi.Controllers
         /// <returns>Возвращает массив UserShortInfoDto</returns>
         [Authorize(Roles = "Parent")]
         [HttpGet("{parentId}/getChildren")]
-        public async Task<ActionResult<List<UserShortInfoDto>>> GetChildren(int parentId)
+        public async Task<ActionResult<List<UserShortInfoDto>>> GetChildren(long parentId)
         {
             var result = await _userService.GetUsersChildren(parentId);
 
@@ -75,7 +76,7 @@ namespace Kventin.WebApi.Controllers
         /// <response code="400">Ошибка (см. сообщение)</response>
         [Authorize(Roles = "Parent")]
         [HttpPost("{parentId}/selectChild/{childId}")]
-        public async Task<ActionResult> SelectChild(int parentId, int childId)
+        public async Task<ActionResult> SelectChild(long parentId, long childId)
         {
             try
             {

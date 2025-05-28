@@ -20,7 +20,7 @@ namespace Kventin.DataAccess.Domain
         /// <summary>
         /// Id автора
         /// </summary>
-        public int AuthorId { get; set; }
+        public long AuthorId { get; set; }
 
         /// <summary>
         /// Автор

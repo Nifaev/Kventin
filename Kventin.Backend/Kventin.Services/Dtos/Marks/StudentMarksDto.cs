@@ -5,7 +5,7 @@ namespace Kventin.Services.Dtos.Marks
     public class StudentMarksDto
     {
         [Required]
-        public int StudentId { get; set; }
+        public long StudentId { get; set; }
 
         public List<MarkShortInfoDto> Marks { get; set; } = [];
     }

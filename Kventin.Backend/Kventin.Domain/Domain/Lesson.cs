@@ -31,7 +31,7 @@ namespace Kventin.DataAccess.Domain
         /// <summary>
         /// Id предмета
         /// </summary>
-        public int SubjectId { get; set; }
+        public long SubjectId { get; set; }
 
         /// <summary>
         /// Предмет
@@ -41,7 +41,7 @@ namespace Kventin.DataAccess.Domain
         /// <summary>
         /// Id группы
         /// </summary>
-        public int StudyGroupId { get; set; }
+        public long StudyGroupId { get; set; }
 
         /// <summary>
         /// Группа
@@ -51,7 +51,7 @@ namespace Kventin.DataAccess.Domain
         /// <summary>
         /// Id преподавателя
         /// </summary>
-        public int TeacherId { get; set; }
+        public long TeacherId { get; set; }
 
         /// <summary>
         /// Преподаватель
@@ -96,7 +96,7 @@ namespace Kventin.DataAccess.Domain
         /// <summary>
         /// Id элемента расписания
         /// </summary>
-        public int? ScheduleItemId { get; set; }
+        public long? ScheduleItemId { get; set; }
 
         /// <summary>
         /// Задания, прикрепленные к занятию

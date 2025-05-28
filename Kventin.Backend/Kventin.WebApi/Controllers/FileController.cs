@@ -34,7 +34,7 @@ namespace Kventin.WebApi.Controllers
         /// </summary>
         [HttpGet("{fileId}")]
         [Authorize(Roles = "SuperUser")]
-        public async Task<ActionResult<FileInfoDto>> GetFileInfo(int fileId)
+        public async Task<ActionResult<FileInfoDto>> GetFileInfo(long fileId)
         {
             var result = await _fileService.GetFileInfo(fileId);
 
@@ -46,7 +46,7 @@ namespace Kventin.WebApi.Controllers
         /// </summary>
         [HttpGet("{fileId}/download")]
         [Authorize]
-        public async Task<ActionResult> DownloadFile(int fileId)
+        public async Task<ActionResult> DownloadFile(long fileId)
         {
             var dto = await _fileService.DownloadFile(fileId);
 
@@ -58,7 +58,7 @@ namespace Kventin.WebApi.Controllers
         /// </summary>
         [HttpDelete("{fileId}")]
         [Authorize(Roles = "SuperUser")]
-        public async Task<ActionResult> DeleteFile(int fileId)
+        public async Task<ActionResult> DeleteFile(long fileId)
         {
             await _fileService.DeleteFiles([fileId]);
 

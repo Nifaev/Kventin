@@ -11,13 +11,13 @@ namespace Kventin.Services.Dtos.Lessons
         public required UserShortInfoDto Teacher { get; set; }
 
         [Required]
-        public required int SubjectId { get; set; }
+        public required long SubjectId { get; set; }
 
         [Required]
         public required string SubjectName { get; set; }
 
         [Required]
-        public required int LessonId { get; set; }
+        public required long LessonId { get; set; }
 
         [Required]
         public required DateOnly Date { get; set; }
@@ -44,7 +44,7 @@ namespace Kventin.Services.Dtos.Lessons
         public required string GroupName { get; set; }
 
         [Required]
-        public required int GroupId { get; set; }
+        public required long GroupId { get; set; }
 
         public List<LessonStudentInfoDto> Students { get; set; } = [];
 

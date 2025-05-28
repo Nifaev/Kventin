@@ -10,7 +10,7 @@ namespace Kventin.DataAccess.Domain
         /// <summary>
         /// Id пользователя
         /// </summary>
-        public int StudentId { get; set; }
+        public long StudentId { get; set; }
 
         /// <summary>
         /// Ученик
@@ -20,7 +20,7 @@ namespace Kventin.DataAccess.Domain
         /// <summary>
         /// Id тарифа обучения
         /// </summary>
-        public int TariffId { get; set; }
+        public long TariffId { get; set; }
 
         /// <summary>
         /// Тариф обучения

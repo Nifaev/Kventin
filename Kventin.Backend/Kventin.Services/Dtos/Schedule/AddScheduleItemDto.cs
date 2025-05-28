@@ -16,16 +16,16 @@ namespace Kventin.Services.Dtos.Schedule
         public string? Classroom { get; set; }
 
         [Required]
-        public required int TeacherId { get; set; }
+        public required long TeacherId { get; set; }
 
         [Required]
-        public required int GroupId { get; set; }
+        public required long GroupId { get; set; }
 
         [Required]
-        public required int SubjectId { get; set; }
+        public required long SubjectId { get; set; }
 
         [Required]
-        public required int ScheduleId { get; set; }
+        public required long ScheduleId { get; set; }
 
         [Required]
         public required bool IsOnline { get; set; }

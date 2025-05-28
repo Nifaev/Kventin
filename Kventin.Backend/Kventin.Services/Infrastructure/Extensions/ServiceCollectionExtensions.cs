@@ -48,7 +48,9 @@ namespace Kventin.Services.Infrastructure.Extensions
                 .AddPolicy("AdminAnnouncements", policy => policy.RequireRole("AdminAnnouncements"))
                 .AddPolicy("AdminFinances", policy => policy.RequireRole("AdminFinances"))
                 .AddPolicy("AdminPersonalAccounts", policy => policy.RequireRole("AdminPersonalAccounts"))
-                .AddPolicy("AdminRegistration", policy => policy.RequireRole("AdminRegistration"));
+                .AddPolicy("AdminRegistration", policy => policy.RequireRole("AdminRegistration"))
+                .AddPolicy("AdminBase", policy => policy.RequireRole("AdminBase"))
+                .AddPolicy("AdminLessons", policy => policy.RequireRole("AdminLessons"));
         }
     }
 }

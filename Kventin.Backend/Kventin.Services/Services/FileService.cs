@@ -18,7 +18,7 @@ namespace Kventin.Services.Services
         private readonly IFileStorageProvider _fileStorageProvider = fileStorageProvider;
         private readonly IFileRecordFactory _fileRecordFactory = fileRecordFactory;
 
-        public async Task DeleteFiles(List<int> fileIds)
+        public async Task DeleteFiles(List<long> fileIds)
         {
             if (fileIds.Count == 0) 
                 return;
@@ -41,7 +41,7 @@ namespace Kventin.Services.Services
             await _db.SaveChangesAsync();
         }
 
-        public async Task<DownloadFileDto> DownloadFile(int fileId)
+        public async Task<DownloadFileDto> DownloadFile(long fileId)
         {
             var fileRecord = await _db.FileRecords.FindAsync(fileId);
 
@@ -57,7 +57,7 @@ namespace Kventin.Services.Services
             return dto;
         }
 
-        public async Task<FileInfoDto> GetFileInfo(int fileId)
+        public async Task<FileInfoDto> GetFileInfo(long fileId)
         {
             var fileRecord = await _db.FileRecords
                 .Include(x => x.UploadedByUser)
@@ -68,7 +68,7 @@ namespace Kventin.Services.Services
             return dto;
         }
 
-        public async Task UploadFiles<T>(List<IFormFile> files, int uploadedByUserId, FileLinkType fileLinkType, int linkedEntityId = 0) where T : BaseEntity
+        public async Task UploadFiles<T>(List<IFormFile> files, long uploadedByUserId, FileLinkType fileLinkType, long linkedEntityId = 0) where T : BaseEntity
         {
             var uploadedByUser = await _db.Users.FindAsync(uploadedByUserId);
 
@@ -107,7 +107,7 @@ namespace Kventin.Services.Services
             await _db.SaveChangesAsync();
         }
 
-        public async Task UploadFileWithoutLinks(IFormFile file, int uploadedByUserId)
+        public async Task UploadFileWithoutLinks(IFormFile file, long uploadedByUserId)
         {
             await UploadFiles<Lesson>([file], uploadedByUserId, FileLinkType.None);
         }

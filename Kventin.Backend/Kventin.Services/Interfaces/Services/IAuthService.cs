@@ -8,9 +8,9 @@ namespace Kventin.Services.Interfaces.Services
     {
         public Task Register(RegisterDto dto);
         public Task<string> Login(LoginDto dto);
-        public int GetUserIdByCookie(IRequestCookieCollection cookie);
+        public long GetUserIdByCookie(IRequestCookieCollection cookie);
         public List<string> GetUserRolesByCookie(IRequestCookieCollection cookie);
-        public Task<string> GetNewCookieWithChildId(IRequestCookieCollection cookie, int parentId, int childId);
-        public int GetChildIdByCookie(IRequestCookieCollection cookie);
+        public Task<string> GetNewCookieWithChildId(IRequestCookieCollection cookie, long parentId, long childId);
+        public long GetChildIdByCookie(IRequestCookieCollection cookie);
     }
 }

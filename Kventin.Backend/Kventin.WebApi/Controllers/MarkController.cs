@@ -72,7 +72,7 @@ namespace Kventin.WebApi.Controllers
         /// <returns></returns>
         [Authorize(Roles = "Teacher, AdminLessons, SuperUser")]
         [HttpPost("{markId}/update")]
-        public async Task<ActionResult> UpdateMarkForLesson(int markId, MarkShortInfoDto dto)
+        public async Task<ActionResult> UpdateMarkForLesson(long markId, MarkShortInfoDto dto)
         {
             try
             {
@@ -93,7 +93,7 @@ namespace Kventin.WebApi.Controllers
         /// <returns></returns>
         [Authorize(Roles = "Teacher, AdminLessons, SuperUser")]
         [HttpDelete("{markId}/delete")]
-        public async Task<ActionResult> DeleteMarkForLesson(int markId)
+        public async Task<ActionResult> DeleteMarkForLesson(long markId)
         {
             try
             {

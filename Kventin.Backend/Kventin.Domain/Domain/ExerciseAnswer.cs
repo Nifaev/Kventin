@@ -15,7 +15,7 @@ namespace Kventin.DataAccess.Domain
         /// <summary>
         /// Id ученика
         /// </summary>
-        public int StudentId { get; set; }
+        public long StudentId { get; set; }
 
         /// <summary>
         /// Ученик
@@ -25,7 +25,7 @@ namespace Kventin.DataAccess.Domain
         /// <summary>
         /// Id задания
         /// </summary>
-        public int ExerciseId { get; set; }
+        public long ExerciseId { get; set; }
 
         /// <summary>
         /// Задание

@@ -15,7 +15,7 @@ namespace Kventin.Services.Services
         private readonly IUserService _userService = userService;
         private readonly IAuthService _authService = authService;
 
-        public async Task UpdateUserAccountInfo(IRequestCookieCollection cookies, UpdateUserAccountInfoDto dto, int userId, int authorizedUserId)
+        public async Task UpdateUserAccountInfo(IRequestCookieCollection cookies, UpdateUserAccountInfoDto dto, long userId, long authorizedUserId)
         {
             var authorizedUserRoles = _authService.GetUserRolesByCookie(cookies);
 
@@ -49,7 +49,7 @@ namespace Kventin.Services.Services
             await _db.SaveChangesAsync();
         }
 
-        public async Task<UserAccountInfoDto> GetUserAccountInfo(int userId)
+        public async Task<UserAccountInfoDto> GetUserAccountInfo(long userId)
         {
             var user = await _db.Users.FindAsync(userId);
 

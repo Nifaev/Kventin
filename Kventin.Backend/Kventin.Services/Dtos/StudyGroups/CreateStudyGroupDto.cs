@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Runtime.CompilerServices;
 
 namespace Kventin.Services.Dtos.StudyGroups
 {
@@ -8,9 +9,9 @@ namespace Kventin.Services.Dtos.StudyGroups
         public required string GroupName { get; set; }
 
         [Required]
-        public required int SubjectId { get; set; }
+        public required long SubjectId { get; set; }
 
         [Required]
-        public required int TeacherId { get; set; }
+        public required long TeacherId { get; set; }
     }
 }

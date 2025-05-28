@@ -24,7 +24,7 @@ namespace Kventin.Services.Dtos.Lessons
         }
 
         [Required]
-        public int LessonId { get; set; }
+        public long LessonId { get; set; }
 
         [Required]
         public TimeOnly StartTime { get; set; }

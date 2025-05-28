@@ -29,7 +29,7 @@ namespace Kventin.Services.Services
             return roles;
         }
 
-        public async Task SetUserRoles(int authorizedUserId, int userId, List<string> rolenamesToAdd)
+        public async Task SetUserRoles(long authorizedUserId, long userId, List<string> rolenamesToAdd)
         {
             var authorizedUser = await GetUserWithRolesByIdAsync(authorizedUserId);
 
@@ -62,7 +62,7 @@ namespace Kventin.Services.Services
             await _db.SaveChangesAsync();
         }
 
-        public async Task DeleteUserRole(int authorizedUserId, int userId, List<string> rolenamesToDelete)
+        public async Task DeleteUserRole(long authorizedUserId, long userId, List<string> rolenamesToDelete)
         {
             var authorizedUser = await GetUserWithRolesByIdAsync(authorizedUserId);
 
@@ -83,7 +83,7 @@ namespace Kventin.Services.Services
             await _db.SaveChangesAsync();
         }
 
-        public async Task<List<string>> GetUserRoles(int userId)
+        public async Task<List<string>> GetUserRoles(long userId)
         {
             var user = await GetUserWithRolesByIdAsync(userId)
                 ?? throw new EntityNotFoundException("Пользователь с таким Id не найден");
@@ -95,7 +95,7 @@ namespace Kventin.Services.Services
             return userRoles;
         }
 
-        public async Task<List<UserRoleInfoDto>> GetAllUsersWithRoles(int authorizedUserId)
+        public async Task<List<UserRoleInfoDto>> GetAllUsersWithRoles(long authorizedUserId)
         {
             var result = new List<UserRoleInfoDto>();
 
@@ -140,7 +140,7 @@ namespace Kventin.Services.Services
             return result;
         }
 
-        private async Task<User?> GetUserWithRolesByIdAsync(int userId)
+        private async Task<User?> GetUserWithRolesByIdAsync(long userId)
         {
             return await _db.Users
                 .Include(x => x.Roles)

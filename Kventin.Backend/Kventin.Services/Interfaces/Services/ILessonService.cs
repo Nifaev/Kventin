@@ -6,12 +6,12 @@ namespace Kventin.Services.Interfaces.Services
 {
     public interface ILessonService
     {
-        Task<SchoolWeekDto> GetSchoolWeek(int skipWeeksCount, int userId, List<string> userRoles, int childId);
-        Task<SchoolDayDto> GetSchoolDay(DateOnly date, int userId, List<string> userRoles, int childId);
-        Task<LessonFullInfoDto> GetLessonFullInfo(int lessonId, int userId, List<string> userRoles, int childId);
-        Task UpdateLesson(int lessonId, UpdateLessonDto dto);
-        Task AttachFilesToLesson(int lessonId, List<IFormFile> files, int uploadedByUserId);
-        Task DetachFilesFromLesson(int lessonId, List<int> fileIds);
-        Task MarkAttendance(int lessonId, List<int> studentIds);
+        Task<SchoolWeekDto> GetSchoolWeek(int skipWeeksCount, long userId, List<string> userRoles, long childId);
+        Task<SchoolDayDto> GetSchoolDay(DateOnly date, long userId, List<string> userRoles, long childId);
+        Task<LessonFullInfoDto> GetLessonFullInfo(long lessonId, long userId, List<string> userRoles, long childId);
+        Task UpdateLesson(long lessonId, UpdateLessonDto dto);
+        Task AttachFilesToLesson(long lessonId, List<IFormFile> files, long uploadedByUserId);
+        Task DetachFilesFromLesson(long lessonId, List<long> fileIds);
+        Task MarkAttendance(long lessonId, List<long> studentIds);
     }
 }

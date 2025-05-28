@@ -25,7 +25,7 @@ namespace Kventin.DataAccess.Domain
         /// <summary>
         /// Id преподавателя
         /// </summary>
-        public int TeacherId { get; set; }
+        public long TeacherId { get; set; }
 
         /// <summary>
         /// Преподаватель
@@ -35,7 +35,7 @@ namespace Kventin.DataAccess.Domain
         /// <summary>
         /// Id группы
         /// </summary>
-        public int StudyGroupId { get; set; }
+        public long StudyGroupId { get; set; }
 
         /// <summary>
         /// Группа
@@ -60,7 +60,7 @@ namespace Kventin.DataAccess.Domain
         /// <summary>
         /// Id занятия, к которому прикреплено задание
         /// </summary>
-        public int LessonId { get; set; }
+        public long LessonId { get; set; }
 
         /// <summary>
         /// Ученик, которому выдано индивидуальное задание
@@ -70,7 +70,7 @@ namespace Kventin.DataAccess.Domain
         /// <summary>
         /// Id ученика, которому выдали индиидуальное задание
         /// </summary>
-        public int? IndividualStudentId { get; set; }
+        public long? IndividualStudentId { get; set; }
 
         /// <summary>
         /// Прикрепленные файлы

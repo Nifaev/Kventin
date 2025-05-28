@@ -22,7 +22,7 @@ namespace Kventin.WebApi.Controllers
         /// <response code="200">Успешно</response>
         /// <response code="400">Ошибка (см. сообщение)</response>
         [HttpGet("{userId}/getAccountInfo")]
-        public async Task<ActionResult<UserAccountInfoDto>> GetUserAccountInfo(int userId)
+        public async Task<ActionResult<UserAccountInfoDto>> GetUserAccountInfo(long userId)
         {
             try
             {
@@ -50,7 +50,7 @@ namespace Kventin.WebApi.Controllers
         /// <response code="200">Успешно</response>
         /// <response code="400">Ошибка (см. сообщение)</response>
         [HttpPost("{userId}/updateAccountInfo")]
-        public async Task<ActionResult> UpdateUserAccountInfo(int userId, UpdateUserAccountInfoDto dto)
+        public async Task<ActionResult> UpdateUserAccountInfo(long userId, UpdateUserAccountInfoDto dto)
         {
             try
             {

@@ -11,13 +11,13 @@ namespace Kventin.Services.Infrastructure.Tools
     {
         private readonly JwtOption _options = options.Value;
 
-        public string GenerateToken(int userId, string userLogin, List<string> rolenames, int selectedChildId = 0)
+        public string GenerateToken(long userId, string userLogin, List<string> rolenames, long selectedChildId = 0)
         {
             List<Claim> claims = 
             [
-                new("userId", userId.ToString(), ClaimValueTypes.Integer),
+                new("userId", userId.ToString(), ClaimValueTypes.Integer64),
                 new("userLogin", userLogin),
-                new("selectedChild", selectedChildId.ToString(), ClaimValueTypes.Integer)
+                new("selectedChild", selectedChildId.ToString(), ClaimValueTypes.Integer64)
             ];
 
             foreach (var rolename in rolenames)
@@ -37,31 +37,31 @@ namespace Kventin.Services.Infrastructure.Tools
             return tokenValue;
         }
 
-        public int GetChildIdByToken(string token)
+        public long GetChildIdByToken(string token)
         {
             var handler = new JwtSecurityTokenHandler();
-            var userId = 0;
+            long userId = 0;
 
             if (handler.CanReadToken(token))
             {
                 var jwtToken = handler.ReadJwtToken(token);
 
-                userId = int.Parse(jwtToken.Claims.First(x => x.Type == "selectedChild").Value);
+                userId = long.Parse(jwtToken.Claims.First(x => x.Type == "selectedChild").Value);
             }
 
             return userId;
         }
 
-        public int GetUserIdByToken(string token)
+        public long GetUserIdByToken(string token)
         {
             var handler = new JwtSecurityTokenHandler();
-            var userId = 0;
+            long userId = 0;
 
             if (handler.CanReadToken(token))
             {
                 var jwtToken = handler.ReadJwtToken(token);
 
-                userId = int.Parse(jwtToken.Claims.First(x => x.Type == "userId").Value);
+                userId = long.Parse(jwtToken.Claims.First(x => x.Type == "userId").Value);
             }
 
             return userId;

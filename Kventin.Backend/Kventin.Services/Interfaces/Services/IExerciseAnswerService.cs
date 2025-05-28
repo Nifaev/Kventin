@@ -6,10 +6,10 @@ namespace Kventin.Services.Interfaces.Services
     public interface IExerciseAnswerService
     {
 
-        Task CreateExerciseAsnwer(int studentId, CreateExerciseAnswerDto dto);
-        Task UpdateExerciseAnswer(int studentId, int answerId, string answerContent);
-        Task DeleteExerciseAnswer(int studentId, int answerId);
-        Task AttachFilesToExerciseAnswer(int studentId, int answerId, List<IFormFile> files);
-        Task DetachFilesFromExerciseAnswer(int studentId, int answerId, List<int> fileIds);
+        Task CreateExerciseAsnwer(long studentId, CreateExerciseAnswerDto dto);
+        Task UpdateExerciseAnswer(long studentId, long answerId, string answerContent);
+        Task DeleteExerciseAnswer(long studentId, long answerId);
+        Task AttachFilesToExerciseAnswer(long studentId, long answerId, List<IFormFile> files);
+        Task DetachFilesFromExerciseAnswer(long studentId, long answerId, List<long> fileIds);
     }
 }

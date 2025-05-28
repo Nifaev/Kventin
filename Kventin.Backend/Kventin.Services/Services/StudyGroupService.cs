@@ -12,7 +12,7 @@ namespace Kventin.Services.Services
     {
         private readonly KventinContext _db = db;
 
-        public async Task AddStudentToStudyGroup(int studyGroupId, int studentId)
+        public async Task AddStudentToStudyGroup(long studyGroupId, long studentId)
         {
             var studyGroup = await _db.StudyGroups.FindAsync(studyGroupId)
                 ?? throw new EntityNotFoundException("Группа с таким Id не найдена");
@@ -27,7 +27,7 @@ namespace Kventin.Services.Services
             await _db.SaveChangesAsync();
         }
 
-        public async Task DeleteStudentFromStudyGroup(int studyGroupId, int studentId)
+        public async Task DeleteStudentFromStudyGroup(long studyGroupId, long studentId)
         {
             var studyGroup = await _db.StudyGroups
                 .Include(x => x.Students)
@@ -72,7 +72,7 @@ namespace Kventin.Services.Services
             await _db.SaveChangesAsync();
         }
 
-        public async Task DeleteStudyGroup(int studyGroupId)
+        public async Task DeleteStudyGroup(long studyGroupId)
         {
             var group = await _db.StudyGroups.FindAsync(studyGroupId);
 
@@ -83,7 +83,7 @@ namespace Kventin.Services.Services
             }
         }
 
-        public async Task<List<StudyGroupShortInfoDto>> GetAllStudyGroupsShortInfo(int userId, List<string> userRoles, int childId)
+        public async Task<List<StudyGroupShortInfoDto>> GetAllStudyGroupsShortInfo(long userId, List<string> userRoles, long childId)
         {
             var result = new List<StudyGroupShortInfoDto>();
 
@@ -131,7 +131,7 @@ namespace Kventin.Services.Services
             return result;
         }
 
-        public async Task<StudyGroupFullInfoDto> GetStudyGroupFullInfo(int studyGroupId)
+        public async Task<StudyGroupFullInfoDto> GetStudyGroupFullInfo(long studyGroupId)
         {
             var studyGroup = await _db.StudyGroups
                 .Include(x => x.Teacher)
@@ -155,7 +155,7 @@ namespace Kventin.Services.Services
             return result;
         }
 
-        public async Task UpdateStudyGroup(int studyGroupId, UpdateStudyGroupDto dto)
+        public async Task UpdateStudyGroup(long studyGroupId, UpdateStudyGroupDto dto)
         {
             var group = await _db.StudyGroups.FindAsync(studyGroupId) 
                 ?? throw new EntityNotFoundException("Группа с таким Id не найдена");

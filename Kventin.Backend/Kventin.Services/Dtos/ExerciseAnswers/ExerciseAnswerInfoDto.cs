@@ -10,13 +10,13 @@ namespace Kventin.Services.Dtos.ExerciseAnswers
         public required UserShortInfoDto Student { get; set; }
 
         [Required]
-        public required int ExerciseId { get; set; }
+        public required long ExerciseId { get; set; }
 
         [Required]
-        public required int LessonId { get; set; }
+        public required long LessonId { get; set; }
 
         [Required]
-        public required int ExerciseAnswerId { get; set; }
+        public required long ExerciseAnswerId { get; set; }
 
         [Required]
         public required string Content { get; set; }

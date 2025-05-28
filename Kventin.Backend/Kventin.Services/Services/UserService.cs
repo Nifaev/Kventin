@@ -43,7 +43,7 @@ namespace Kventin.Services.Services
             return result;
         }
 
-        public async Task SetChildrenForParent(int parentId, List<int> childrenIds)
+        public async Task SetChildrenForParent(long parentId, List<long> childrenIds)
         {
             var parent = await _db.Users
                 .Include(x => x.Children)
@@ -67,7 +67,7 @@ namespace Kventin.Services.Services
             await _db.SaveChangesAsync();
         }
 
-        public async Task<List<UserShortInfoDto>> GetUsersChildren(int parentId)
+        public async Task<List<UserShortInfoDto>> GetUsersChildren(long parentId)
         {
             var children = await _db.Users
                 .Include(x => x.Children)

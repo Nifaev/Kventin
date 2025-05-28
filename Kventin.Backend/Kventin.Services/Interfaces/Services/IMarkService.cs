@@ -4,9 +4,9 @@ namespace Kventin.Services.Interfaces.Services
 {
     public interface IMarkService
     {
-        Task AssignMarksForLesson(int teacherId, AssignMarksForLessonDto dto);
-        Task AssignMarksForExercise(int teacherId, AssignMarksForExerciseDto dto);
-        Task UpdateMark(int markId, MarkShortInfoDto dto);
-        Task DeleteMark(int markId);
+        Task AssignMarksForLesson(long teacherId, AssignMarksForLessonDto dto);
+        Task AssignMarksForExercise(long teacherId, AssignMarksForExerciseDto dto);
+        Task UpdateMark(long markId, MarkShortInfoDto dto);
+        Task DeleteMark(long markId);
     }
 }

@@ -7,7 +7,7 @@ namespace Kventin.Services.Dtos.Exercises
     public class ExerciseShortInfoDto
     {
         [Required]
-        public required int ExeriseId { get; set; }
+        public required long ExeriseId { get; set; }
 
         [Required]
         public DateTime CreateDateTime { get; set; }

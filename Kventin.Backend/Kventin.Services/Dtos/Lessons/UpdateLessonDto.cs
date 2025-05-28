@@ -4,8 +4,8 @@ namespace Kventin.Services.Dtos.Lessons
 {
     public class UpdateLessonDto
     {
-        public int? TeacherId { get; set; }
-        public int? SubjectId { get; set; }
+        public long? TeacherId { get; set; }
+        public long? SubjectId { get; set; }
         public string? Classroom { get; set; }
         public bool? IsOnline { get; set; }
         public string? Topic { get; set; }

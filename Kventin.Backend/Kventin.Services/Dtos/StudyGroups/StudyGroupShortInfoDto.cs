@@ -6,7 +6,7 @@ namespace Kventin.Services.Dtos.StudyGroups
     public class StudyGroupShortInfoDto
     {
         [Required]
-        public required int StudyGroupId { get; set; }
+        public required long StudyGroupId { get; set; }
 
         [Required]
         public required UserShortInfoDto Teacher { get; set; }

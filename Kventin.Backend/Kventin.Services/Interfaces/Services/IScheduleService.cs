@@ -6,8 +6,8 @@ namespace Kventin.Services.Interfaces.Services
     {
         Task<ReturnScheduleDto> GetSchedule(ScheduleDto dto);
         Task AddScheduleItem(AddScheduleItemDto dto);
-        Task UpdateScheduleItem(UpdateScheduleItemDto dto, int itemId);
-        Task DeleteScheduleItem(int itemId);
+        Task UpdateScheduleItem(UpdateScheduleItemDto dto, long itemId);
+        Task DeleteScheduleItem(long itemId);
         Task CreateSchedule(ScheduleDto dto);
         Task<List<string>> GetSchoolYears();
     }

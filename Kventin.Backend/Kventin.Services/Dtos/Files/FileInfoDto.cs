@@ -18,7 +18,7 @@ namespace Kventin.Services.Dtos.Files
         }
 
         [Required]
-        public int FileId { get; set; }
+        public long FileId { get; set; }
 
         [Required]
         public string ContentType { get; set; }

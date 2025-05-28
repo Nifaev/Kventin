@@ -44,12 +44,12 @@ namespace Kventin.DataAccess.Mappings
                     "UsersRoles",
                     x => x.HasOne<Role>().WithMany().HasForeignKey("RoleId").OnDelete(DeleteBehavior.NoAction),
                     x => x.HasOne<User>().WithMany().HasForeignKey("UserId").OnDelete(DeleteBehavior.NoAction),
-                    x => x.HasData([new { RoleId = 4, UserId = 1 }]));
+                    x => x.HasData([new { RoleId = 4L, UserId = 1L }]));
 
             builder.HasData([
                 new User
                 {
-                    Id = 1,
+                    Id = 1L,
                     FirstName = "Суперпользователь",
                     LastName = "Встроенный",
                     PhoneNumber = "1234567890",

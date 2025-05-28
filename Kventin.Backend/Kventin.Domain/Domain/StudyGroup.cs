@@ -15,7 +15,7 @@ namespace Kventin.DataAccess.Domain
         /// <summary>
         /// Id предмета
         /// </summary>
-        public required int SubjectId { get; set; }
+        public required long SubjectId { get; set; }
 
         /// <summary>
         /// Предмет
@@ -25,7 +25,7 @@ namespace Kventin.DataAccess.Domain
         /// <summary>
         /// Id преподавателя
         /// </summary>
-        public required int TeacherId { get; set; }
+        public required long TeacherId { get; set; }
 
         /// <summary>
         /// Преподаватель

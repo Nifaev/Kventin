@@ -9,7 +9,7 @@ namespace Kventin.Services.Dtos.Marks
         public required string MarkType { get; set; }
 
         [Required]
-        public required int MarkId { get; set; }
+        public required long MarkId { get; set; }
 
         [Required]
         public required MarkValue MarkValue { get; set; }

@@ -15,7 +15,7 @@ namespace Kventin.Services.Services
         private readonly KventinContext _db = db;
         private readonly IFileService _fileService = fileService;
 
-        public async Task CreateExerciseAsnwer(int studentId, CreateExerciseAnswerDto dto)
+        public async Task CreateExerciseAsnwer(long studentId, CreateExerciseAnswerDto dto)
         {
             if (string.IsNullOrWhiteSpace(dto.Content))
                 throw new ArgumentException("Поле Content не должно быть null или пустой строкой");
@@ -50,7 +50,7 @@ namespace Kventin.Services.Services
             await _db.SaveChangesAsync();
         }
 
-        public async Task DeleteExerciseAnswer(int studentId, int answerId)
+        public async Task DeleteExerciseAnswer(long studentId, long answerId)
         {
             var student = await _db.Users
                 .FirstOrDefaultAsync(x => x.Id == studentId &&
@@ -74,7 +74,7 @@ namespace Kventin.Services.Services
             await _db.SaveChangesAsync();
         }
 
-        public async Task UpdateExerciseAnswer(int studentId, int answerId, string answerContent)
+        public async Task UpdateExerciseAnswer(long studentId, long answerId, string answerContent)
         {
             var student = await _db.Users
                 .FirstOrDefaultAsync(x => x.Id == studentId &&
@@ -92,21 +92,21 @@ namespace Kventin.Services.Services
             await _db.SaveChangesAsync();
         }
 
-        public async Task DetachFilesFromExerciseAnswer(int studentId, int answerId, List<int> fileIds)
+        public async Task DetachFilesFromExerciseAnswer(long studentId, long answerId, List<long> fileIds)
         {
             await CheckAccess(studentId, answerId);
 
             await _fileService.DeleteFiles(fileIds);
         }
 
-        public async Task AttachFilesToExerciseAnswer(int studentId, int answerId, List<IFormFile> files)
+        public async Task AttachFilesToExerciseAnswer(long studentId, long answerId, List<IFormFile> files)
         {
             await CheckAccess(studentId, answerId);
 
             await _fileService.UploadFiles<ExerciseAnswer>(files, studentId, FileLinkType.ExerciseAnswer, answerId);
         }
 
-        private async Task CheckAccess(int studentId, int answerId)
+        private async Task CheckAccess(long studentId, long answerId)
         {
             var isStudent = await _db.Users
                 .AnyAsync(x => x.Id == studentId &&
