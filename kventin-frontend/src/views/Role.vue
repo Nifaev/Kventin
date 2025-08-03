@@ -116,7 +116,6 @@ const selectedRole     = ref({})
 const message          = ref('')
 const error            = ref('')
 
-// состояние модалки
 const showChildModal   = ref(false)
 const currentParentId  = ref(null)
 const students         = ref([])
@@ -127,7 +126,6 @@ const sortedUsers = computed(() => [
   ...users.value.filter(u => u.roles.length > 0)
 ])
 
-// загрузка пользователей + ролей
 async function fetchData() {
   message.value = ''
   error.value = ''
@@ -144,7 +142,6 @@ async function fetchData() {
   }
 }
 
-// назначить роль или открыть модалку для Parent
 async function addRole(userId, role) {
   if (!role) return
   message.value = ''
@@ -165,7 +162,6 @@ async function addRole(userId, role) {
   }
 }
 
-// удалить роль
 async function removeRole(userId, role) {
   if (!confirm(`Удалить роль «${role}»?`)) return
   message.value = ''
@@ -179,7 +175,6 @@ async function removeRole(userId, role) {
   }
 }
 
-// двойной клик выбирает ребёнка в modal
 function onChildDblClick(e) {
   const id = Number(e.target.value)
   const student = students.value.find(s => s.userId === id)
@@ -191,7 +186,6 @@ function onChildDblClick(e) {
   }
 }
 
-// сохраняем связь Parent→Children
 async function confirmChildren() {
   try {
     const childIds = selectedChildren.value.map(c => c.id)

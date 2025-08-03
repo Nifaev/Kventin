@@ -37,20 +37,32 @@
                   <option disabled value="">—</option>
                   <option v-for="val in ['1','2','3','4','5','Н/А']" :key="val" :value="val">{{ val }}</option>
                 </select>
-                <button class="add-btn" @click="addMark(student)">➕</button>
+                <button class="add-btn" @click="addMark(student)">
+                  <img src="/images/save.png" alt="Добавить">
+                </button>
               </td>
               <td v-if="canManageMarks">
                 <div v-for="mark in student.marks" :key="mark.markId" class="mark-edit">
                   <select v-model="mark.markValue">
                     <option v-for="val in ['1','2','3','4','5','Н/А']" :key="val" :value="val">{{ val }}</option>
                   </select>
-                  <button class="update-btn" @click="updateMark(mark)">✔️</button>
-                  <button class="delete-btn" @click="deleteMark(mark)">🗑️</button>
+                  <button class="update-btn" @click="updateMark(mark)">
+                    <img src="/images/redactirovat.png" alt="Изменить">
+                  </button>
+                  <button class="delete-btn" @click="deleteMark(mark)">
+                    <img src="/images/delete.png" alt="Удалить">
+                  </button>
                 </div>
               </td>
             </tr>
           </tbody>
         </table>
+      </div>
+
+      <div class="file-upload" v-if="canManageMarks">
+        <h3>Добавить задания на урок</h3>
+        <input type="file" @change="handleFileUpload" />
+        <button @click="uploadFile">Загрузить файл</button>
       </div>
     </div>
   </div>
@@ -67,6 +79,7 @@ const lessonId = route.params.lessonId;
 
 const lessonData = ref(null);
 const currentUserRoles = ref([]);
+const selectedFile = ref(null);
 
 const canManageMarks = computed(() =>
   currentUserRoles.value.some(role => ['Teacher', 'AdminLessons', 'SuperUser'].includes(role))
@@ -97,13 +110,15 @@ async function fetchCurrentUserRoles() {
 }
 
 async function addMark(student) {
-  if (!student.newMark) return alert('Выберите оценку.');
+  const markValue = parseInt(student.newMark, 10);
+
+  if (!markValue) return alert('Выберите оценку.');
 
   const payload = {
     lessonId: Number(lessonId),
     studentMarks: [{
       studentId: student.userId,
-      marks: [{ markValue: student.newMark, teacherComment: '' }]
+      marks: [{ markValue: markValue, teacherComment: '' }]
     }]
   };
 
@@ -118,7 +133,7 @@ async function addMark(student) {
 }
 
 async function updateMark(mark) {
-  const payload = { markValue: mark.markValue, teacherComment: '' };
+  const payload = { markValue: parseInt(mark.markValue, 10), teacherComment: '' };
 
   try {
     await axios.post(`/api/mark/${mark.markId}/update`, payload);
@@ -144,6 +159,27 @@ function formatDate(iso) {
   return `${d}.${m}.${y}`;
 }
 
+function handleFileUpload(event) {
+  selectedFile.value = event.target.files[0];
+}
+
+async function uploadFile() {
+  if (!selectedFile.value) return alert('Выберите файл для загрузки.');
+
+  const formData = new FormData();
+  formData.append('file', selectedFile.value);
+
+  try {
+    await axios.post('http://localhost:7269/api/file/upload', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+      withCredentials: true, // добавлено для поддержки CORS
+    });
+    alert('Файл успешно загружен.');
+  } catch (e) {
+    alert('Ошибка загрузки файла.');
+  }
+}
+
 onMounted(async () => {
   await fetchCurrentUserRoles();
   await fetchLessonDetails();
@@ -161,40 +197,73 @@ onMounted(async () => {
 }
 
 .back-button {
-  padding: 6px 12px; cursor: pointer; background: #F7D4B4;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.2); border-radius: 5px; width: 10%; margin-left: 2%;
+  padding: 6px 12px;
+  cursor: pointer;
+  background: #F7D4B4;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  border-radius: 5px;
+  width: 10%;
+  margin-left: 2%;
 }
 
 .lesson-content {
-  background: #fff; padding: 20px; border-radius: 10px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin: 0 2%;
+  background: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  margin: 0 2%;
 }
 
 .students-table table {
-  width: 100%; border-collapse: collapse; margin-top: 2%;
+  width: 100%; 
+  border-collapse: collapse;
+  margin-top: 2%;
 }
 
 .students-table th, .students-table td {
-  border: 1px solid #352f2f; padding: 10px; text-align: center;
+  border: 1px solid #352f2f;
+  padding: 10px;
+  text-align: center;
+  vertical-align: middle; /* добавлено вертикальное выравнивание */
 }
 
-.students-table th { background-color: #7fcdd3a6; }
+.students-table th {
+  background-color: #7fcdd3a6;
+}
 
 select {
-  padding: 4px; text-align: center;
+  padding: 4px;
+  text-align: center;
 }
 
 .add-btn, .update-btn, .delete-btn {
-  cursor: pointer; border: none; border-radius: 5px; padding: 4px 8px;
+  cursor: pointer;
+  border: none;
+  background: none;
+  padding: 2px;
+  width: 24px;
+  height: 24px;
+  display: inline-flex; /* изменено с flex на inline-flex */
+  align-items: center;
+  justify-content: center;
 }
 
-.add-btn { background: #4caf50; color: #fff; }
-.update-btn { background: #2196f3; color: #fff; }
-.delete-btn { background: #f44336; color: #fff; }
+.add-btn img, .update-btn img, .delete-btn img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
 
 .mark-edit {
-  display: flex; justify-content: center; align-items: center; gap: 5px; margin-bottom: 5px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  margin-bottom: 5px;
 }
 
-.add-btn:hover, .update-btn:hover, .delete-btn:hover { opacity: 0.8; }
+.add-btn:hover, .update-btn:hover, .delete-btn:hover {
+  opacity: 0.8;
+}
 </style>
+

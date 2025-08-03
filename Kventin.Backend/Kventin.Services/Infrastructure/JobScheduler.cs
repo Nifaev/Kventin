@@ -21,7 +21,7 @@ namespace Kventin.Services.Infrastructure
 
             ITrigger trigger = TriggerBuilder.Create()
                 .WithIdentity("CustomScheduleTrigger")
-                //.StartNow()
+                .StartNow()
                 .WithSimpleSchedule(x => x
                    .WithIntervalInMinutes(30)  // Интервал в 30 минут
                    .RepeatForever())
