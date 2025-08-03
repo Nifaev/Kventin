@@ -13,7 +13,7 @@
         /// <summary>
         /// Id сущности
         /// </summary>
-        public long Id { get; set; }
+        public int Id { get; set; }
 
         /// <summary>
         /// Дата и время создания

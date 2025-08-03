@@ -15,7 +15,7 @@ namespace Kventin.DataAccess.Domain
         /// <summary>
         /// Id сотрудника
         /// </summary>
-        public long EmployeeId { get; set; }
+        public int EmployeeId { get; set; }
 
         /// <summary>
         /// Сотрудник

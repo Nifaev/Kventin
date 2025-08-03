@@ -143,11 +143,6 @@ namespace Kventin.DataAccess.Domain
         public List<StudentActivity> StudentActivities { get; set; } = [];
 
         /// <summary>
-        /// Id ставки сотрудника
-        /// </summary>
-        public long? EmployeeRateId { get; set; }
-
-        /// <summary>
         /// Ставка сотрудника
         /// </summary>
         public EmployeeRate? EmployeeRate { get; set; }

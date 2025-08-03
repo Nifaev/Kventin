@@ -80,7 +80,7 @@ namespace Kventin.WebApi.Controllers
         /// <returns></returns>
         [Authorize]
         [HttpGet("{lessonId}")]
-        public async Task<ActionResult<LessonFullInfoDto>> GetLessonFullInfo(long lessonId)
+        public async Task<ActionResult<LessonFullInfoDto>> GetLessonFullInfo(int lessonId)
         {
             var userId = _authService.GetUserIdByCookie(Request.Cookies);
             var userRoles = _authService.GetUserRolesByCookie(Request.Cookies);
@@ -106,7 +106,7 @@ namespace Kventin.WebApi.Controllers
         /// <returns></returns>
         [Authorize(Roles = "Teacher, AdminLessons, SuperUser")]
         [HttpPost("{lessonId}/update")]
-        public async Task<ActionResult> UpdateLesson(long lessonId, UpdateLessonDto dto)
+        public async Task<ActionResult> UpdateLesson(int lessonId, UpdateLessonDto dto)
         {
             try
             {
@@ -128,7 +128,7 @@ namespace Kventin.WebApi.Controllers
         /// <returns></returns>
         [Authorize(Roles = "Teacher, AdminLessons, SuperUser")]
         [HttpPost("{lessonId}/uploadFiles")]
-        public async Task<ActionResult> UploadFiles(long lessonId, List<IFormFile> files)
+        public async Task<ActionResult> UploadFiles(int lessonId, List<IFormFile> files)
         {
             var userId = _authService.GetUserIdByCookie(Request.Cookies);
 
@@ -152,7 +152,7 @@ namespace Kventin.WebApi.Controllers
         /// <returns></returns>
         [Authorize(Roles = "Teacher, AdminLessons, SuperUser")]
         [HttpDelete("{lessonId}/deleteFiles")]
-        public async Task<ActionResult> DeleteFiles(long lessonId, List<long> fileIds)
+        public async Task<ActionResult> DeleteFiles(int lessonId, List<int> fileIds)
         {
             try
             {
@@ -174,7 +174,7 @@ namespace Kventin.WebApi.Controllers
         /// <returns></returns>
         [Authorize(Roles = "Teacher, AdminLessons, SuperUser")]
         [HttpPost("{lessonId}/markAttendance")]
-        public async Task<ActionResult> MarkAttendance(long lessonId, List<long> attendedStudentIds)
+        public async Task<ActionResult> MarkAttendance(int lessonId, List<int> attendedStudentIds)
         {
             try
             {

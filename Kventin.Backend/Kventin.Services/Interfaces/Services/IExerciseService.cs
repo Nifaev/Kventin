@@ -5,11 +5,11 @@ namespace Kventin.Services.Interfaces.Services
 {
     public interface IExerciseService
     {
-        Task CreateExercise(long teacherId, CreateExerciseDto dto);
-        Task DeleteExercise(long exerciseId);
-        Task UpdateExercise(long exerciseId, UpdateExerciseDto dto);
-        Task<ExerciseFullInfoDto> GetExerciseFullInfo(long exerciseId, long userId, List<string> userRoles, long childId);
-        Task AttachFilesToExercise(long exerciseId, long userId, List<IFormFile> files);
-        Task DetachFilesFromExercise(long exerciseId, List<long> fileIds);
+        Task CreateExercise(int teacherId, CreateExerciseDto dto);
+        Task DeleteExercise(int exerciseId);
+        Task UpdateExercise(int exerciseId, UpdateExerciseDto dto);
+        Task<ExerciseFullInfoDto> GetExerciseFullInfo(int exerciseId, int userId, List<string> userRoles, int childId);
+        Task AttachFilesToExercise(int exerciseId, int userId, List<IFormFile> files);
+        Task DetachFilesFromExercise(int exerciseId, List<int> fileIds);
     }
 }

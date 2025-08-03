@@ -5,7 +5,7 @@ namespace Kventin.Services.Interfaces.Services
 {
     public interface IAccountService
     {
-        public Task<UserAccountInfoDto> GetUserAccountInfo(long userId);
-        public Task UpdateUserAccountInfo(IRequestCookieCollection cookies, UpdateUserAccountInfoDto dto, long userId, long authorizedUserId);
+        public Task<UserAccountInfoDto> GetUserAccountInfo(int userId);
+        public Task UpdateUserAccountInfo(IRequestCookieCollection cookies, UpdateUserAccountInfoDto dto, int userId, int authorizedUserId);
     }
 }

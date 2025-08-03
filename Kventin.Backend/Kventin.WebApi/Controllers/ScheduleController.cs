@@ -76,7 +76,7 @@ namespace Kventin.WebApi.Controllers
         /// <response code="200">Успешно</response>
         /// <response code="400">Ошибка (см. сообщение)</response>
         [HttpPost("updateItem/{itemId}")]
-        public async Task<ActionResult> EditScheduleItem(long itemId, UpdateScheduleItemDto dto)
+        public async Task<ActionResult> EditScheduleItem(int itemId, UpdateScheduleItemDto dto)
         {
             try
             {
@@ -96,7 +96,7 @@ namespace Kventin.WebApi.Controllers
         /// <returns></returns>
         /// <response code="200">Успешно</response>
         [HttpDelete("deleteItem/{itemId}")]
-        public async Task<ActionResult> DeleteScheduleItem(long itemId)
+        public async Task<ActionResult> DeleteScheduleItem(int itemId)
         {
             await _scheduleService.DeleteScheduleItem(itemId);
             

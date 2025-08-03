@@ -9,8 +9,8 @@ namespace Kventin.Services.Dtos.Schedule
         public DayOfTheWeek? DayOfWeek { get; set; }
         public bool? IsOnline { get; set; }
         public string? Classroom { get; set; }
-        public long? SubjectId { get; set; }
-        public long? StudyGroupId { get; set; }
-        public long? TeacherId { get; set; }
+        public int? SubjectId { get; set; }
+        public int? StudyGroupId { get; set; }
+        public int? TeacherId { get; set; }
     }
 }

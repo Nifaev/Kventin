@@ -21,7 +21,7 @@ namespace Kventin.WebApi.Controllers
         /// <returns></returns>
         [Authorize(Roles = "SuperUser, AdminLessons, Teacher")]
         [HttpPost("{exerciseId}/update")]
-        public async Task<ActionResult> UpdateExercise(long exerciseId, UpdateExerciseDto dto)
+        public async Task<ActionResult> UpdateExercise(int exerciseId, UpdateExerciseDto dto)
         {
             try
             {
@@ -42,7 +42,7 @@ namespace Kventin.WebApi.Controllers
         /// <returns></returns>
         [Authorize(Roles = "SuperUser, AdminLessons, Teacher")]
         [HttpDelete("{exerciseId}/delete")]
-        public async Task<ActionResult> DeleteExercise(long exerciseId)
+        public async Task<ActionResult> DeleteExercise(int exerciseId)
         {
             try
             {
@@ -86,7 +86,7 @@ namespace Kventin.WebApi.Controllers
         /// <returns></returns>
         [Authorize]
         [HttpGet("{exerciseId}")]
-        public async Task<ActionResult<ExerciseFullInfoDto>> GetExerciseFullInfo(long exerciseId)
+        public async Task<ActionResult<ExerciseFullInfoDto>> GetExerciseFullInfo(int exerciseId)
         {
             var userId = _authService.GetUserIdByCookie(Request.Cookies);
             var userRoles = _authService.GetUserRolesByCookie(Request.Cookies);
@@ -112,7 +112,7 @@ namespace Kventin.WebApi.Controllers
         /// <returns></returns>
         [Authorize(Roles = "SuperUser, AdminLessons, Teacher")]
         [HttpPost("{exerciseId}/uploadFiles")]
-        public async Task<ActionResult<ExerciseFullInfoDto>> UploadFilesToExercise(long exerciseId, List<IFormFile> files)
+        public async Task<ActionResult<ExerciseFullInfoDto>> UploadFilesToExercise(int exerciseId, List<IFormFile> files)
         {
             var userId = _authService.GetUserIdByCookie(Request.Cookies);
 
@@ -136,7 +136,7 @@ namespace Kventin.WebApi.Controllers
         /// <returns></returns>
         [Authorize(Roles = "SuperUser, AdminLessons, Teacher")]
         [HttpDelete("{exerciseId}/deleteFiles")]
-        public async Task<ActionResult<ExerciseFullInfoDto>> DeleteFileFromExercise(long exerciseId, List<long> fileIds)
+        public async Task<ActionResult<ExerciseFullInfoDto>> DeleteFileFromExercise(int exerciseId, List<int> fileIds)
         {
             try
             {

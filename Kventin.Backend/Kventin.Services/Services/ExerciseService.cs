@@ -4,6 +4,7 @@ using Kventin.DataAccess.Enums;
 using Kventin.Services.Dtos.ExerciseAnswers;
 using Kventin.Services.Dtos.Exercises;
 using Kventin.Services.Dtos.Files;
+using Kventin.Services.Dtos.Lessons;
 using Kventin.Services.Dtos.Marks;
 using Kventin.Services.Dtos.Users;
 using Kventin.Services.Infrastructure.Exceptions;
@@ -20,7 +21,7 @@ namespace Kventin.Services.Services
         private readonly KventinContext _db = db;
         private readonly IFileService _fileService = fileService;
 
-        public async Task CreateExercise(long teacherId, CreateExerciseDto dto)
+        public async Task CreateExercise(int teacherId, CreateExerciseDto dto)
         {
             if (dto.IsIndividual && !dto.IndividualStudentId.HasValue)
                 throw new ArgumentException("Индивидуальное занятие должно быть кому то назначено");
@@ -63,7 +64,7 @@ namespace Kventin.Services.Services
             await _db.SaveChangesAsync();
         }
         
-        public async Task DeleteExercise(long exerciseId)
+        public async Task DeleteExercise(int exerciseId)
         {
             var exercise = await _db.Exercises
                 .Include(x => x.Files)
@@ -81,7 +82,7 @@ namespace Kventin.Services.Services
             await _db.SaveChangesAsync();
         }
 
-        public async Task<ExerciseFullInfoDto> GetExerciseFullInfo(long exerciseId, long userId, List<string> userRoles, long childId)
+        public async Task<ExerciseFullInfoDto> GetExerciseFullInfo(int exerciseId, int userId, List<string> userRoles, int childId)
         {
             var exercise = await _db.Exercises
                 .Include(x => x.StudyGroup)
@@ -99,7 +100,7 @@ namespace Kventin.Services.Services
                 .FirstOrDefaultAsync(x => x.Id == exerciseId)
                 ?? throw new EntityNotFoundException("Задание с таким Id не найдено");
 
-            long studentId = 0;
+            var studentId = 0;
 
             if (userRoles.Contains("Parent"))
             {
@@ -235,7 +236,7 @@ namespace Kventin.Services.Services
             return dto;
         }
 
-        public async Task UpdateExercise(long exerciseId, UpdateExerciseDto dto)
+        public async Task UpdateExercise(int exerciseId, UpdateExerciseDto dto)
         {
             var exercise = await _db.Exercises
                 .Include(x => x.StudyGroup)
@@ -281,12 +282,12 @@ namespace Kventin.Services.Services
             await _db.SaveChangesAsync();
         }
 
-        public async Task AttachFilesToExercise(long exerciseId, long userId, List<IFormFile> files)
+        public async Task AttachFilesToExercise(int exerciseId, int userId, List<IFormFile> files)
         {
             await _fileService.UploadFiles<Exercise>(files, userId, FileLinkType.Exercise, exerciseId);
         }
 
-        public async Task DetachFilesFromExercise(long exerciseId, List<long> fileIds)
+        public async Task DetachFilesFromExercise(int exerciseId, List<int> fileIds)
         {
             await _fileService.DeleteFiles(fileIds);
         }

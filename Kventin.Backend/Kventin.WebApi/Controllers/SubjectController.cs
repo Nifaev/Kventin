@@ -73,7 +73,7 @@ namespace Kventin.WebApi.Controllers
         /// <response code="400">Ошибка (см. сообщение)</response>
         [HttpGet("{subjectId}")]
         [Authorize(Roles = "SuperUser, AdminSchedule")]
-        public async Task<ActionResult<SubjectDto>> GetSubjectById(long subjectId)
+        public async Task<ActionResult<SubjectDto>> GetSubjectById(int subjectId)
         {
             try
             {
@@ -96,7 +96,7 @@ namespace Kventin.WebApi.Controllers
         /// <response code="400">Ошибка (см. сообщение)</response>
         [HttpDelete("{subjectId}/delete")]
         [Authorize(Roles = "SuperUser, AdminSchedule")]
-        public async Task<ActionResult> DeleteSubjectById(long subjectId)
+        public async Task<ActionResult> DeleteSubjectById(int subjectId)
         {
             try
             {
@@ -120,7 +120,7 @@ namespace Kventin.WebApi.Controllers
         /// <response code="400">Ошибка (см. сообщение)</response>
         [HttpPost("{subjectId}/update")]
         [Authorize(Roles = "SuperUser, AdminSchedule")]
-        public async Task<ActionResult> UpdateSubjectById(long subjectId, string newSubjectName)
+        public async Task<ActionResult> UpdateSubjectById(int subjectId, string newSubjectName)
         {
             try 
             {

@@ -12,7 +12,7 @@ namespace Kventin.Services.Services
     {
         private readonly KventinContext _db = db;
 
-        public async Task AssignMarksForExercise(long teacherId, AssignMarksForExerciseDto dto)
+        public async Task AssignMarksForExercise(int teacherId, AssignMarksForExerciseDto dto)
         {
             var exercise = await _db.Exercises
                 .Include(x => x.StudyGroup)
@@ -64,7 +64,7 @@ namespace Kventin.Services.Services
             await _db.SaveChangesAsync();
         }
 
-        public async Task AssignMarksForLesson(long teacherId, AssignMarksForLessonDto dto)
+        public async Task AssignMarksForLesson(int teacherId, AssignMarksForLessonDto dto)
         {
             var lesson = await _db.Lessons
                 .Include(x => x.StudentsAttended)
@@ -109,7 +109,7 @@ namespace Kventin.Services.Services
             await _db.SaveChangesAsync();
         }
 
-        public async Task DeleteMark(long markId)
+        public async Task DeleteMark(int markId)
         {
             var mark = await _db.Marks.FindAsync(markId)
                 ?? throw new EntityNotFoundException("Оценка с таким Id не найдена");
@@ -119,7 +119,7 @@ namespace Kventin.Services.Services
             await _db.SaveChangesAsync();
         }
 
-        public async Task UpdateMark(long markId, MarkShortInfoDto dto)
+        public async Task UpdateMark(int markId, MarkShortInfoDto dto)
         {
             var mark = await _db.Marks.FindAsync(markId)
                 ?? throw new EntityNotFoundException("Оценка с таким Id не найдена");

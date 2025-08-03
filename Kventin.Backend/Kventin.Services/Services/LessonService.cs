@@ -24,7 +24,7 @@ namespace Kventin.Services.Services
         private readonly IFileService _fileService = fileService;
         private readonly LessonsGeneratorOptions _options = lessonsOptions.Value;
         private readonly int _take = 100;
-        public async Task<SchoolWeekDto> GetSchoolWeek(int skipWeeksCount, long userId, List<string> userRoles, long childId)
+        public async Task<SchoolWeekDto> GetSchoolWeek(int skipWeeksCount, int userId, List<string> userRoles, int childId)
         {
             if (skipWeeksCount > _options.WeeksCount)
                 throw new ArgumentException($"Значение параметра skipWeeksCount не должно превышать {_options.WeeksCount}");
@@ -75,7 +75,7 @@ namespace Kventin.Services.Services
             return result;
         }
 
-        public async Task<SchoolDayDto> GetSchoolDay(DateOnly date, long userId, List<string> userRoles, long childId)
+        public async Task<SchoolDayDto> GetSchoolDay(DateOnly date, int userId, List<string> userRoles, int childId)
         {
             var result = new SchoolDayDto
             {
@@ -108,9 +108,9 @@ namespace Kventin.Services.Services
             return result;
         }
 
-        public async Task<LessonFullInfoDto> GetLessonFullInfo(long lessonId, long userId, List<string> userRoles, long childId)
+        public async Task<LessonFullInfoDto> GetLessonFullInfo(int lessonId, int userId, List<string> userRoles, int childId)
         {
-            long studentId = 0;
+            var studentId = 0;
 
             if (userRoles.Contains("Parent"))
             {
@@ -276,7 +276,7 @@ namespace Kventin.Services.Services
             return entities;
         }
         
-        private async Task<Lesson?> GetLessonWithAllIncludes(long lessonId)
+        private async Task<Lesson?> GetLessonWithAllIncludes(int lessonId)
         {
             var lesson = await _db.Lessons
                 .AsNoTracking()
@@ -297,7 +297,7 @@ namespace Kventin.Services.Services
             return lesson;
         }
 
-        private IQueryable<Lesson> GetLessonsQueryForRoles(IQueryable<Lesson> lessonsQuery, long userId, List<string> userRoles, long childId)
+        private IQueryable<Lesson> GetLessonsQueryForRoles(IQueryable<Lesson> lessonsQuery, int userId, List<string> userRoles, int childId)
         {
             IQueryable<Lesson> result = lessonsQuery;
 
@@ -334,7 +334,7 @@ namespace Kventin.Services.Services
             return (startOfWeek, endOfWeek);
         }
 
-        public async Task UpdateLesson(long lessonId, UpdateLessonDto dto)
+        public async Task UpdateLesson(int lessonId, UpdateLessonDto dto)
         {
             var lesson = await _db.Lessons.FindAsync(lessonId)
                 ?? throw new EntityNotFoundException("Занятие с указанным Id не найдено");
@@ -377,17 +377,17 @@ namespace Kventin.Services.Services
             await _db.SaveChangesAsync();
         }
 
-        public async Task AttachFilesToLesson(long lessonId, List<IFormFile> files, long uploadedByUserId)
+        public async Task AttachFilesToLesson(int lessonId, List<IFormFile> files, int uploadedByUserId)
         {
             await _fileService.UploadFiles<Lesson>(files, uploadedByUserId, FileLinkType.Lesson, lessonId);
         }
 
-        public async Task DetachFilesFromLesson(long lessonId, List<long> fileIds)
+        public async Task DetachFilesFromLesson(int lessonId, List<int> fileIds)
         {
             await _fileService.DeleteFiles(fileIds);
         }
 
-        public async Task MarkAttendance(long lessonId, List<long> studentIds)
+        public async Task MarkAttendance(int lessonId, List<int> studentIds)
         {
             var students = await _db.Users
                 .Where(x => studentIds.Contains(x.Id) &&

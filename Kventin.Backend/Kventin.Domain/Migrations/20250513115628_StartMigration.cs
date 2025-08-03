@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Kventin.DataAccess.Migrations
 {
     /// <inheritdoc />
-    public partial class LongIds : Migration
+    public partial class StartMigration : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -17,7 +17,7 @@ namespace Kventin.DataAccess.Migrations
                 name: "Roles",
                 columns: table => new
                 {
-                    Id = table.Column<long>(type: "bigint", nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     CreateDateTime = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -32,7 +32,7 @@ namespace Kventin.DataAccess.Migrations
                 name: "Schedules",
                 columns: table => new
                 {
-                    Id = table.Column<long>(type: "bigint", nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     StartYear = table.Column<int>(type: "int", nullable: false),
                     EndYear = table.Column<int>(type: "int", nullable: false),
@@ -48,9 +48,9 @@ namespace Kventin.DataAccess.Migrations
                 name: "Subjects",
                 columns: table => new
                 {
-                    Id = table.Column<long>(type: "bigint", nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     CreateDateTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     DeleteDateTime = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
@@ -63,7 +63,7 @@ namespace Kventin.DataAccess.Migrations
                 name: "TuitionTariffs",
                 columns: table => new
                 {
-                    Id = table.Column<long>(type: "bigint", nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Price = table.Column<double>(type: "float", nullable: false),
@@ -82,19 +82,18 @@ namespace Kventin.DataAccess.Migrations
                 name: "Users",
                 columns: table => new
                 {
-                    Id = table.Column<long>(type: "bigint", nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    FirstName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    LastName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    MiddleName = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Email = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    HashedPassword = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    VkLink = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    TgLink = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ContractNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    FirstName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    LastName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    MiddleName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
+                    PhoneNumber = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: false),
+                    Email = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
+                    HashedPassword = table.Column<string>(type: "nvarchar(96)", maxLength: 96, nullable: false),
+                    VkLink = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    TgLink = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    ContractNumber = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
                     IsSuperUser = table.Column<bool>(type: "bit", nullable: false),
-                    EmployeeRateId = table.Column<long>(type: "bigint", nullable: true),
                     CreateDateTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     DeleteDateTime = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
@@ -107,11 +106,11 @@ namespace Kventin.DataAccess.Migrations
                 name: "Announcements",
                 columns: table => new
                 {
-                    Id = table.Column<long>(type: "bigint", nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Content = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    AuthorId = table.Column<long>(type: "bigint", nullable: false),
+                    Title = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    Content = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: false),
+                    AuthorId = table.Column<int>(type: "int", nullable: false),
                     CreateDateTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     DeleteDateTime = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
@@ -130,10 +129,10 @@ namespace Kventin.DataAccess.Migrations
                 name: "EmployeeActivities",
                 columns: table => new
                 {
-                    Id = table.Column<long>(type: "bigint", nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     TotalGroupLessonStudentsCount = table.Column<int>(type: "int", nullable: false),
-                    EmployeeId = table.Column<long>(type: "bigint", nullable: false),
+                    EmployeeId = table.Column<int>(type: "int", nullable: false),
                     CreateDateTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     DeleteDateTime = table.Column<DateTime>(type: "datetime2", nullable: true),
                     PeriodStartDate = table.Column<DateOnly>(type: "date", nullable: false),
@@ -156,13 +155,13 @@ namespace Kventin.DataAccess.Migrations
                 name: "EmployeeRates",
                 columns: table => new
                 {
-                    Id = table.Column<long>(type: "bigint", nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     HourlyRate = table.Column<double>(type: "float", nullable: false),
                     IndividualLessonRate = table.Column<double>(type: "float", nullable: false),
                     GroupLessonRate = table.Column<double>(type: "float", nullable: false),
                     GroupLessonStudentsRate = table.Column<double>(type: "float", nullable: false),
-                    EmployeeId = table.Column<long>(type: "bigint", nullable: false),
+                    EmployeeId = table.Column<int>(type: "int", nullable: false),
                     CreateDateTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     DeleteDateTime = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
@@ -181,9 +180,9 @@ namespace Kventin.DataAccess.Migrations
                 name: "EmployeeSalaries",
                 columns: table => new
                 {
-                    Id = table.Column<long>(type: "bigint", nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    EmployeeId = table.Column<long>(type: "bigint", nullable: false),
+                    EmployeeId = table.Column<int>(type: "int", nullable: false),
                     CreateDateTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     DeleteDateTime = table.Column<DateTime>(type: "datetime2", nullable: true),
                     PaymentDateTime = table.Column<DateTime>(type: "datetime2", nullable: true),
@@ -206,22 +205,21 @@ namespace Kventin.DataAccess.Migrations
                 name: "Messages",
                 columns: table => new
                 {
-                    Id = table.Column<long>(type: "bigint", nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    SenderId = table.Column<long>(type: "bigint", nullable: false),
+                    SenderId = table.Column<int>(type: "int", nullable: false),
                     CreateDateTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     DeleteDateTime = table.Column<DateTime>(type: "datetime2", nullable: true),
                     Status = table.Column<int>(type: "int", nullable: false),
-                    Content = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    RecieverId = table.Column<int>(type: "int", nullable: false),
-                    RecieverId1 = table.Column<long>(type: "bigint", nullable: false)
+                    Content = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
+                    RecieverId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Messages", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Messages_Users_RecieverId1",
-                        column: x => x.RecieverId1,
+                        name: "FK_Messages_Users_RecieverId",
+                        column: x => x.RecieverId,
                         principalTable: "Users",
                         principalColumn: "Id");
                     table.ForeignKey(
@@ -235,21 +233,20 @@ namespace Kventin.DataAccess.Migrations
                 name: "Notifications",
                 columns: table => new
                 {
-                    Id = table.Column<long>(type: "bigint", nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     CreateDateTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     DeleteDateTime = table.Column<DateTime>(type: "datetime2", nullable: true),
                     Status = table.Column<int>(type: "int", nullable: false),
-                    Content = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    RecieverId = table.Column<int>(type: "int", nullable: false),
-                    RecieverId1 = table.Column<long>(type: "bigint", nullable: false)
+                    Content = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
+                    RecieverId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Notifications", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Notifications_Users_RecieverId1",
-                        column: x => x.RecieverId1,
+                        name: "FK_Notifications_Users_RecieverId",
+                        column: x => x.RecieverId,
                         principalTable: "Users",
                         principalColumn: "Id");
                 });
@@ -258,8 +255,8 @@ namespace Kventin.DataAccess.Migrations
                 name: "ParentsChildren",
                 columns: table => new
                 {
-                    ParentId = table.Column<long>(type: "bigint", nullable: false),
-                    StudentId = table.Column<long>(type: "bigint", nullable: false)
+                    ParentId = table.Column<int>(type: "int", nullable: false),
+                    StudentId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -280,10 +277,10 @@ namespace Kventin.DataAccess.Migrations
                 name: "StudentActivities",
                 columns: table => new
                 {
-                    Id = table.Column<long>(type: "bigint", nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    StudentId = table.Column<long>(type: "bigint", nullable: false),
-                    TariffId = table.Column<long>(type: "bigint", nullable: false),
+                    StudentId = table.Column<int>(type: "int", nullable: false),
+                    TariffId = table.Column<int>(type: "int", nullable: false),
                     CreateDateTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     DeleteDateTime = table.Column<DateTime>(type: "datetime2", nullable: true),
                     PeriodStartDate = table.Column<DateOnly>(type: "date", nullable: false),
@@ -312,8 +309,8 @@ namespace Kventin.DataAccess.Migrations
                 name: "StudentsTariffs",
                 columns: table => new
                 {
-                    StudentId = table.Column<long>(type: "bigint", nullable: false),
-                    TariffId = table.Column<long>(type: "bigint", nullable: false)
+                    StudentId = table.Column<int>(type: "int", nullable: false),
+                    TariffId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -334,11 +331,11 @@ namespace Kventin.DataAccess.Migrations
                 name: "StudyGroups",
                 columns: table => new
                 {
-                    Id = table.Column<long>(type: "bigint", nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    SubjectId = table.Column<long>(type: "bigint", nullable: false),
-                    TeacherId = table.Column<long>(type: "bigint", nullable: false),
+                    SubjectId = table.Column<int>(type: "int", nullable: false),
+                    TeacherId = table.Column<int>(type: "int", nullable: false),
                     CreateDateTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     DeleteDateTime = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
@@ -361,10 +358,10 @@ namespace Kventin.DataAccess.Migrations
                 name: "TuitionPayments",
                 columns: table => new
                 {
-                    Id = table.Column<long>(type: "bigint", nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     ContractBumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    PayerId = table.Column<long>(type: "bigint", nullable: false),
+                    PayerId = table.Column<int>(type: "int", nullable: false),
                     CreateDateTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     DeleteDateTime = table.Column<DateTime>(type: "datetime2", nullable: true),
                     PaymentDateTime = table.Column<DateTime>(type: "datetime2", nullable: true),
@@ -387,8 +384,8 @@ namespace Kventin.DataAccess.Migrations
                 name: "UsersRoles",
                 columns: table => new
                 {
-                    RoleId = table.Column<long>(type: "bigint", nullable: false),
-                    UserId = table.Column<long>(type: "bigint", nullable: false)
+                    RoleId = table.Column<int>(type: "int", nullable: false),
+                    UserId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -409,17 +406,17 @@ namespace Kventin.DataAccess.Migrations
                 name: "ScheduleItems",
                 columns: table => new
                 {
-                    Id = table.Column<long>(type: "bigint", nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     StartTime = table.Column<TimeOnly>(type: "time", nullable: false),
                     EndTime = table.Column<TimeOnly>(type: "time", nullable: false),
                     DayOfWeek = table.Column<int>(type: "int", nullable: false),
                     IsOnline = table.Column<bool>(type: "bit", nullable: false),
                     Classroom = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    SubjectId = table.Column<long>(type: "bigint", nullable: false),
-                    StudyGroupId = table.Column<long>(type: "bigint", nullable: false),
-                    TeacherId = table.Column<long>(type: "bigint", nullable: false),
-                    ScheduleId = table.Column<long>(type: "bigint", nullable: false),
+                    SubjectId = table.Column<int>(type: "int", nullable: false),
+                    StudyGroupId = table.Column<int>(type: "int", nullable: false),
+                    TeacherId = table.Column<int>(type: "int", nullable: false),
+                    ScheduleId = table.Column<int>(type: "int", nullable: false),
                     CreateDateTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     DeleteDateTime = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
@@ -456,8 +453,8 @@ namespace Kventin.DataAccess.Migrations
                 name: "StudentStudyGroups",
                 columns: table => new
                 {
-                    StudentId = table.Column<long>(type: "bigint", nullable: false),
-                    StudyGroupId = table.Column<long>(type: "bigint", nullable: false)
+                    StudentId = table.Column<int>(type: "int", nullable: false),
+                    StudyGroupId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -480,20 +477,20 @@ namespace Kventin.DataAccess.Migrations
                 name: "Lessons",
                 columns: table => new
                 {
-                    Id = table.Column<long>(type: "bigint", nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     StartTime = table.Column<TimeOnly>(type: "time", nullable: false),
                     EndTime = table.Column<TimeOnly>(type: "time", nullable: false),
                     IsOnline = table.Column<bool>(type: "bit", nullable: false),
-                    Classroom = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    SubjectId = table.Column<long>(type: "bigint", nullable: false),
-                    StudyGroupId = table.Column<long>(type: "bigint", nullable: false),
-                    TeacherId = table.Column<long>(type: "bigint", nullable: false),
+                    Classroom = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: true),
+                    SubjectId = table.Column<int>(type: "int", nullable: false),
+                    StudyGroupId = table.Column<int>(type: "int", nullable: false),
+                    TeacherId = table.Column<int>(type: "int", nullable: false),
                     Date = table.Column<DateOnly>(type: "date", nullable: false),
-                    Topic = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Topic = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    Description = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
                     Status = table.Column<int>(type: "int", nullable: false),
-                    ScheduleItemId = table.Column<long>(type: "bigint", nullable: true),
+                    ScheduleItemId = table.Column<int>(type: "int", nullable: true),
                     CreateDateTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     DeleteDateTime = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
@@ -529,15 +526,15 @@ namespace Kventin.DataAccess.Migrations
                 name: "Exercises",
                 columns: table => new
                 {
-                    Id = table.Column<long>(type: "bigint", nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     DeadlineDateTime = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    Content = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Content = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
                     IsIndividual = table.Column<bool>(type: "bit", nullable: false),
-                    TeacherId = table.Column<long>(type: "bigint", nullable: false),
-                    StudyGroupId = table.Column<long>(type: "bigint", nullable: false),
-                    LessonId = table.Column<long>(type: "bigint", nullable: false),
-                    IndividualStudentId = table.Column<long>(type: "bigint", nullable: true),
+                    TeacherId = table.Column<int>(type: "int", nullable: false),
+                    StudyGroupId = table.Column<int>(type: "int", nullable: false),
+                    LessonId = table.Column<int>(type: "int", nullable: false),
+                    IndividualStudentId = table.Column<int>(type: "int", nullable: true),
                     CreateDateTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     DeleteDateTime = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
@@ -572,8 +569,8 @@ namespace Kventin.DataAccess.Migrations
                 name: "StudentLessons",
                 columns: table => new
                 {
-                    LessonId = table.Column<long>(type: "bigint", nullable: false),
-                    StudentId = table.Column<long>(type: "bigint", nullable: false)
+                    LessonId = table.Column<int>(type: "int", nullable: false),
+                    StudentId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -594,11 +591,11 @@ namespace Kventin.DataAccess.Migrations
                 name: "ExerciseAnswers",
                 columns: table => new
                 {
-                    Id = table.Column<long>(type: "bigint", nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Content = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    StudentId = table.Column<long>(type: "bigint", nullable: false),
-                    ExerciseId = table.Column<long>(type: "bigint", nullable: false),
+                    Content = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
+                    StudentId = table.Column<int>(type: "int", nullable: false),
+                    ExerciseId = table.Column<int>(type: "int", nullable: false),
                     CreateDateTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     DeleteDateTime = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
@@ -622,15 +619,14 @@ namespace Kventin.DataAccess.Migrations
                 name: "Marks",
                 columns: table => new
                 {
-                    Id = table.Column<long>(type: "bigint", nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Comment = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Comment = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
                     Value = table.Column<int>(type: "int", nullable: false),
-                    StudentId = table.Column<long>(type: "bigint", nullable: false),
-                    TeacherId = table.Column<long>(type: "bigint", nullable: false),
-                    LessonId = table.Column<long>(type: "bigint", nullable: true),
-                    ExerciseId = table.Column<long>(type: "bigint", nullable: true),
-                    MarkType = table.Column<int>(type: "int", nullable: false),
+                    StudentId = table.Column<int>(type: "int", nullable: false),
+                    TeacherId = table.Column<int>(type: "int", nullable: false),
+                    LessonId = table.Column<int>(type: "int", nullable: true),
+                    ExerciseId = table.Column<int>(type: "int", nullable: true),
                     CreateDateTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     DeleteDateTime = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
@@ -660,95 +656,33 @@ namespace Kventin.DataAccess.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
-            migrationBuilder.CreateTable(
-                name: "FileRecords",
-                columns: table => new
-                {
-                    Id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    OriginalFileName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    StorageFileName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    ContentType = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    FileSize = table.Column<long>(type: "bigint", nullable: false),
-                    LinkedWith = table.Column<int>(type: "int", nullable: false),
-                    UploadedByUserId = table.Column<long>(type: "bigint", nullable: false),
-                    LessonId = table.Column<long>(type: "bigint", nullable: true),
-                    ExerciseId = table.Column<long>(type: "bigint", nullable: true),
-                    ExerciseAnswerId = table.Column<long>(type: "bigint", nullable: true),
-                    NotificationId = table.Column<long>(type: "bigint", nullable: true),
-                    MessageId = table.Column<long>(type: "bigint", nullable: true),
-                    AnnouncementId = table.Column<long>(type: "bigint", nullable: true),
-                    CreateDateTime = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    DeleteDateTime = table.Column<DateTime>(type: "datetime2", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_FileRecords", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_FileRecords_Announcements_AnnouncementId",
-                        column: x => x.AnnouncementId,
-                        principalTable: "Announcements",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_FileRecords_ExerciseAnswers_ExerciseAnswerId",
-                        column: x => x.ExerciseAnswerId,
-                        principalTable: "ExerciseAnswers",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_FileRecords_Exercises_ExerciseId",
-                        column: x => x.ExerciseId,
-                        principalTable: "Exercises",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_FileRecords_Lessons_LessonId",
-                        column: x => x.LessonId,
-                        principalTable: "Lessons",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_FileRecords_Messages_MessageId",
-                        column: x => x.MessageId,
-                        principalTable: "Messages",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_FileRecords_Notifications_NotificationId",
-                        column: x => x.NotificationId,
-                        principalTable: "Notifications",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_FileRecords_Users_UploadedByUserId",
-                        column: x => x.UploadedByUserId,
-                        principalTable: "Users",
-                        principalColumn: "Id");
-                });
-
             migrationBuilder.InsertData(
                 table: "Roles",
                 columns: new[] { "Id", "CreateDateTime", "DeleteDateTime", "Name" },
                 values: new object[,]
                 {
-                    { 1L, new DateTime(2025, 1, 18, 19, 30, 0, 0, DateTimeKind.Unspecified), null, "Student" },
-                    { 2L, new DateTime(2025, 1, 18, 19, 30, 0, 0, DateTimeKind.Unspecified), null, "Teacher" },
-                    { 3L, new DateTime(2025, 1, 18, 19, 30, 0, 0, DateTimeKind.Unspecified), null, "Parent" },
-                    { 4L, new DateTime(2025, 1, 18, 19, 30, 0, 0, DateTimeKind.Unspecified), null, "SuperUser" },
-                    { 5L, new DateTime(2025, 1, 18, 19, 30, 0, 0, DateTimeKind.Unspecified), null, "AdminSchedule" },
-                    { 6L, new DateTime(2025, 1, 18, 19, 30, 0, 0, DateTimeKind.Unspecified), null, "AdminGroups" },
-                    { 7L, new DateTime(2025, 1, 18, 19, 30, 0, 0, DateTimeKind.Unspecified), null, "AdminBase" },
-                    { 8L, new DateTime(2025, 1, 18, 19, 30, 0, 0, DateTimeKind.Unspecified), null, "AdminAnnouncements" },
-                    { 9L, new DateTime(2025, 1, 18, 19, 30, 0, 0, DateTimeKind.Unspecified), null, "AdminFinances" },
-                    { 10L, new DateTime(2025, 1, 18, 19, 30, 0, 0, DateTimeKind.Unspecified), null, "AdminPersonalAccounts" },
-                    { 11L, new DateTime(2025, 1, 18, 19, 30, 0, 0, DateTimeKind.Unspecified), null, "AdminRegistration" },
-                    { 12L, new DateTime(2025, 1, 18, 19, 30, 0, 0, DateTimeKind.Unspecified), null, "AdminLessons" }
+                    { 1, new DateTime(2025, 1, 18, 19, 30, 0, 0, DateTimeKind.Unspecified), null, "Student" },
+                    { 2, new DateTime(2025, 1, 18, 19, 30, 0, 0, DateTimeKind.Unspecified), null, "Teacher" },
+                    { 3, new DateTime(2025, 1, 18, 19, 30, 0, 0, DateTimeKind.Unspecified), null, "Parent" },
+                    { 4, new DateTime(2025, 1, 18, 19, 30, 0, 0, DateTimeKind.Unspecified), null, "SuperUser" },
+                    { 5, new DateTime(2025, 1, 18, 19, 30, 0, 0, DateTimeKind.Unspecified), null, "AdminSchedule" },
+                    { 6, new DateTime(2025, 1, 18, 19, 30, 0, 0, DateTimeKind.Unspecified), null, "AdminGroups" },
+                    { 7, new DateTime(2025, 1, 18, 19, 30, 0, 0, DateTimeKind.Unspecified), null, "AdminStudyProgress" },
+                    { 8, new DateTime(2025, 1, 18, 19, 30, 0, 0, DateTimeKind.Unspecified), null, "AdminAnnouncements" },
+                    { 9, new DateTime(2025, 1, 18, 19, 30, 0, 0, DateTimeKind.Unspecified), null, "AdminFinances" },
+                    { 10, new DateTime(2025, 1, 18, 19, 30, 0, 0, DateTimeKind.Unspecified), null, "AdminPersonalAccounts" },
+                    { 11, new DateTime(2025, 1, 18, 19, 30, 0, 0, DateTimeKind.Unspecified), null, "AdminRegistration" }
                 });
 
             migrationBuilder.InsertData(
                 table: "Users",
-                columns: new[] { "Id", "ContractNumber", "CreateDateTime", "DeleteDateTime", "Email", "EmployeeRateId", "FirstName", "HashedPassword", "IsSuperUser", "LastName", "MiddleName", "PhoneNumber", "TgLink", "VkLink" },
-                values: new object[] { 1L, null, new DateTime(2025, 1, 18, 19, 30, 0, 0, DateTimeKind.Unspecified), null, null, null, "Суперпользователь", "$2a$11$fOB6qIW/7qIQzJWq.mcS6ugc6UoFPAWctpSDZJQj5uaKTNiqiQ9xO", true, "Встроенный", null, "1234567890", null, null });
+                columns: new[] { "Id", "ContractNumber", "CreateDateTime", "DeleteDateTime", "Email", "FirstName", "HashedPassword", "IsSuperUser", "LastName", "MiddleName", "PhoneNumber", "TgLink", "VkLink" },
+                values: new object[] { 1, null, new DateTime(2025, 1, 18, 19, 30, 0, 0, DateTimeKind.Unspecified), null, null, "Суперпользователь", "$2a$11$fOB6qIW/7qIQzJWq.mcS6ugc6UoFPAWctpSDZJQj5uaKTNiqiQ9xO", true, "Встроенный", null, "1234567890", null, null });
 
             migrationBuilder.InsertData(
                 table: "UsersRoles",
                 columns: new[] { "RoleId", "UserId" },
-                values: new object[] { 4L, 1L });
+                values: new object[] { 4, 1 });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Announcements_AuthorId",
@@ -802,41 +736,6 @@ namespace Kventin.DataAccess.Migrations
                 column: "TeacherId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_FileRecords_AnnouncementId",
-                table: "FileRecords",
-                column: "AnnouncementId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_FileRecords_ExerciseAnswerId",
-                table: "FileRecords",
-                column: "ExerciseAnswerId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_FileRecords_ExerciseId",
-                table: "FileRecords",
-                column: "ExerciseId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_FileRecords_LessonId",
-                table: "FileRecords",
-                column: "LessonId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_FileRecords_MessageId",
-                table: "FileRecords",
-                column: "MessageId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_FileRecords_NotificationId",
-                table: "FileRecords",
-                column: "NotificationId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_FileRecords_UploadedByUserId",
-                table: "FileRecords",
-                column: "UploadedByUserId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Lessons_ScheduleItemId",
                 table: "Lessons",
                 column: "ScheduleItemId");
@@ -877,9 +776,9 @@ namespace Kventin.DataAccess.Migrations
                 column: "TeacherId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Messages_RecieverId1",
+                name: "IX_Messages_RecieverId",
                 table: "Messages",
-                column: "RecieverId1");
+                column: "RecieverId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Messages_SenderId",
@@ -887,9 +786,9 @@ namespace Kventin.DataAccess.Migrations
                 column: "SenderId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Notifications_RecieverId1",
+                name: "IX_Notifications_RecieverId",
                 table: "Notifications",
-                column: "RecieverId1");
+                column: "RecieverId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ParentsChildren_StudentId",
@@ -966,6 +865,9 @@ namespace Kventin.DataAccess.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
+                name: "Announcements");
+
+            migrationBuilder.DropTable(
                 name: "EmployeeActivities");
 
             migrationBuilder.DropTable(
@@ -975,10 +877,16 @@ namespace Kventin.DataAccess.Migrations
                 name: "EmployeeSalaries");
 
             migrationBuilder.DropTable(
-                name: "FileRecords");
+                name: "ExerciseAnswers");
 
             migrationBuilder.DropTable(
                 name: "Marks");
+
+            migrationBuilder.DropTable(
+                name: "Messages");
+
+            migrationBuilder.DropTable(
+                name: "Notifications");
 
             migrationBuilder.DropTable(
                 name: "ParentsChildren");
@@ -1002,25 +910,13 @@ namespace Kventin.DataAccess.Migrations
                 name: "UsersRoles");
 
             migrationBuilder.DropTable(
-                name: "Announcements");
-
-            migrationBuilder.DropTable(
-                name: "ExerciseAnswers");
-
-            migrationBuilder.DropTable(
-                name: "Messages");
-
-            migrationBuilder.DropTable(
-                name: "Notifications");
+                name: "Exercises");
 
             migrationBuilder.DropTable(
                 name: "TuitionTariffs");
 
             migrationBuilder.DropTable(
                 name: "Roles");
-
-            migrationBuilder.DropTable(
-                name: "Exercises");
 
             migrationBuilder.DropTable(
                 name: "Lessons");

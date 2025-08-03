@@ -15,18 +15,18 @@ namespace Kventin.DataAccess.Mappings
 
             builder.HasData(
                 [
-                    new() { Id = 1L, Name = "Student", CreateDateTime = new DateTime(2025, 1, 18, 19, 30, 00)},
-                    new() { Id = 2L, Name = "Teacher", CreateDateTime = new DateTime(2025, 1, 18, 19, 30, 00)},
-                    new() { Id = 3L, Name = "Parent", CreateDateTime = new DateTime(2025, 1, 18, 19, 30, 00)},
-                    new() { Id = 4L, Name = "SuperUser", CreateDateTime = new DateTime(2025, 1, 18, 19, 30, 00)},
-                    new() { Id = 5L, Name = "AdminSchedule", CreateDateTime = new DateTime(2025, 1, 18, 19, 30, 00)},
-                    new() { Id = 6L, Name = "AdminGroups", CreateDateTime = new DateTime(2025, 1, 18, 19, 30, 00)},
-                    new() { Id = 7L, Name = "AdminBase", CreateDateTime = new DateTime(2025, 1, 18, 19, 30, 00)},
-                    new() { Id = 8L, Name = "AdminAnnouncements", CreateDateTime = new DateTime(2025, 1, 18, 19, 30, 00)},
-                    new() { Id = 9L, Name = "AdminFinances", CreateDateTime = new DateTime(2025, 1, 18, 19, 30, 00)},
-                    new() { Id = 10L, Name = "AdminPersonalAccounts", CreateDateTime = new DateTime(2025, 1, 18, 19, 30, 00)},
-                    new() { Id = 11L, Name = "AdminRegistration", CreateDateTime = new DateTime(2025, 1, 18, 19, 30, 00)},
-                    new() { Id = 12L, Name = "AdminLessons", CreateDateTime = new DateTime(2025, 1, 18, 19, 30, 00)},
+                    new() { Id = 1, Name = "Student", CreateDateTime = new DateTime(2025, 1, 18, 19, 30, 00)},
+                    new() { Id = 2, Name = "Teacher", CreateDateTime = new DateTime(2025, 1, 18, 19, 30, 00)},
+                    new() { Id = 3, Name = "Parent", CreateDateTime = new DateTime(2025, 1, 18, 19, 30, 00)},
+                    new() { Id = 4, Name = "SuperUser", CreateDateTime = new DateTime(2025, 1, 18, 19, 30, 00)},
+                    new() { Id = 5, Name = "AdminSchedule", CreateDateTime = new DateTime(2025, 1, 18, 19, 30, 00)},
+                    new() { Id = 6, Name = "AdminGroups", CreateDateTime = new DateTime(2025, 1, 18, 19, 30, 00)},
+                    new() { Id = 7, Name = "AdminBase", CreateDateTime = new DateTime(2025, 1, 18, 19, 30, 00)},
+                    new() { Id = 8, Name = "AdminAnnouncements", CreateDateTime = new DateTime(2025, 1, 18, 19, 30, 00)},
+                    new() { Id = 9, Name = "AdminFinances", CreateDateTime = new DateTime(2025, 1, 18, 19, 30, 00)},
+                    new() { Id = 10, Name = "AdminPersonalAccounts", CreateDateTime = new DateTime(2025, 1, 18, 19, 30, 00)},
+                    new() { Id = 11, Name = "AdminRegistration", CreateDateTime = new DateTime(2025, 1, 18, 19, 30, 00)},
+                    new() { Id = 12, Name = "AdminLessons", CreateDateTime = new DateTime(2025, 1, 18, 19, 30, 00)},
                 ]);
         }
     }

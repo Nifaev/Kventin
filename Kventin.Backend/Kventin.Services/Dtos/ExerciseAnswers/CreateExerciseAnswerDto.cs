@@ -8,6 +8,6 @@ namespace Kventin.Services.Dtos.ExerciseAnswers
         public required string Content { get; set; }
 
         [Required]
-        public required long ExerciseId { get; set; }
+        public required int ExerciseId { get; set; }
     }
 }

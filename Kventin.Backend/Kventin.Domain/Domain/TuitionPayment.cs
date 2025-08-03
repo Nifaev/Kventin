@@ -15,7 +15,7 @@ namespace Kventin.DataAccess.Domain
         /// <summary>
         /// Id плательщика (ученик/родитель)
         /// </summary>
-        public long PayerId { get; set; }
+        public int PayerId { get; set; }
 
         /// <summary>
         /// Плательщик (ученик/родитель)

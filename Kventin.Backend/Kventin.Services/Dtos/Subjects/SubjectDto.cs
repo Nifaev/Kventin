@@ -5,7 +5,7 @@ namespace Kventin.Services.Dtos.Subjects
     public class SubjectDto
     {
         [Required]
-        public required long SubjectId { get; set; }
+        public required int SubjectId { get; set; }
 
         [Required]
         public required string SubjectName { get; set; }

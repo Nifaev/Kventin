@@ -10,7 +10,7 @@ namespace Kventin.DataAccess.Domain
         /// <summary>
         /// Id отправителя
         /// </summary>
-        public long SenderId { get; set; }
+        public int SenderId { get; set; }
 
         /// <summary>
         /// Отправитель

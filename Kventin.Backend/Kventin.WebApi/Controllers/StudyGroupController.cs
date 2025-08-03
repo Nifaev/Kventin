@@ -45,7 +45,7 @@ namespace Kventin.WebApi.Controllers
         /// <response code="400">Ошибка (см. сообщение)</response>
         [HttpDelete("{studyGroupId}/delete")]
         [Authorize(Roles = "SuperUser, AdminGroups")]
-        public async Task<ActionResult> DeleteStudyGroupById(long studyGroupId)
+        public async Task<ActionResult> DeleteStudyGroupById(int studyGroupId)
         {
             try
             {
@@ -69,7 +69,7 @@ namespace Kventin.WebApi.Controllers
         /// <response code="400">Ошибка (см. сообщение)</response>
         [HttpPost("{studyGroupId}/update")]
         [Authorize(Roles = "SuperUser, AdminGroups")]
-        public async Task<ActionResult> UpdateStudyGroupById(long studyGroupId, UpdateStudyGroupDto dto)
+        public async Task<ActionResult> UpdateStudyGroupById(int studyGroupId, UpdateStudyGroupDto dto)
         {
             try
             {
@@ -92,7 +92,7 @@ namespace Kventin.WebApi.Controllers
         /// <response code="400">Ошибка (см. сообщение)</response>
         [HttpGet("{studyGroupId}")]
         [Authorize]
-        public async Task<ActionResult<StudyGroupFullInfoDto>> GetStudyGroupInfoById(long studyGroupId)
+        public async Task<ActionResult<StudyGroupFullInfoDto>> GetStudyGroupInfoById(int studyGroupId)
         {
             try
             {
@@ -146,7 +146,7 @@ namespace Kventin.WebApi.Controllers
         /// <response code="400">Ошибка (см. сообщение)</response>
         [HttpPost("{studyGroupId}/addStudent")]
         [Authorize(Roles = "SuperUser, AdminGroups")]
-        public async Task<ActionResult> AddStudentToStudyGroup(long studyGroupId, long studentId)
+        public async Task<ActionResult> AddStudentToStudyGroup(int studyGroupId, int studentId)
         {
             try
             {
@@ -170,7 +170,7 @@ namespace Kventin.WebApi.Controllers
         /// <response code="400">Ошибка (см. сообщение)</response>
         [HttpDelete("{studyGroupId}/deleteStudent")]
         [Authorize(Roles = "SuperUser, AdminGroups")]
-        public async Task<ActionResult> DeleteStudentFromStudyGroup(long studyGroupId, long studentId)
+        public async Task<ActionResult> DeleteStudentFromStudyGroup(int studyGroupId, int studentId)
         {
             try
             {

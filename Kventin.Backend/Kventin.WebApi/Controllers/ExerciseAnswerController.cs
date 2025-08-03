@@ -43,7 +43,7 @@ namespace Kventin.WebApi.Controllers
         /// <returns></returns>
         [Authorize("Student")]
         [HttpDelete("{exerciseAnswerId}/delete")]
-        public async Task<ActionResult> DeleteExerciseAnswer(long exerciseAnswerId)
+        public async Task<ActionResult> DeleteExerciseAnswer(int exerciseAnswerId)
         {
             var studentId = _authService.GetUserIdByCookie(Request.Cookies);
 
@@ -67,7 +67,7 @@ namespace Kventin.WebApi.Controllers
         /// <returns></returns>
         [Authorize("Student")]
         [HttpPost("{exerciseAnswerId}/update")]
-        public async Task<ActionResult> UpdateExerciseAnswer(long exerciseAnswerId, string answerContent)
+        public async Task<ActionResult> UpdateExerciseAnswer(int exerciseAnswerId, string answerContent)
         {
             var studentId = _authService.GetUserIdByCookie(Request.Cookies);
 
@@ -91,7 +91,7 @@ namespace Kventin.WebApi.Controllers
         /// <returns></returns>
         [Authorize("Student")]
         [HttpPost("{exerciseAnswerId}/uploadFiles")]
-        public async Task<ActionResult> UploadFilesToExerciseAnswer(long exerciseAnswerId, List<IFormFile> files)
+        public async Task<ActionResult> UploadFilesToExerciseAnswer(int exerciseAnswerId, List<IFormFile> files)
         {
             var studentId = _authService.GetUserIdByCookie(Request.Cookies);
 
@@ -115,7 +115,7 @@ namespace Kventin.WebApi.Controllers
         /// <returns></returns>
         [Authorize("Student")]
         [HttpDelete("{exerciseAnswerId}/deleteFile")]
-        public async Task<ActionResult> DeleteFileFromExerciseAnswer(long exerciseAnswerId, List<long> fileIds)
+        public async Task<ActionResult> DeleteFileFromExerciseAnswer(int exerciseAnswerId, List<int> fileIds)
         {
             var studentId = _authService.GetUserIdByCookie(Request.Cookies);
 

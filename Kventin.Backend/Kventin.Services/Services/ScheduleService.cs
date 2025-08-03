@@ -107,7 +107,7 @@ namespace Kventin.Services.Services
             await _db.SaveChangesAsync();
         }
 
-        public async Task UpdateScheduleItem(UpdateScheduleItemDto dto, long itemId)
+        public async Task UpdateScheduleItem(UpdateScheduleItemDto dto, int itemId)
         {
             var scheduleItem = await _db.ScheduleItems.FindAsync(itemId)
                 ?? throw new EntityNotFoundException("Элемент расписания с укзанным Id не найден");
@@ -133,7 +133,7 @@ namespace Kventin.Services.Services
             await _db.SaveChangesAsync();
         }
 
-        public async Task DeleteScheduleItem(long itemId)
+        public async Task DeleteScheduleItem(int itemId)
         {
             var scheduleItem = await _db.ScheduleItems.FindAsync(itemId);
 

@@ -1,6 +1,7 @@
 ﻿using Kventin.DataAccess;
 using Kventin.DataAccess.Domain;
 using Kventin.Services.Dtos.Auth;
+using Kventin.Services.Dtos.Users;
 using Kventin.Services.Infrastructure.Exceptions;
 using Kventin.Services.Interfaces.Services;
 using Kventin.Services.Interfaces.Tools;
@@ -18,7 +19,7 @@ namespace Kventin.Services.Services
         private readonly IPasswordHasher _passwordHasher = passwordHasher;
         private readonly IJwtProvider _jwtProvider = jwtProvider;
 
-        public async Task<string> GetNewCookieWithChildId(IRequestCookieCollection cookie, long parentId, long childId)
+        public async Task<string> GetNewCookieWithChildId(IRequestCookieCollection cookie, int parentId, int childId)
         {
             var parent = await _db.Users
                 .FirstOrDefaultAsync(x => x.Id == parentId &&
@@ -45,7 +46,7 @@ namespace Kventin.Services.Services
         {
             var hashedPassword = string.Empty;
             var login = string.Empty;
-            long userId = 0;
+            var userId = 0;
             var rolenames = new List<string>();
 
             if (dto.PhoneNumber != null)
@@ -134,7 +135,7 @@ namespace Kventin.Services.Services
             await _db.SaveChangesAsync();
         }
 
-        public long GetUserIdByCookie(IRequestCookieCollection cookie)
+        public int GetUserIdByCookie(IRequestCookieCollection cookie)
         {
             var token = cookie["choco-cookies"] ?? string.Empty;
 
@@ -168,7 +169,7 @@ namespace Kventin.Services.Services
             return roles;
         }
 
-        public long GetChildIdByCookie(IRequestCookieCollection cookie)
+        public int GetChildIdByCookie(IRequestCookieCollection cookie)
         {
             var token = cookie["choco-cookies"] ?? string.Empty;
 

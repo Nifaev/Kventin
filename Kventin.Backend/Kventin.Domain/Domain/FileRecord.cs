@@ -36,7 +36,7 @@ namespace Kventin.DataAccess.Domain
         /// <summary>
         /// Id пользователя, загрузившего файл
         /// </summary>
-        public long UploadedByUserId { get; set; }
+        public int UploadedByUserId { get; set; }
 
         /// <summary>
         /// Пользователь, загрузивший файл
@@ -46,7 +46,7 @@ namespace Kventin.DataAccess.Domain
         /// <summary>
         /// Id занятия, к которому прикреплен файл
         /// </summary>
-        public long? LessonId { get; set; }
+        public int? LessonId { get; set; }
         
         /// <summary>
         /// Занятие, к которому прикреплен файл
@@ -56,7 +56,7 @@ namespace Kventin.DataAccess.Domain
         /// <summary>
         /// Id задания, к которому прикреплен файл
         /// </summary>
-        public long? ExerciseId { get; set; }
+        public int? ExerciseId { get; set; }
 
         /// <summary>
         /// Задание, к которому прикреплен файл
@@ -66,7 +66,7 @@ namespace Kventin.DataAccess.Domain
         /// <summary>
         /// Id ответа на задание, к которому прикреплен файл
         /// </summary>
-        public long? ExerciseAnswerId { get; set; }
+        public int? ExerciseAnswerId { get; set; }
 
         /// <summary>
         /// Ответ на задание, к которому прикреплен файл
@@ -76,7 +76,7 @@ namespace Kventin.DataAccess.Domain
         /// <summary>
         /// Id уведомления, к которому прикреплен файл
         /// </summary>
-        public long? NotificationId { get; set; }
+        public int? NotificationId { get; set; }
 
         /// <summary>
         /// Уведомление, к которому прикреплен файл
@@ -86,7 +86,7 @@ namespace Kventin.DataAccess.Domain
         /// <summary>
         /// Id сообщения, к которому прикреплен файл
         /// </summary>
-        public long? MessageId { get; set; }
+        public int? MessageId { get; set; }
 
         /// <summary>
         /// Сообщение, к которому прикреплен файл
@@ -96,7 +96,7 @@ namespace Kventin.DataAccess.Domain
         /// <summary>
         /// Id объяления, к которому прикреплен файл
         /// </summary>
-        public long? AnnouncementId { get; set; }
+        public int? AnnouncementId { get; set; }
 
         /// <summary>
         /// Объявление, к которому прикреплен файл

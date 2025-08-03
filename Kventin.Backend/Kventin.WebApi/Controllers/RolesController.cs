@@ -26,7 +26,7 @@ namespace Kventin.WebApi.Controllers
         /// <response code="400">Ошибка (см. сообщение)</response>
         [Authorize(Roles = "SuperUser, AdminRegistration")]
         [HttpPost("{userId}/setRoles")]
-        public async Task<ActionResult> SetRoles(long userId, List<string> rolenames)
+        public async Task<ActionResult> SetRoles(int userId, List<string> rolenames)
         {
             try
             {
@@ -53,7 +53,7 @@ namespace Kventin.WebApi.Controllers
         /// <response code="400">Ошибка (см. сообщение)</response>
         [Authorize(Roles = "SuperUser, AdminRegistration")]
         [HttpPost("{userId}/deleteRoles")]
-        public async Task<ActionResult> DeleteRoles(long userId, List<string> rolenames)
+        public async Task<ActionResult> DeleteRoles(int userId, List<string> rolenames)
         {
             try
             {
@@ -96,7 +96,7 @@ namespace Kventin.WebApi.Controllers
         /// <response code="400">Ошибка (см. сообщение)</response>
         [Authorize(Roles = "SuperUser, AdminRegistration")]
         [HttpGet("{userId}/getRoles")]
-        public async Task<ActionResult<List<string>>> GetRoles(long userId)
+        public async Task<ActionResult<List<string>>> GetRoles(int userId)
         {
             try
             {
