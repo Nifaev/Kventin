@@ -17,7 +17,7 @@ namespace Kventin.Services.Dtos.Exercises
         [Required]
         public required bool IsIndividual { get; set; }
 
-        public UserShortInfoDto? IndividualStudent { get; set; }
+        public ExerciseStudentInfoDto? IndividualStudent { get; set; }
 
         /// <summary>
         /// Это поле будет заполнено только для ученика и родителя (если оценка есть)
